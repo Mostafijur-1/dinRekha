@@ -21,6 +21,7 @@ import {
 } from "@/features/timeline/repository";
 import { currentMinuteForTimezone } from "@/features/timeline/time";
 import { getCurrentUser } from "@/lib/auth";
+import { buildDashboardReminders } from "@/features/notifications/due";
 
 export const metadata = { title: "আজকের Dashboard" };
 export const dynamic = "force-dynamic";
@@ -56,6 +57,9 @@ export default async function DashboardPage({
   const completion = activities.length
     ? Math.round((completed / activities.length) * 100)
     : 0;
+  const reminders = isToday
+    ? buildDashboardReminders(user.reminders, activities, currentMinute)
+    : [];
   const dateLabel = new Intl.DateTimeFormat("bn-BD", {
     timeZone: "UTC",
     weekday: "long",
@@ -119,6 +123,26 @@ export default async function DashboardPage({
               </Link>
             )}
           </nav>
+
+          {reminders.length > 0 && (
+            <aside
+              className="dashboard-reminders"
+              aria-labelledby="reminder-heading"
+            >
+              <div>
+                <span>এখন খেয়াল করুন</span>
+                <h2 id="reminder-heading">Reminder</h2>
+              </div>
+              <div className="dashboard-reminder-list">
+                {reminders.map((reminder) => (
+                  <article key={reminder.id}>
+                    <strong>{reminder.title}</strong>
+                    <span>{reminder.detail}</span>
+                  </article>
+                ))}
+              </div>
+            </aside>
+          )}
 
           <div id="timeline" className="dashboard-anchor">
             <TimelineCreator

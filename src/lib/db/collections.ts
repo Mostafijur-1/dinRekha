@@ -16,6 +16,14 @@ export type UserDocument = {
   profile: {
     timezone: string;
     initializedAt: Date;
+    reminders?: {
+      activity: boolean;
+      endOfDay: boolean;
+      dailySummary: boolean;
+      streak: boolean;
+      endOfDayTime: string;
+      dailySummaryTime: string;
+    };
   };
   createdAt: Date;
   updatedAt: Date;
@@ -46,6 +54,8 @@ export type DailyActivityDocument = {
   unit?: string;
   frequency?: ActivityFrequency;
   days?: number[];
+  preferredTime?: string;
+  reminderEnabled?: boolean;
   effectiveFrom?: string;
   status: "active" | "archived";
   sortOrder: number;
@@ -112,6 +122,19 @@ export type SharingPolicyDocument = {
   updatedAt: Date;
 };
 
+export type NotificationDeliveryDocument = {
+  _id: ObjectId;
+  ownerId: ObjectId;
+  kind: "activity" | "end_of_day" | "daily_summary" | "streak";
+  dateKey: string;
+  activityId?: ObjectId;
+  scheduledMinute: number;
+  status: "pending" | "sent" | "skipped" | "failed";
+  attempts: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDatabase()).collection<UserDocument>("users");
 }
@@ -167,5 +190,13 @@ export async function sharingPoliciesCollection(): Promise<
 > {
   return (await getDatabase()).collection<SharingPolicyDocument>(
     "sharingPolicies",
+  );
+}
+
+export async function notificationDeliveriesCollection(): Promise<
+  Collection<NotificationDeliveryDocument>
+> {
+  return (await getDatabase()).collection<NotificationDeliveryDocument>(
+    "notificationDeliveries",
   );
 }

@@ -20,6 +20,25 @@ export type SafeUser = {
   status: "active" | "disabled" | "pending_deletion";
   sessionVersion: number;
   timezone: string;
+  reminders: ReminderSettings;
+};
+
+export type ReminderSettings = {
+  activity: boolean;
+  endOfDay: boolean;
+  dailySummary: boolean;
+  streak: boolean;
+  endOfDayTime: string;
+  dailySummaryTime: string;
+};
+
+export const defaultReminderSettings: ReminderSettings = {
+  activity: true,
+  endOfDay: false,
+  dailySummary: false,
+  streak: false,
+  endOfDayTime: "21:30",
+  dailySummaryTime: "22:00",
 };
 
 function toSafeUser(user: UserDocument | null): SafeUser | null {
@@ -33,6 +52,7 @@ function toSafeUser(user: UserDocument | null): SafeUser | null {
     status: user.status,
     sessionVersion: user.sessionVersion ?? 1,
     timezone: user.profile.timezone,
+    reminders: { ...defaultReminderSettings, ...user.profile.reminders },
   };
 }
 
@@ -162,6 +182,20 @@ export async function updateUserProfile(
         updatedAt: new Date(),
       },
     },
+  );
+  return result.matchedCount === 1;
+}
+
+export async function updateReminderSettings(
+  userId: string,
+  reminders: ReminderSettings,
+): Promise<boolean> {
+  if (!ObjectId.isValid(userId)) return false;
+  const result = await (
+    await usersCollection()
+  ).updateOne(
+    { _id: new ObjectId(userId), status: "active" },
+    { $set: { "profile.reminders": reminders, updatedAt: new Date() } },
   );
   return result.matchedCount === 1;
 }

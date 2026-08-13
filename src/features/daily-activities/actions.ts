@@ -33,6 +33,8 @@ function definitionFrom(formData: FormData) {
     unit: formData.get("unit") ?? "",
     frequency: formData.get("frequency"),
     days: [...new Set(formData.getAll("days"))],
+    preferredTime: formData.get("preferredTime") ?? "",
+    reminderEnabled: formData.get("reminderEnabled") === "on",
   });
 }
 

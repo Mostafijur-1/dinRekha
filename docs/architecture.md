@@ -80,3 +80,8 @@ creator-এর response-এ ফেরে; database-এ SHA-256 hash, expiry ও 
 Sharing policy প্রতি connection-এ owner→recipient direction-এ unique। Default policy সব false;
 active connection ও explicit permission ছাড়া shared report query চলে না। বর্তমান targets শুধু aggregate
 Productivity summary ও streaks; Timeline, category distribution, daily values এবং private notes share হয় না।
+
+Reminder schedule user timezone-এ minute precision-এ নির্ধারিত। Activity-level preferred time এবং
+user-level granular switches থেকে একই deterministic engine Dashboard reminder তৈরি করে; ভবিষ্যৎ Web Push
+delivery-ও এই policy ব্যবহার করবে। `notificationDeliveries`-এর compound unique index retry-তে একই
+user/kind/date/activity notification duplicate হওয়া আটকানোর persistence boundary তৈরি করে।

@@ -20,6 +20,10 @@ export const activityDefinitionSchema = z
     unit: text(24),
     frequency: frequencySchema,
     days: z.array(z.coerce.number().int().min(0).max(6)).max(7),
+    preferredTime: z
+      .union([z.literal(""), z.string().regex(/^\d{2}:\d{2}$/)])
+      .default(""),
+    reminderEnabled: z.boolean().default(false),
   })
   .superRefine((value, context) => {
     if (value.measurement === "boolean" && value.target !== 1) {
@@ -44,6 +48,13 @@ export const activityDefinitionSchema = z
         message: "অন্তত একটি দিন নির্বাচন করুন।",
       });
     }
+    if (value.reminderEnabled && !value.preferredTime) {
+      context.addIssue({
+        code: "custom",
+        path: ["preferredTime"],
+        message: "Reminder চালু করতে একটি সময় দিন।",
+      });
+    }
   });
 
 export const activityIdSchema = z
@@ -58,4 +69,9 @@ export const progressValueSchema = z.coerce
 export const dateKeySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 export const reorderDirectionSchema = z.enum(["up", "down"]);
 
-export type ActivityDefinitionInput = z.infer<typeof activityDefinitionSchema>;
+type ParsedActivityDefinition = z.output<typeof activityDefinitionSchema>;
+export type ActivityDefinitionInput = Omit<
+  ParsedActivityDefinition,
+  "preferredTime" | "reminderEnabled"
+> &
+  Partial<Pick<ParsedActivityDefinition, "preferredTime" | "reminderEnabled">>;

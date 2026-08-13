@@ -1372,6 +1372,52 @@ a {
   flex-wrap: wrap;
   gap: 0.65rem;
 }
+
+.activity-reminder-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 2.75rem;
+  color: var(--ink-soft);
+}
+
+.activity-reminder-toggle input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--brand);
+}
+
+.settings-reminders {
+  margin-top: 1.25rem;
+}
+
+.dashboard-reminders {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--brand) 5%, var(--surface));
+}
+
+.dashboard-reminders h2,
+.dashboard-reminders span {
+  margin: 0;
+}
+
+.dashboard-reminder-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.dashboard-reminder-list article {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+}
 .sharing-form label {
   color: var(--text-soft);
   font-size: 0.68rem;

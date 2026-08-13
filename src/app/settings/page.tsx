@@ -5,6 +5,7 @@ import { Brand } from "@/components/brand";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { ProfileForm } from "@/features/settings/components/profile-form";
 import { AccountDeletionForm } from "@/features/account/deletion-form";
+import { ReminderSettingsForm } from "@/features/notifications/reminder-settings-form";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "Profile ও Settings" };
@@ -82,6 +83,20 @@ export default async function SettingsPage() {
               </div>
             </aside>
           </div>
+          <section className="settings-card settings-reminders">
+            <div className="feature-section-heading">
+              <div>
+                <span>আপনার নিয়ন্ত্রণে</span>
+                <h2>Reminder</h2>
+              </div>
+            </div>
+            <p>
+              প্রতিটি ধরনের Reminder আলাদাভাবে নিয়ন্ত্রণ করুন। Browser
+              notification delivery চালু না হলেও Dashboard-এ সময়মতো মনে করিয়ে
+              দেওয়া হবে।
+            </p>
+            <ReminderSettingsForm settings={user.reminders} />
+          </section>
           <section className="settings-danger-zone">
             <span>Danger zone</span>
             <h2>Account বন্ধ করুন</h2>

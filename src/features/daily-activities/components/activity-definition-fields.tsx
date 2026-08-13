@@ -33,6 +33,8 @@ export function ActivityDefinitionFields({
     unit?: string;
     frequency: ActivityFrequency;
     days: number[];
+    preferredTime?: string;
+    reminderEnabled?: boolean;
   };
 }) {
   return (
@@ -46,6 +48,22 @@ export function ActivityDefinitionFields({
           minLength={2}
           maxLength={80}
         />
+      </label>
+      <label className="activity-field">
+        <span>পছন্দের সময় (ঐচ্ছিক)</span>
+        <input
+          name="preferredTime"
+          type="time"
+          defaultValue={activity?.preferredTime}
+        />
+      </label>
+      <label className="activity-field activity-reminder-toggle">
+        <input
+          name="reminderEnabled"
+          type="checkbox"
+          defaultChecked={activity?.reminderEnabled}
+        />
+        <span>এই Activity-এর Reminder চালু রাখুন</span>
       </label>
       <fieldset className="activity-frequency activity-field-wide">
         <legend>কখন দেখাবেন</legend>

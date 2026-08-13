@@ -23,6 +23,8 @@ export type DailyActivityView = {
   unit?: string;
   frequency: ActivityFrequency;
   days: number[];
+  preferredTime?: string;
+  reminderEnabled: boolean;
   value: number;
   completed: boolean;
   canMoveUp: boolean;
@@ -103,6 +105,8 @@ export async function listDailyActivities(
       unit: row.unit,
       frequency: row.frequency ?? "daily",
       days: row.days ?? [],
+      preferredTime: row.preferredTime,
+      reminderEnabled: row.reminderEnabled ?? false,
       value,
       completed: value >= row.target,
       canMoveUp: index > 0,
@@ -132,6 +136,8 @@ export async function createDailyActivity(
     ...(input.unit ? { unit: input.unit } : {}),
     frequency: input.frequency,
     ...(input.frequency === "selected_days" ? { days: input.days } : {}),
+    ...(input.preferredTime ? { preferredTime: input.preferredTime } : {}),
+    reminderEnabled: input.reminderEnabled ?? false,
     effectiveFrom,
     status: "active",
     sortOrder: Date.now(),
@@ -165,6 +171,8 @@ export async function updateDailyActivity(
     ...(input.unit ? { unit: input.unit } : {}),
     frequency: input.frequency,
     ...(input.frequency === "selected_days" ? { days: input.days } : {}),
+    ...(input.preferredTime ? { preferredTime: input.preferredTime } : {}),
+    reminderEnabled: input.reminderEnabled ?? false,
   };
   const result = await activities.updateOne(
     { _id: activity, ownerId: owner, status: "active" },
@@ -174,6 +182,7 @@ export async function updateDailyActivity(
         ...(input.description ? {} : { description: "" }),
         ...(input.unit ? {} : { unit: "" }),
         ...(input.frequency === "daily" ? { days: "" } : {}),
+        ...(input.preferredTime ? {} : { preferredTime: "" }),
       },
     },
   );
