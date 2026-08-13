@@ -11,6 +11,7 @@
   --brand: #176b43;
   --brand-strong: #0d5433;
   --brand-soft: #e7f1e9;
+  --trust-surface: #13251a;
   --accent: #dd9d3e;
   --border: #dfe3dc;
   --shadow-sm: 0 1px 2px rgb(23 50 34 / 0.05), 0 8px 24px rgb(23 50 34 / 0.06);
@@ -631,7 +632,7 @@ a {
 }
 .trust-section {
   padding-block: 6rem;
-  background: var(--text);
+  background: var(--trust-surface);
   color: white;
 }
 .trust-grid {
