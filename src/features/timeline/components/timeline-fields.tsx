@@ -2,9 +2,11 @@ import type { TimelineEntryView } from "@/features/timeline/repository";
 
 export function TimelineFields({
   entry,
+  defaults,
   allowInProgress = true,
 }: {
   entry?: TimelineEntryView;
+  defaults?: { activity: string; category: string; startTime?: string };
   allowInProgress?: boolean;
 }) {
   return (
@@ -13,7 +15,7 @@ export function TimelineFields({
         <span>Activity</span>
         <input
           name="activity"
-          defaultValue={entry?.activity}
+          defaultValue={entry?.activity ?? defaults?.activity}
           maxLength={80}
           required
           placeholder="যেমন: পড়াশোনা"
@@ -23,7 +25,7 @@ export function TimelineFields({
         <span>Category</span>
         <input
           name="category"
-          defaultValue={entry?.category}
+          defaultValue={entry?.category ?? defaults?.category}
           maxLength={40}
           required
           placeholder="যেমন: কাজ"
@@ -34,7 +36,7 @@ export function TimelineFields({
         <input
           name="startTime"
           type="time"
-          defaultValue={entry?.startTime}
+          defaultValue={entry?.startTime ?? defaults?.startTime}
           required
         />
       </label>

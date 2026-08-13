@@ -1,12 +1,15 @@
 import { ObjectId } from "mongodb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { findOne, insertOne, updateOne, deleteOne } = vi.hoisted(() => ({
-  findOne: vi.fn(),
-  insertOne: vi.fn(),
-  updateOne: vi.fn(),
-  deleteOne: vi.fn(),
-}));
+const { findOne, insertOne, updateOne, deleteOne, aggregate, toArray } =
+  vi.hoisted(() => ({
+    findOne: vi.fn(),
+    insertOne: vi.fn(),
+    updateOne: vi.fn(),
+    deleteOne: vi.fn(),
+    aggregate: vi.fn(),
+    toArray: vi.fn(),
+  }));
 
 vi.mock("@/lib/db/collections", () => ({
   timelineEntriesCollection: vi.fn(async () => ({
@@ -14,6 +17,7 @@ vi.mock("@/lib/db/collections", () => ({
     insertOne,
     updateOne,
     deleteOne,
+    aggregate,
   })),
 }));
 vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
@@ -21,6 +25,7 @@ vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
 import {
   createTimelineEntry,
   deleteTimelineEntry,
+  listTimelineSuggestions,
   updateTimelineEntry,
 } from "@/features/timeline/repository";
 
@@ -34,6 +39,18 @@ const input = {
 
 describe("Timeline repository authorization and overlap", () => {
   beforeEach(() => vi.clearAllMocks());
+
+  it("scopes suggestion history to the authenticated owner", async () => {
+    const ownerId = new ObjectId();
+    toArray.mockResolvedValue([]);
+    aggregate.mockReturnValue({ toArray });
+
+    await listTimelineSuggestions(ownerId.toHexString(), "2026-08-13", 600);
+
+    expect(aggregate).toHaveBeenCalledWith(
+      expect.arrayContaining([{ $match: { ownerId } }]),
+    );
+  });
 
   it("does not insert an overlapping interval", async () => {
     findOne.mockResolvedValue({ _id: new ObjectId() });

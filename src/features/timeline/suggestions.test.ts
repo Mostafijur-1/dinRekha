@@ -1,0 +1,47 @@
+import { describe, expect, it } from "vitest";
+
+import { rankTimelineSuggestions } from "@/features/timeline/suggestions";
+
+describe("rankTimelineSuggestions", () => {
+  it("combines frequency, recency and time-of-day deterministically", () => {
+    const suggestions = rankTimelineSuggestions(
+      [
+        {
+          activity: "পড়াশোনা",
+          category: "শেখা",
+          uses: 3,
+          lastUsedDate: "2026-08-12",
+          typicalStartMinute: 540,
+        },
+        {
+          activity: "হাঁটা",
+          category: "স্বাস্থ্য",
+          uses: 1,
+          lastUsedDate: "2026-07-01",
+          typicalStartMinute: 1080,
+        },
+      ],
+      "2026-08-13",
+      570,
+    );
+
+    expect(suggestions[0]).toMatchObject({
+      activity: "পড়াশোনা",
+      reason: "এই সময়ের পরিচিত কাজ",
+    });
+  });
+
+  it("honors the requested result limit", () => {
+    const candidates = Array.from({ length: 8 }, (_, index) => ({
+      activity: `কাজ ${index}`,
+      category: "কাজ",
+      uses: 1,
+      lastUsedDate: "2026-08-13",
+      typicalStartMinute: index * 60,
+    }));
+
+    expect(
+      rankTimelineSuggestions(candidates, "2026-08-13", 0, 3),
+    ).toHaveLength(3);
+  });
+});

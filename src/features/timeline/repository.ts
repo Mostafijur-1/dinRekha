@@ -3,6 +3,11 @@ import "server-only";
 import { ObjectId } from "mongodb";
 
 import type { TimelineEntryInput } from "@/features/timeline/schemas";
+import {
+  rankTimelineSuggestions,
+  type TimelineSuggestion,
+  type TimelineSuggestionCandidate,
+} from "@/features/timeline/suggestions";
 import { minuteToTime, timeToMinute } from "@/features/timeline/time";
 import {
   timelineEntriesCollection,
@@ -81,6 +86,38 @@ export async function listTimelineEntries(
     status: row.status,
     duration: (row.endMinute ?? row.startMinute) - row.startMinute,
   }));
+}
+
+export async function listTimelineSuggestions(
+  ownerId: string,
+  todayKey: string,
+  currentMinute: number,
+): Promise<TimelineSuggestion[]> {
+  const owner = objectId(ownerId);
+  if (!owner) return [];
+  await ensureDatabaseIndexes();
+  const candidates = await (
+    await timelineEntriesCollection()
+  )
+    .aggregate<TimelineSuggestionCandidate>([
+      { $match: { ownerId: owner } },
+      {
+        $group: {
+          _id: { activity: "$activity", category: "$category" },
+          activity: { $first: "$activity" },
+          category: { $first: "$category" },
+          uses: { $sum: 1 },
+          lastUsedDate: { $max: "$dateKey" },
+          typicalStartMinute: { $avg: "$startMinute" },
+        },
+      },
+      { $sort: { uses: -1, lastUsedDate: -1 } },
+      { $limit: 30 },
+      { $project: { _id: 0 } },
+    ])
+    .toArray();
+
+  return rankTimelineSuggestions(candidates, todayKey, currentMinute);
 }
 
 export async function createTimelineEntry(

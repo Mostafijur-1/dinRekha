@@ -15,7 +15,10 @@ import { ActivityCreator } from "@/features/daily-activities/components/activity
 import { listDailyActivities } from "@/features/daily-activities/repository";
 import { TimelineCreator } from "@/features/timeline/components/timeline-creator";
 import { TimelineSection } from "@/features/timeline/components/timeline-section";
-import { listTimelineEntries } from "@/features/timeline/repository";
+import {
+  listTimelineEntries,
+  listTimelineSuggestions,
+} from "@/features/timeline/repository";
 import { currentMinuteForTimezone } from "@/features/timeline/time";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -43,9 +46,11 @@ export default async function DashboardPage({
   const previousDate = shiftDateKey(dateKey, -1)!;
   const nextDate = shiftDateKey(dateKey, 1)!;
   const isToday = dateKey === todayKey;
-  const [activities, timelineEntries] = await Promise.all([
+  const currentMinute = currentMinuteForTimezone(now, user.timezone);
+  const [activities, timelineEntries, timelineSuggestions] = await Promise.all([
     listDailyActivities(user.id, dateKey),
     listTimelineEntries(user.id, dateKey),
+    listTimelineSuggestions(user.id, todayKey, currentMinute),
   ]);
   const completed = activities.filter((activity) => activity.completed).length;
   const completion = activities.length
@@ -116,13 +121,16 @@ export default async function DashboardPage({
           </nav>
 
           <div id="timeline" className="dashboard-anchor">
-            <TimelineCreator dateKey={dateKey} isToday={isToday} />
+            <TimelineCreator
+              dateKey={dateKey}
+              isToday={isToday}
+              currentMinute={currentMinute}
+              suggestions={timelineSuggestions}
+            />
             <TimelineSection
               entries={timelineEntries}
               dateKey={dateKey}
-              boundary={
-                isToday ? currentMinuteForTimezone(now, user.timezone) : 1440
-              }
+              boundary={isToday ? currentMinute : 1440}
               isToday={isToday}
             />
           </div>
