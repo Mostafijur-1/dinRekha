@@ -3,8 +3,9 @@
 import { useActionState } from "react";
 import { initialInviteActionState } from "@/features/connections/action-state";
 import { createInviteAction } from "@/features/connections/actions";
+import { InviteLinkActions } from "@/features/connections/invite-link-actions";
 
-export function InviteCreator() {
+export function InviteCreator({ appOrigin }: { appOrigin: string }) {
   const [state, action, pending] = useActionState(
     createInviteAction,
     initialInviteActionState,
@@ -20,7 +21,7 @@ export function InviteCreator() {
           disabled={pending}
           type="submit"
         >
-          {pending ? "Invite তৈরি হচ্ছে…" : "নতুন Invite তৈরি করুন"}
+          {pending ? "আমন্ত্রণ তৈরি হচ্ছে…" : "নতুন আমন্ত্রণ তৈরি করুন"}
         </button>
       </form>
       {state.message && (
@@ -33,8 +34,8 @@ export function InviteCreator() {
       )}
       {path && (
         <div className="connection-invite-result">
-          <span>এই link যাকে connect করতে চান তাকে পাঠান:</span>
-          <code>{path}</code>
+          <span>এই লিংক যাকে যুক্ত করতে চান তাকে পাঠান:</span>
+          <InviteLinkActions appOrigin={appOrigin} path={path} />
           <small>একবার ব্যবহার করা যাবে এবং ২৪ ঘণ্টা পর মেয়াদ শেষ হবে।</small>
         </div>
       )}

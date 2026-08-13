@@ -227,9 +227,9 @@ a {
 
 .hero-copy h1 {
   margin: 1.75rem 0 1.25rem;
-  font-size: clamp(3.2rem, 6vw, 5.6rem);
-  line-height: 1.09;
-  letter-spacing: -0.065em;
+  font-size: clamp(2.75rem, 5vw, 4.75rem);
+  line-height: 1.16;
+  letter-spacing: -0.052em;
   font-weight: 780;
 }
 
@@ -266,6 +266,14 @@ a {
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(22px);
   transform: rotate(1.2deg);
+  transition:
+    transform 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.product-preview:hover {
+  transform: rotate(0deg) translateY(-0.35rem);
+  box-shadow: 0 36px 90px rgb(24 65 42 / 0.19);
 }
 
 .product-preview::before {
@@ -1348,6 +1356,76 @@ a {
   color: var(--brand);
   font-size: 0.7rem;
 }
+.invite-link-actions {
+  display: grid;
+  gap: 0.65rem;
+}
+.invite-link-actions input,
+.invite-link-opener input {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.76rem;
+}
+.invite-link-actions > div,
+.invite-link-opener > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.invite-link-actions .activity-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.invite-link-actions p {
+  margin: 0;
+  color: var(--brand);
+  font-size: 0.72rem;
+}
+.connection-invite-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-block: 1.2rem;
+  color: var(--text-faint);
+  font-size: 0.7rem;
+}
+.connection-invite-divider::before,
+.connection-invite-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--border);
+}
+.invite-link-opener {
+  display: grid;
+  gap: 0.55rem;
+}
+.invite-link-opener > label {
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  font-weight: 750;
+}
+.invite-link-opener > div > input {
+  min-width: 14rem;
+  flex: 1;
+}
+.connection-success {
+  margin: 0 0 1rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 25%, var(--border));
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
 .connection-list {
   display: grid;
   gap: 0.65rem;
@@ -2402,7 +2480,8 @@ a {
     padding-block: 2.6rem 5rem;
   }
   .hero-copy h1 {
-    font-size: clamp(2.9rem, 15vw, 4.3rem);
+    font-size: clamp(2.45rem, 12vw, 3.65rem);
+    line-height: 1.2;
   }
   .hero-actions {
     align-items: flex-start;
@@ -2415,6 +2494,18 @@ a {
   .product-preview {
     padding: 1rem;
     border-radius: 1.5rem;
+  }
+  .product-preview:hover {
+    transform: none;
+  }
+  .invite-link-actions > div,
+  .invite-link-opener > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .invite-link-actions .activity-button,
+  .invite-link-opener .activity-button {
+    width: 100%;
   }
   .preview-score-row {
     padding: 0.9rem;

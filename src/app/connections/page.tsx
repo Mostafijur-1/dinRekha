@@ -4,15 +4,22 @@ import { Brand } from "@/components/brand";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { disconnectAction } from "@/features/connections/actions";
 import { InviteCreator } from "@/features/connections/invite-creator";
+import { InviteLinkOpener } from "@/features/connections/invite-link-opener";
 import { listConnections } from "@/features/connections/repository";
 import { updateSharingAction } from "@/features/sharing/actions";
 import { getSharingPolicy } from "@/features/sharing/repository";
 import { getCurrentUser } from "@/lib/auth";
+import { publicEnv } from "@/lib/env";
 
-export const metadata = { title: "Connections" };
+export const metadata = { title: "সংযোগ" };
 export const dynamic = "force-dynamic";
 
-export default async function ConnectionsPage() {
+export default async function ConnectionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ connected?: string }>;
+}) {
+  const { connected } = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/auth/sign-in?callbackUrl=%2Fconnections");
   const connections = await listConnections(user.id);
@@ -37,7 +44,7 @@ export default async function ConnectionsPage() {
           </div>
           <div className="app-header-context">
             <span>ব্যক্তিগত নেটওয়ার্ক</span>
-            <strong>Connections</strong>
+            <strong>সংযোগ</strong>
           </div>
           <div className="shell-account">
             <span>{user.name}</span>
@@ -47,27 +54,37 @@ export default async function ConnectionsPage() {
         <div className="connections-layout">
           <section className="reports-intro">
             <span>আপনার নিয়ন্ত্রণে</span>
-            <h1>বিশ্বস্ত মানুষের সঙ্গে connect করুন</h1>
+            <h1>বিশ্বস্ত মানুষের সঙ্গে যুক্ত হোন</h1>
             <p>
-              Connection তৈরি হলেও কোনো progress নিজে থেকে share হয় না। প্রতিটি
-              permission আপনি আলাদাভাবে ঠিক করবেন।
+              সংযোগ তৈরি হলেও কোনো অগ্রগতি নিজে থেকে প্রকাশ হয় না। কোন তথ্য
+              দেখাবেন, তা আপনি আলাদাভাবে ঠিক করবেন।
             </p>
           </section>
           <section className="connection-panel">
             <div className="feature-section-heading">
               <div>
-                <span>Secure invite</span>
-                <h2>নতুন Connection</h2>
+                <span>নিরাপদ আমন্ত্রণ</span>
+                <h2>নতুন সংযোগ</h2>
               </div>
-              <p>দিনে সর্বোচ্চ ১০টি; একসঙ্গে ৫টি active invite।</p>
+              <p>দিনে সর্বোচ্চ ১০টি; একসঙ্গে ৫টি সক্রিয় আমন্ত্রণ।</p>
             </div>
-            <InviteCreator />
+            <InviteCreator appOrigin={publicEnv.appUrl.origin} />
+            <div className="connection-invite-divider">
+              <span>অথবা</span>
+            </div>
+            <InviteLinkOpener />
           </section>
           <section className="connection-panel">
+            {connected === "1" && (
+              <p className="connection-success" role="status">
+                সংযোগ সফল হয়েছে। এখন দুজনেই আলাদাভাবে তথ্য দেখানোর অনুমতি ঠিক
+                করতে পারবেন।
+              </p>
+            )}
             <div className="feature-section-heading">
               <div>
                 <span>বর্তমান তালিকা</span>
-                <h2>আপনার Connections</h2>
+                <h2>আপনার সংযোগগুলো</h2>
               </div>
               <p>{connections.length.toLocaleString("bn-BD")} জন</p>
             </div>
@@ -84,7 +101,7 @@ export default async function ConnectionsPage() {
                     <article key={connection.id}>
                       <div>
                         <strong>{connection.name}</strong>
-                        <span>আপনার data → {connection.name}</span>
+                        <span>আপনার তথ্য → {connection.name}</span>
                       </div>
                       <form action={updateSharing} className="sharing-form">
                         <label>
@@ -93,7 +110,7 @@ export default async function ConnectionsPage() {
                             name="productivitySummary"
                             defaultChecked={policy.productivitySummary}
                           />{" "}
-                          Productivity summary
+                          কাজের অগ্রগতির সারাংশ
                         </label>
                         <label>
                           <input
@@ -101,24 +118,24 @@ export default async function ConnectionsPage() {
                             name="streaks"
                             defaultChecked={policy.streaks}
                           />{" "}
-                          Activity streaks
+                          অভ্যাস ধরে রাখার ধারা
                         </label>
                         <button className="activity-button" type="submit">
-                          Permission সংরক্ষণ
+                          অনুমতি সংরক্ষণ
                         </button>
                       </form>
                       <a
                         className="report-detail-link"
                         href={`/connections/shared/${connection.userId}`}
                       >
-                        {connection.name} কী share করেছেন দেখুন →
+                        {connection.name} কী দেখাচ্ছেন দেখুন →
                       </a>
                       <form action={disconnect}>
                         <button
                           className="activity-button activity-button-danger"
                           type="submit"
                         >
-                          Disconnect
+                          সংযোগ বিচ্ছিন্ন করুন
                         </button>
                       </form>
                     </article>
@@ -127,8 +144,8 @@ export default async function ConnectionsPage() {
               </div>
             ) : (
               <div className="report-empty">
-                <strong>এখনো কোনো Connection নেই</strong>
-                <p>Invite link তৈরি করে বিশ্বস্ত কাউকে পাঠান।</p>
+                <strong>এখনো কোনো সংযোগ নেই</strong>
+                <p>আমন্ত্রণের লিংক তৈরি করে বিশ্বস্ত কাউকে পাঠান।</p>
               </div>
             )}
           </section>

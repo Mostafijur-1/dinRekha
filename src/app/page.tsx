@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Brand } from "@/components/brand";
 import { ArrowIcon, CheckIcon, ClockIcon, SparkIcon } from "@/components/icons";
+import { getCurrentUser } from "@/lib/auth";
 
 const dailyActivities = [
   { name: "সকালের হাঁটা", meta: "৩০ মিনিট", progress: "সম্পন্ন", done: true },
@@ -13,21 +14,42 @@ const values = [
   {
     number: "০১",
     title: "দ্রুত লিখুন",
-    body: "বারবার টাইপ নয়। পরিচিত কাজ, সাম্প্রতিক Activity আর সময়ভিত্তিক পরামর্শ থেকে এক ট্যাপে শুরু করুন।",
+    body: "বারবার টাইপ নয়। পরিচিত কাজ, সাম্প্রতিক অভ্যাস আর সময়ভিত্তিক পরামর্শ থেকে এক ট্যাপে শুরু করুন।",
   },
   {
     number: "০২",
     title: "নিজের দিন বুঝুন",
-    body: "দিনের Timeline, সম্পন্ন কাজ আর সময়ের বণ্টন—সবকিছু এক জায়গায় পরিষ্কারভাবে দেখুন।",
+    body: "দিনের সময়রেখা, সম্পন্ন কাজ আর সময়ের বণ্টন—সবকিছু এক জায়গায় পরিষ্কারভাবে দেখুন।",
   },
   {
     number: "০৩",
     title: "নিয়ন্ত্রণ আপনার",
-    body: "আপনার Activity ব্যক্তিগত। কী রাখবেন, কাকে কতটুকু দেখাবেন—সেই সিদ্ধান্তও শুধু আপনার।",
+    body: "আপনার কাজ ও অভ্যাস ব্যক্তিগত। কী রাখবেন, কাকে কতটুকু দেখাবেন—সেই সিদ্ধান্তও শুধু আপনার।",
   },
 ];
 
-export default function Home() {
+type HomeUser = { name: string; timezone: string } | null;
+
+function welcomeFor(user: HomeUser, now = new Date()) {
+  if (!user) return "স্বাগতম";
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", {
+      hour: "2-digit",
+      hour12: false,
+      timeZone: user.timezone,
+    }).format(now),
+  );
+  const greeting =
+    hour < 12 ? "শুভ সকাল" : hour < 18 ? "শুভ বিকেল" : "শুভ সন্ধ্যা";
+  return `${greeting}, ${user.name}`;
+}
+
+export function HomeContent({ user }: { user: HomeUser }) {
+  const isSignedIn = Boolean(user);
+  const welcome = welcomeFor(user);
+  const primaryHref = isSignedIn ? "/dashboard" : "/auth/sign-up";
+  const primaryLabel = isSignedIn ? "আজকের দিন দেখুন" : "Google দিয়ে শুরু করুন";
+
   return (
     <main>
       <section className="hero-shell">
@@ -37,8 +59,11 @@ export default function Home() {
             <a className="nav-link" href="#কেন-দিনরেখা">
               কেন দিনরেখা
             </a>
-            <Link className="button button-quiet" href="/auth/sign-in">
-              প্রবেশ করুন
+            <Link
+              className="button button-quiet"
+              href={isSignedIn ? "/dashboard" : "/auth/sign-in"}
+            >
+              {isSignedIn ? "ড্যাশবোর্ড" : "প্রবেশ করুন"}
             </Link>
           </div>
         </nav>
@@ -47,23 +72,25 @@ export default function Home() {
           <div className="hero-copy">
             <div className="eyebrow">
               <SparkIcon />
-              সময় ও অভ্যাস—একটি পরিষ্কার রেখায়
+              {welcome}
             </div>
             <h1>
-              দিন কোথায় গেল,
-              <span> রেখায় দেখুন।</span>
+              প্রতিদিনের সময় ও অভ্যাস,
+              <span> এক জায়গায় বুঝে নিন।</span>
             </h1>
             <p className="hero-description">
-              Timeline-এ সময় লিখুন, Daily Activity-তে অভ্যাস ধরে রাখুন। দিনরেখা
-              আপনার দিনকে বিচার করে না—শুধু পরিষ্কারভাবে দেখতে সাহায্য করে।
+              কখন কী করলেন, কোন অভ্যাসটি এগোচ্ছে এবং কোথায় মনোযোগ দরকার—দিনরেখা
+              সহজ ভাষায় আপনার দিনের পরিষ্কার ছবি দেখায়।
             </p>
             <div className="hero-actions">
-              <Link className="button button-primary" href="/auth/sign-up">
-                বিনামূল্যে শুরু করুন
+              <Link className="button button-primary" href={primaryHref}>
+                {primaryLabel}
                 <ArrowIcon />
               </Link>
               <span className="supporting-note">
-                বিনামূল্যে শুরু করুন · কোনো কার্ড লাগবে না
+                {isSignedIn
+                  ? "আপনার তথ্য প্রস্তুত—আজকের জায়গা থেকেই শুরু করুন"
+                  : "বিনামূল্যে · কোনো কার্ড বা আলাদা পাসওয়ার্ড লাগবে না"}
               </span>
             </div>
           </div>
@@ -74,11 +101,11 @@ export default function Home() {
           >
             <div className="preview-topbar">
               <div>
-                <p>আজ, ১৩ আগস্ট</p>
-                <strong>শুভ সকাল, রাফি</strong>
+                <p>আজকের দিন এক নজরে</p>
+                <strong>{welcome}</strong>
               </div>
               <span className="avatar" aria-hidden="true">
-                র
+                {user?.name.trim().charAt(0) || "দি"}
               </span>
             </div>
 
@@ -95,7 +122,7 @@ export default function Home() {
             </div>
 
             <div className="preview-section-title">
-              <strong>Daily Activities</strong>
+              <strong>আজকের অভ্যাস</strong>
               <span>সব দেখুন</span>
             </div>
             <div className="activity-list">
@@ -145,8 +172,8 @@ export default function Home() {
       <section className="value-section" id="কেন-দিনরেখা">
         <div className="page-width">
           <div className="section-heading">
-            <p>সময় লিখুন, অভ্যাস দেখুন, দিন বুঝুন</p>
-            <h2>দিনের হিসাব রাখা সহজ, ব্যক্তিগত এবং শান্ত।</h2>
+            <p>সময় লিখুন · অভ্যাস দেখুন · নিজের ছন্দ বুঝুন</p>
+            <h2>দিনের হিসাব রাখুন চাপ নয়, স্বচ্ছতা নিয়ে।</h2>
           </div>
           <div className="value-grid">
             {values.map((value) => (
@@ -167,12 +194,13 @@ export default function Home() {
             <h2>ব্যক্তিগত দিন ব্যক্তিগতই থাকে।</h2>
           </div>
           <p>
-            Google দিয়ে নিরাপদ প্রবেশ, server-side authorization এবং
-            owner-scoped data access—দিনরেখা আপনার Activity ও note অন্য কারও
-            সামনে প্রকাশ করে না।
+            Google দিয়ে নিরাপদ প্রবেশ এবং প্রতিটি তথ্যের মালিকভিত্তিক
+            অনুমতি—আপনি স্পষ্টভাবে অনুমতি না দিলে দিনরেখা আপনার কাজ, সময় বা
+            ব্যক্তিগত নোট অন্য কাউকে দেখায় না।
           </p>
-          <Link className="button button-primary" href="/auth/sign-up">
-            নিজের দিনরেখা তৈরি করুন <ArrowIcon />
+          <Link className="button button-primary" href={primaryHref}>
+            {isSignedIn ? "নিজের অগ্রগতি দেখুন" : "নিজের দিনরেখা তৈরি করুন"}{" "}
+            <ArrowIcon />
           </Link>
         </div>
       </section>
@@ -184,4 +212,9 @@ export default function Home() {
       </footer>
     </main>
   );
+}
+
+export default async function Home() {
+  const user = await getCurrentUser();
+  return <HomeContent user={user} />;
 }
