@@ -6,6 +6,7 @@ import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { ProfileForm } from "@/features/settings/components/profile-form";
 import { AccountDeletionForm } from "@/features/account/deletion-form";
 import { ReminderSettingsForm } from "@/features/notifications/reminder-settings-form";
+import { PushManager } from "@/features/notifications/push-manager";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "Profile ও Settings" };
@@ -96,6 +97,7 @@ export default async function SettingsPage() {
               দেওয়া হবে।
             </p>
             <ReminderSettingsForm settings={user.reminders} />
+            <PushManager publicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
           </section>
           <section className="settings-danger-zone">
             <span>Danger zone</span>

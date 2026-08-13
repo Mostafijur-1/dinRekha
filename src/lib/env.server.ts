@@ -8,6 +8,10 @@ const serverEnvironmentSchema = z.object({
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET কমপক্ষে ৩২ অক্ষরের হতে হবে।"),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
   GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  VAPID_PRIVATE_KEY: z.string().min(20).optional(),
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(20).optional(),
+  VAPID_SUBJECT: z.string().min(1).default("mailto:admin@dinrekha.app"),
+  CRON_SECRET: z.string().min(16).optional(),
 });
 
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;

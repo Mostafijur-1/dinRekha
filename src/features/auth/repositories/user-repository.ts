@@ -5,6 +5,7 @@ import { MongoServerError, ObjectId } from "mongodb";
 import {
   type UserDocument,
   oauthAccountsCollection,
+  pushSubscriptionsCollection,
   usersCollection,
 } from "@/lib/db/collections";
 import { ensureDatabaseIndexes } from "@/lib/db/indexes";
@@ -163,6 +164,13 @@ export async function markAccountForDeletion(userId: string): Promise<boolean> {
       $inc: { sessionVersion: 1 },
     },
   );
+  if (result.modifiedCount === 1) {
+    await (
+      await pushSubscriptionsCollection()
+    ).deleteMany({
+      ownerId: new ObjectId(userId),
+    });
+  }
   return result.modifiedCount === 1;
 }
 

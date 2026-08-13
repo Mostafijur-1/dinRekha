@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { publicEnv } from "@/lib/env";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 
 import "./globals.css";
 
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
   authors: [{ name: "দিনরেখা" }],
   creator: "দিনরেখা",
   formatDetection: { telephone: false },
+  manifest: "/manifest.webmanifest",
+  icons: { icon: "/icon.svg", apple: "/icon.svg" },
   openGraph: {
     title,
     description,
@@ -48,7 +51,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="bn" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ServiceWorkerRegistration />
+      </body>
     </html>
   );
 }

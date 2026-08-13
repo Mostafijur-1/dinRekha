@@ -13,6 +13,14 @@ export async function buildAccountExport(user: {
   name: string;
   email: string;
   timezone: string;
+  reminders?: {
+    activity: boolean;
+    endOfDay: boolean;
+    dailySummary: boolean;
+    streak: boolean;
+    endOfDayTime: string;
+    dailySummaryTime: string;
+  };
 }) {
   if (!ObjectId.isValid(user.id)) return null;
   const ownerId = new ObjectId(user.id);
@@ -31,9 +39,14 @@ export async function buildAccountExport(user: {
       .toArray(),
   ]);
   return {
-    format: "dinrekha-account-export-v1",
+    format: "dinrekha-account-export-v2",
     exportedAt: new Date().toISOString(),
-    profile: { name: user.name, email: user.email, timezone: user.timezone },
+    profile: {
+      name: user.name,
+      email: user.email,
+      timezone: user.timezone,
+      reminders: user.reminders,
+    },
     dailyActivities: activities.map((item) => ({
       id: item._id.toHexString(),
       name: item.name,
@@ -44,6 +57,8 @@ export async function buildAccountExport(user: {
       unit: item.unit,
       frequency: item.frequency,
       days: item.days,
+      preferredTime: item.preferredTime,
+      reminderEnabled: item.reminderEnabled,
       effectiveFrom: item.effectiveFrom,
       status: item.status,
       sortOrder: item.sortOrder,

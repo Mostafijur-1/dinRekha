@@ -10,6 +10,7 @@ import {
   connectionsCollection,
   sharingPoliciesCollection,
   notificationDeliveriesCollection,
+  pushSubscriptionsCollection,
 } from "@/lib/db/collections";
 
 type IndexGlobal = typeof globalThis & {
@@ -29,6 +30,7 @@ async function createIndexes(): Promise<void> {
     connections,
     policies,
     notificationDeliveries,
+    pushSubscriptions,
   ] = await Promise.all([
     usersCollection(),
     oauthAccountsCollection(),
@@ -39,6 +41,7 @@ async function createIndexes(): Promise<void> {
     connectionsCollection(),
     sharingPoliciesCollection(),
     notificationDeliveriesCollection(),
+    pushSubscriptionsCollection(),
   ]);
 
   await Promise.all([
@@ -100,6 +103,11 @@ async function createIndexes(): Promise<void> {
       { ownerId: 1, kind: 1, dateKey: 1, activityId: 1 },
       { unique: true, name: "notification_delivery_once" },
     ),
+    pushSubscriptions.createIndex(
+      { endpoint: 1 },
+      { unique: true, name: "push_endpoint_unique" },
+    ),
+    pushSubscriptions.createIndex({ ownerId: 1 }, { name: "push_owner" }),
     notificationDeliveries.createIndex(
       { status: 1, dateKey: 1, scheduledMinute: 1 },
       { name: "notification_delivery_schedule" },

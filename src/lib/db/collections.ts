@@ -135,6 +135,16 @@ export type NotificationDeliveryDocument = {
   updatedAt: Date;
 };
 
+export type PushSubscriptionDocument = {
+  _id: ObjectId;
+  ownerId: ObjectId;
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+  userAgent?: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDatabase()).collection<UserDocument>("users");
 }
@@ -198,5 +208,13 @@ export async function notificationDeliveriesCollection(): Promise<
 > {
   return (await getDatabase()).collection<NotificationDeliveryDocument>(
     "notificationDeliveries",
+  );
+}
+
+export async function pushSubscriptionsCollection(): Promise<
+  Collection<PushSubscriptionDocument>
+> {
+  return (await getDatabase()).collection<PushSubscriptionDocument>(
+    "pushSubscriptions",
   );
 }

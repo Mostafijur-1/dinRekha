@@ -85,3 +85,9 @@ Reminder schedule user timezone-এ minute precision-এ নির্ধার�
 user-level granular switches থেকে একই deterministic engine Dashboard reminder তৈরি করে; ভবিষ্যৎ Web Push
 delivery-ও এই policy ব্যবহার করবে। `notificationDeliveries`-এর compound unique index retry-তে একই
 user/kind/date/activity notification duplicate হওয়া আটকানোর persistence boundary তৈরি করে।
+
+PWA service worker কেবল public landing shell, manifest ও icons cache করে; authenticated Dashboard,
+Reports বা API response cache করে না। Push subscription প্রতি device endpoint-এ owner-scoped এবং Cron
+VAPID-signed generic payload পাঠায়—Activity name বা private note lock screen/push provider-এ যায় না।
+Dispatcher stateless এবং secured HTTP endpoint হিসেবে Vercel-compatible; পাঁচ মিনিটের delivery cadence
+Vercel Pro/Enterprise বা external scheduler-এর deployment concern, application process-এর নয়।

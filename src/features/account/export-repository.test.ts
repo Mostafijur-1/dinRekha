@@ -29,6 +29,14 @@ describe("account export", () => {
       name: "নাম",
       email: "user@example.com",
       timezone: "Asia/Dhaka",
+      reminders: {
+        activity: true,
+        endOfDay: false,
+        dailySummary: false,
+        streak: false,
+        endOfDayTime: "21:30",
+        dailySummaryTime: "22:00",
+      },
     });
     expect(activitiesFind).toHaveBeenCalledWith({ ownerId: owner });
     expect(progressFind).toHaveBeenCalledWith({ ownerId: owner });
@@ -37,7 +45,9 @@ describe("account export", () => {
       name: "নাম",
       email: "user@example.com",
       timezone: "Asia/Dhaka",
+      reminders: expect.objectContaining({ activity: true }),
     });
+    expect(result).not.toHaveProperty("pushSubscriptions");
     expect(result).not.toHaveProperty("sessionVersion");
   });
 });

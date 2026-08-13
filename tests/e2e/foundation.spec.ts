@@ -101,3 +101,24 @@ test("Shared progress URL authentication callback-এ থাকে", async ({ pa
     `/connections/shared/${ownerId}`,
   );
 });
+
+test("PWA manifest বাংলা app identity ও install icon দেয়", async ({
+  request,
+}) => {
+  const response = await request.get("/manifest.webmanifest");
+  expect(response.ok()).toBe(true);
+  const manifest = await response.json();
+  expect(manifest.short_name).toBe("দিনরেখা");
+  expect(manifest.display).toBe("standalone");
+  expect(manifest.icons).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ sizes: "192x192", type: "image/png" }),
+      expect.objectContaining({ sizes: "512x512", purpose: "maskable" }),
+    ]),
+  );
+});
+
+test("Notification Cron secret ছাড়া চালানো যায় না", async ({ request }) => {
+  const response = await request.get("/api/cron/notifications");
+  expect(response.status()).toBe(401);
+});

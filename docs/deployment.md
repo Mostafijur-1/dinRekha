@@ -15,6 +15,15 @@ https://<deployment-host>/api/auth/callback/google
 
 Changing Preview hostname ব্যবহার করলে প্রতিটি অনুমোদিত callback host আলাদাভাবে configure করতে হবে।
 
+Web Push ও scheduled Reminder delivery চালু করতে একই VAPID pair-এর
+`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, একটি `mailto:`/HTTPS
+`VAPID_SUBJECT` এবং কমপক্ষে ১৬ অক্ষরের `CRON_SECRET` প্রয়োজন। Secured dispatcher
+endpoint হলো `/api/cron/notifications`; scheduler-কে প্রতি ৫ মিনিটে ওই path-এ
+`Authorization: Bearer <CRON_SECRET>` পাঠাতে হবে। Vercel Hobby দিনে একবারের বেশি
+Cron অনুমোদন করে না এবং এমন schedule deployment fail করায় repository-তে automatic
+Cron enable করা হয়নি। Vercel Pro/Enterprise বা বিশ্বস্ত external scheduler ছাড়া
+background Push delivery চালু হবে না; Dashboard Reminder এই scheduler-এর উপর নির্ভরশীল নয়।
+
 ## Project settings
 
 - Framework preset: Next.js
