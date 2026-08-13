@@ -3,6 +3,11 @@ import "server-only";
 import { ObjectId } from "mongodb";
 
 import {
+  buildActivityHistory,
+  type ActivityHistory,
+  type ActivityHistoryDefinition,
+} from "@/features/reports/activity-history";
+import {
   buildProductivityReport,
   type ProductivityReport,
   type ReportActivity,
@@ -19,6 +24,64 @@ import {
   timelineEntriesCollection,
 } from "@/lib/db/collections";
 import { ensureDatabaseIndexes } from "@/lib/db/indexes";
+
+export async function getActivityHistory(
+  ownerId: string,
+  activityId: string,
+  dateKeys: string[],
+  todayKey: string,
+): Promise<ActivityHistory | null> {
+  if (
+    !ObjectId.isValid(ownerId) ||
+    !ObjectId.isValid(activityId) ||
+    dateKeys.length === 0
+  ) {
+    return null;
+  }
+  const owner = new ObjectId(ownerId);
+  const activityObjectId = new ObjectId(activityId);
+  await ensureDatabaseIndexes();
+  const activity = await (
+    await dailyActivitiesCollection()
+  ).findOne({ _id: activityObjectId, ownerId: owner });
+  if (!activity) return null;
+
+  const progressRows = await (
+    await dailyActivityProgressCollection()
+  )
+    .find({
+      ownerId: owner,
+      activityId: activityObjectId,
+      dateKey: { $gte: dateKeys[0]!, $lte: dateKeys.at(-1)! },
+    })
+    .sort({ dateKey: 1 })
+    .toArray();
+  const definition: ActivityHistoryDefinition = {
+    id: activity._id.toHexString(),
+    name: activity.name,
+    description: activity.description,
+    category: activity.category,
+    measurement: activity.measurement,
+    target: activity.target,
+    unit: activity.unit,
+    frequency: activity.frequency ?? "daily",
+    days: activity.days ?? [],
+    effectiveFrom:
+      activity.effectiveFrom ?? activity.createdAt.toISOString().slice(0, 10),
+    archivedOn: activity.archivedAt?.toISOString().slice(0, 10),
+  };
+
+  return buildActivityHistory({
+    activity: definition,
+    dateKeys,
+    todayKey,
+    progress: progressRows.map((item) => ({
+      activityId: item.activityId.toHexString(),
+      dateKey: item.dateKey,
+      value: item.value,
+    })),
+  });
+}
 
 export async function getProductivityReport(
   ownerId: string,

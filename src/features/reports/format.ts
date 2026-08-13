@@ -14,3 +14,14 @@ export function reportDateLabel(dateKey: string): string {
     month: "short",
   }).format(new Date(`${dateKey}T12:00:00Z`));
 }
+
+export function activityValueLabel(
+  value: number,
+  measurement: "boolean" | "counter" | "duration" | "quantity",
+  unit?: string,
+): string {
+  if (measurement === "boolean") return value >= 1 ? "সম্পন্ন" : "বাকি";
+  if (measurement === "duration") return minutesLabel(value);
+  const suffix = unit || (measurement === "counter" ? "বার" : "");
+  return `${value.toLocaleString("bn-BD")} ${suffix}`.trim();
+}

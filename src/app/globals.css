@@ -1075,6 +1075,68 @@ a {
   border-radius: inherit;
   background: var(--brand);
 }
+.report-detail-link,
+.report-back-link {
+  display: inline-flex;
+  margin-top: 0.75rem;
+  color: var(--brand);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.report-detail-link:hover,
+.report-back-link:hover {
+  text-decoration: underline;
+}
+.activity-history-layout {
+  padding-top: 2rem;
+}
+.activity-history-layout .reports-intro {
+  padding-top: 1.5rem;
+}
+.activity-history-chart {
+  display: grid;
+  grid-template-columns: repeat(30, minmax(2.8rem, 1fr));
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0.5rem 0 0.75rem;
+}
+.activity-history-chart article {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+.activity-history-bar {
+  width: 1.8rem;
+  height: 8rem;
+  display: flex;
+  align-items: end;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--canvas-deep);
+}
+.activity-history-bar span {
+  width: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+.activity-history-chart article.is-complete .activity-history-bar span {
+  background: var(--brand);
+}
+.activity-history-chart article.is-off-day {
+  opacity: 0.45;
+}
+.activity-history-chart article > strong {
+  margin-top: 0.4rem;
+  font-size: 0.58rem;
+  white-space: nowrap;
+}
+.activity-history-chart time {
+  margin-top: 0.12rem;
+  color: var(--text-faint);
+  font-size: 0.55rem;
+  white-space: nowrap;
+}
 .timeline-creator {
   margin-bottom: 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));

@@ -42,3 +42,16 @@ test("Report page authentication ছাড়া খোলা যায় না", as
   const currentUrl = new URL(page.url());
   expect(currentUrl.searchParams.get("callbackUrl")).toBe("/reports");
 });
+
+test("Activity history URL authentication callback-এ থাকে", async ({
+  page,
+}) => {
+  const activityId = "64f000000000000000000001";
+  await page.goto(`/reports/activities/${activityId}`);
+
+  await expect(page).toHaveURL(/\/auth\/sign-in/);
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe(
+    `/reports/activities/${activityId}`,
+  );
+});

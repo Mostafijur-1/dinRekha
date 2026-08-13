@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AppNavigation } from "@/components/app-navigation";
@@ -175,6 +176,12 @@ export default async function ReportsPage() {
                     >
                       <span style={{ width: `${item.consistency ?? 0}%` }} />
                     </div>
+                    <Link
+                      className="report-detail-link"
+                      href={`/reports/activities/${item.activityId}`}
+                    >
+                      ৩০ দিনের বিস্তারিত দেখুন →
+                    </Link>
                   </article>
                 ))}
               </div>
