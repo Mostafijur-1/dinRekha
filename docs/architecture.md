@@ -91,3 +91,7 @@ Reports বা API response cache করে না। Push subscription প্�
 VAPID-signed generic payload পাঠায়—Activity name বা private note lock screen/push provider-এ যায় না।
 Dispatcher stateless এবং secured HTTP endpoint হিসেবে Vercel-compatible; পাঁচ মিনিটের delivery cadence
 Vercel Pro/Enterprise বা external scheduler-এর deployment concern, application process-এর নয়।
+
+Production observability vendor-neutral: JSON log schema arbitrary payload নেয় না; কেবল event, request ID,
+route, status, duration ও aggregate count allowlist করা। Readiness endpoint MongoDB ping করে কিন্তু failure
+message/URI প্রকাশ করে না। Activity name, note, email, token এবং push endpoint log করা নিষিদ্ধ।

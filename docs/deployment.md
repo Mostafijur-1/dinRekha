@@ -24,6 +24,9 @@ Cron অনুমোদন করে না এবং এমন schedule deploym
 Cron enable করা হয়নি। Vercel Pro/Enterprise বা বিশ্বস্ত external scheduler ছাড়া
 background Push delivery চালু হবে না; Dashboard Reminder এই scheduler-এর উপর নির্ভরশীল নয়।
 
+`/api/health/ready` production readiness probe; MongoDB পাওয়া গেলে 200, না পেলে generic 503 দেয়।
+Response ও structured log-এ `x-request-id` correlation থাকে এবং endpoint `no-store`।
+
 ## Project settings
 
 - Framework preset: Next.js
