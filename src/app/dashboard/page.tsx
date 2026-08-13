@@ -1,30 +1,31 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { Brand } from "@/components/brand";
+import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { getCurrentUser } from "@/lib/auth";
 
-export const metadata = {
-  title: "Dashboard প্রস্তুত হচ্ছে",
-};
+export const metadata = { title: "Dashboard" };
 
-export default function DashboardPlaceholder() {
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/auth/sign-in?callbackUrl=/dashboard");
+
   return (
     <main className="shell-page">
       <header className="shell-header">
         <Brand />
-        <Link className="button button-quiet" href="/">
-          হোমে ফিরুন
-        </Link>
+        <div className="shell-account">
+          <span>{user.name}</span>
+          <SignOutButton />
+        </div>
       </header>
       <section className="empty-state">
-        <span>ভিত্তি প্রস্তুত</span>
-        <h1>আপনার Dashboard এখানে তৈরি হবে।</h1>
+        <span>Account নিরাপদে প্রস্তুত</span>
+        <h1>স্বাগতম, {user.name}।</h1>
         <p>
-          এই মুহূর্তে অ্যাপের নিরাপদ ও নির্ভরযোগ্য ভিত্তি প্রস্তুত হয়েছে।
-          পরবর্তী মাইলস্টোনে নির্ধারিত ফিচারগুলো একে একে যুক্ত হবে।
+          আপনার ব্যক্তিগত Dashboard এখন সুরক্ষিত। পরবর্তী milestone-এ Daily
+          Activities তৈরি ও প্রতিদিনের অগ্রগতি রাখার সুবিধা এখানে যুক্ত হবে।
         </p>
-        <Link className="button button-primary" href="/">
-          পরিচিতি দেখুন
-        </Link>
       </section>
     </main>
   );

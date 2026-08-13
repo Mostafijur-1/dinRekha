@@ -1,58 +1,54 @@
 # Architecture
 
-## উদ্দেশ্য
-
-এই milestone শুধু production-ready foundation তৈরি করে। Authentication, MongoDB,
-Timeline, Daily Activities এবং reporting ইচ্ছাকৃতভাবে এখনো যোগ করা হয়নি।
-
 ## Application boundary
 
 - `src/app`: route, layout, metadata ও route-level composition
-- `src/components`: পুনর্ব্যবহারযোগ্য, domain-neutral interface অংশ
-- ভবিষ্যতে `src/features`: feature-specific UI, service, policy ও validation
-- ভবিষ্যতে `src/lib`: database, authentication, security এবং shared infrastructure
+- `src/components`: reusable, domain-neutral interface
+- `src/features`: feature UI, service, repository, policy ও validation
+- `src/lib`: database, authentication, security ও shared infrastructure
 
-Server Components default থাকবে। Browser state বা direct interaction দরকার হলেই কেবল
-Client Component ব্যবহার করা হবে। Private data কখনো unsafe shared cache-এ রাখা হবে না।
+Server Components default। Browser state বা direct interaction দরকার হলেই Client Component।
+Private data unsafe shared cache-এ রাখা হয় না।
 
 ## Bangla-only product decision
 
-Application-এর একমাত্র interface language বাংলা। Locale route, translation dictionary
-বা localization dependency নেই। Familiar product শব্দ—যেমন Dashboard, Timeline ও
-Activity—প্রয়োজনে স্বাভাবিক বাংলা বাক্যের মধ্যে ব্যবহার করা হবে। এই সিদ্ধান্ত ১৩ আগস্ট
-২০২৬-এর সরাসরি product direction অনুযায়ী Constitution-এর future English localization
-প্রস্তুতির আগের নির্দেশকে প্রতিস্থাপন করে।
+Application-এর একমাত্র interface language বাংলা। Locale route, translation dictionary বা
+localization dependency নেই। Dashboard, Timeline ও Activity-এর মতো পরিচিত product শব্দ স্বাভাবিক
+বাংলা বাক্যে ব্যবহার করা যায়। ১৩ আগস্ট ২০২৬-এর সরাসরি product direction আগের future-English
+localization নির্দেশকে প্রতিস্থাপন করেছে।
 
 ## Design system
 
-Global semantic tokens canvas, surface, text, brand, border, radius এবং shadow নির্ধারণ
-করে। Bengali-friendly system font stack remote font dependency ছাড়াই দ্রুত rendering
-দেয়। Layout mobile-first, keyboard focus দৃশ্যমান এবং reduced-motion preference মানে।
-Dark color tokens browser preference অনুযায়ী প্রস্তুত আছে।
+Global semantic tokens canvas, surface, text, brand, border, radius ও shadow নির্ধারণ করে।
+Bengali-friendly system font stack remote font dependency ছাড়াই দ্রুত rendering দেয়। Layout
+mobile-first, keyboard focus দৃশ্যমান, reduced-motion preference মানে এবং dark-mode-ready।
+
+## Database
+
+Current official MongoDB Node.js driver centralized repository layer-এর পেছনে ব্যবহৃত। Vercel warm
+invocation-এ connection promise ও bounded pool reuse হয়; failed connection cache হয় না। React
+component সরাসরি database access করে না। Index definition code-owned এবং idempotent।
+
+## Authentication
+
+Stable NextAuth v4 OAuth/session protocol সামলায়। পুরোনো Mongo adapter-এর জন্য driver downgrade না
+করে JWT session ও application-owned MongoDB repositories ব্যবহৃত হয়েছে। Protected request session
+identity-এর পাশাপাশি active database user পুনরায় যাচাই করে। বিস্তারিত `docs/authentication.md`-এ।
 
 ## Security baseline
 
-Next.js response headers clickjacking, MIME sniffing, unnecessary device permission এবং
-overly broad referrer leakage সীমিত করে। Feature-level authentication, authorization,
-CSRF strategy, rate limiting এবং Content Security Policy সংশ্লিষ্ট milestone-এ exact
-data flow জানার পর যুক্ত হবে; অসম্পূর্ণ policy এখন অনুমান করে যোগ করা হয়নি।
+Response headers clickjacking, MIME sniffing, unnecessary device permission ও broad referrer leakage
+সীমিত করে। Authentication boundary-তে typed validation, origin checks, rate limits, secure cookie,
+password hashing, opaque token hashing এবং server-only module boundaries আছে। Feature-level
+authorization সংশ্লিষ্ট repository/service layer-এ থাকবে।
 
 ## Testing strategy
 
-- Vitest: pure logic ও দ্রুত unit tests
-- Testing Library: component behavior এবং accessible contract
-- Playwright: প্রধান browser journey, desktop ও mobile viewport
-- GitHub Actions: format, lint, type-check, unit/component test এবং production build
+- Vitest: security logic, schema ও repository contract
+- Testing Library: component behavior ও accessible contract
+- Playwright: প্রধান browser journey, desktop ও mobile
+- GitHub Actions: format, lint, type-check, tests, production build ও E2E
 
-## Architecture decisions
+## Deferred scope
 
-### Native Next.js on Vercel
-
-Project Constitution অনুযায়ী native Next.js App Router ব্যবহার করা হয়েছে। কোনো
-long-running custom server বা local filesystem persistence নেই।
-
-### No database or authentication dependency yet
-
-MongoDB driver এবং authentication architecture গুরুত্বপূর্ণ দীর্ঘমেয়াদি সিদ্ধান্ত।
-তাদের নিজস্ব milestone-এর threat model ও data requirements ছাড়া dependency যোগ করা
-scope expansion হতো।
+Timeline, Daily Activities, reports ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি।

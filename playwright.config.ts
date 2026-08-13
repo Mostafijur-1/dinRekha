@@ -22,5 +22,9 @@ export default defineConfig({
         url: "http://127.0.0.1:3000",
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
+        env: {
+          AUTH_SECRET: "playwright-only-auth-secret-not-for-production",
+          NEXTAUTH_URL: "http://127.0.0.1:3000",
+        },
       },
 });
