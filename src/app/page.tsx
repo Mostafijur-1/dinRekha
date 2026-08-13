@@ -1,7 +1,14 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import { Brand } from "@/components/brand";
 import { ArrowIcon, CheckIcon, ClockIcon, SparkIcon } from "@/components/icons";
+import { countActiveUsers } from "@/features/auth/repositories/user-repository";
+import { dateKeyForTimezone } from "@/features/daily-activities/date";
+import {
+  listDailyActivities,
+  type DailyActivityView,
+} from "@/features/daily-activities/repository";
 import { InstallControl } from "@/features/pwa/install-control";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -30,6 +37,30 @@ const values = [
 ];
 
 type HomeUser = { name: string; timezone: string } | null;
+type HomeActivity = Pick<
+  DailyActivityView,
+  | "id"
+  | "name"
+  | "category"
+  | "measurement"
+  | "target"
+  | "unit"
+  | "preferredTime"
+  | "value"
+  | "completed"
+>;
+
+function bengaliNumber(value: number): string {
+  return value.toLocaleString("bn-BD");
+}
+
+function activityProgress(activity: HomeActivity): string {
+  if (activity.completed) return "সম্পন্ন";
+  if (activity.measurement === "boolean") return "বাকি";
+  const unit =
+    activity.unit || (activity.measurement === "counter" ? "বার" : "");
+  return `${bengaliNumber(activity.value)} / ${bengaliNumber(activity.target)}${unit ? ` ${unit}` : ""}`;
+}
 
 function welcomeFor(user: HomeUser, now = new Date()) {
   if (!user) return "স্বাগতম";
@@ -45,9 +76,39 @@ function welcomeFor(user: HomeUser, now = new Date()) {
   return `${greeting}, ${user.name}`;
 }
 
-export function HomeContent({ user }: { user: HomeUser }) {
+export function HomeContent({
+  user,
+  activities = [],
+  memberCount = 0,
+}: {
+  user: HomeUser;
+  activities?: HomeActivity[];
+  memberCount?: number;
+}) {
   const isSignedIn = Boolean(user);
   const welcome = welcomeFor(user);
+  const completedCount = activities.filter(
+    (activity) => activity.completed,
+  ).length;
+  const completion = isSignedIn
+    ? activities.length
+      ? Math.round((completedCount / activities.length) * 100)
+      : 0
+    : 72;
+  const visibleActivities = isSignedIn
+    ? activities.slice(0, 3).map((activity) => ({
+        key: activity.id,
+        name: activity.name,
+        meta:
+          activity.preferredTime ||
+          `${activity.category} · লক্ষ্য ${bengaliNumber(activity.target)}${activity.unit ? ` ${activity.unit}` : ""}`,
+        progress: activityProgress(activity),
+        done: activity.completed,
+      }))
+    : dailyActivities.map((activity) => ({ ...activity, key: activity.name }));
+  const nextActivity = isSignedIn
+    ? activities.find((activity) => !activity.completed)
+    : undefined;
   const primaryHref = isSignedIn ? "/dashboard" : "/auth/sign-up";
   const primaryLabel = isSignedIn ? "আজকের দিন দেখুন" : "Google দিয়ে শুরু করুন";
 
@@ -95,6 +156,10 @@ export function HomeContent({ user }: { user: HomeUser }) {
                   : "বিনামূল্যে · কোনো কার্ড বা আলাদা পাসওয়ার্ড লাগবে না"}
               </span>
             </div>
+            <p className="member-count-note">
+              দিনরেখায় বর্তমানে {bengaliNumber(memberCount)} জন সক্রিয় সদস্য
+              আছেন।
+            </p>
           </div>
 
           <div
@@ -112,48 +177,75 @@ export function HomeContent({ user }: { user: HomeUser }) {
             </div>
 
             <div className="preview-score-row">
-              <div className="score-ring" aria-label="আজকের অগ্রগতি ৭২ শতাংশ">
-                <span>৭২</span>
+              <div
+                className="score-ring"
+                aria-label={`আজকের অগ্রগতি ${bengaliNumber(completion)} শতাংশ`}
+                style={{ "--home-progress": `${completion}%` } as CSSProperties}
+              >
+                <span>{bengaliNumber(completion)}</span>
                 <small>%</small>
               </div>
               <div className="score-copy">
                 <span>আজকের অগ্রগতি</span>
-                <strong>দিনটি এগোচ্ছে সুন্দরভাবে</strong>
-                <p>৫টির মধ্যে ৩টি গুরুত্বপূর্ণ কাজ হয়েছে</p>
+                <strong>
+                  {isSignedIn
+                    ? activities.length === 0
+                      ? "আজকের প্রথম অভ্যাসটি তৈরি করুন"
+                      : completion === 100
+                        ? "আজকের সব অভ্যাস সম্পন্ন"
+                        : "নিজের ছন্দে দিনটি এগিয়ে নিন"
+                    : "দিনটি এগোচ্ছে সুন্দরভাবে"}
+                </strong>
+                <p>
+                  {isSignedIn
+                    ? `${bengaliNumber(activities.length)}টির মধ্যে ${bengaliNumber(completedCount)}টি অভ্যাস সম্পন্ন`
+                    : "৫টির মধ্যে ৩টি গুরুত্বপূর্ণ কাজ হয়েছে"}
+                </p>
               </div>
             </div>
 
             <div className="preview-section-title">
               <strong>আজকের অভ্যাস</strong>
-              <span>সব দেখুন</span>
+              {isSignedIn ? (
+                <Link href="/dashboard">সব দেখুন</Link>
+              ) : (
+                <span>নমুনা</span>
+              )}
             </div>
             <div className="activity-list">
-              {dailyActivities.map((activity) => (
-                <div className="activity-row" key={activity.name}>
-                  <span
-                    className={
-                      activity.done
-                        ? "activity-check is-done"
-                        : "activity-check"
-                    }
-                  >
-                    {activity.done && <CheckIcon />}
-                  </span>
-                  <span className="activity-name">
-                    <strong>{activity.name}</strong>
-                    <small>{activity.meta}</small>
-                  </span>
-                  <span
-                    className={
-                      activity.done
-                        ? "activity-progress is-done"
-                        : "activity-progress"
-                    }
-                  >
-                    {activity.progress}
-                  </span>
+              {visibleActivities.length === 0 ? (
+                <div className="activity-empty">
+                  <strong>আজকের কোনো অভ্যাস নেই</strong>
+                  <span>ড্যাশবোর্ড থেকে প্রথম অভ্যাসটি যোগ করুন।</span>
                 </div>
-              ))}
+              ) : (
+                visibleActivities.map((activity) => (
+                  <div className="activity-row" key={activity.key}>
+                    <span
+                      className={
+                        activity.done
+                          ? "activity-check is-done"
+                          : "activity-check"
+                      }
+                    >
+                      {activity.done && <CheckIcon />}
+                    </span>
+                    <span className="activity-name">
+                      <strong>{activity.name}</strong>
+                      <small>{activity.meta}</small>
+                    </span>
+                    <span
+                      className={
+                        activity.done
+                          ? "activity-progress is-done"
+                          : "activity-progress"
+                      }
+                    >
+                      {activity.progress}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="focus-card">
@@ -161,10 +253,25 @@ export function HomeContent({ user }: { user: HomeUser }) {
                 <ClockIcon />
               </span>
               <span>
-                <small>এখন চলছে</small>
-                <strong>গভীর মনোযোগ</strong>
+                <small>
+                  {isSignedIn
+                    ? nextActivity
+                      ? "পরের অভ্যাস"
+                      : "আজকের অবস্থা"
+                    : "এখন চলছে"}
+                </small>
+                <strong>
+                  {isSignedIn
+                    ? nextActivity?.name ||
+                      (activities.length
+                        ? "সব অভ্যাস সম্পন্ন"
+                        : "একটি অভ্যাস যোগ করুন")
+                    : "গভীর মনোযোগ"}
+                </strong>
               </span>
-              <time>৪২:১৮</time>
+              <time>
+                {isSignedIn ? nextActivity?.preferredTime || "আজ" : "৪২:১৮"}
+              </time>
             </div>
           </div>
         </div>
@@ -218,5 +325,20 @@ export function HomeContent({ user }: { user: HomeUser }) {
 
 export default async function Home() {
   const user = await getCurrentUser();
-  return <HomeContent user={user} />;
+  const [memberCount, activities] = await Promise.all([
+    countActiveUsers(),
+    user
+      ? listDailyActivities(
+          user.id,
+          dateKeyForTimezone(new Date(), user.timezone),
+        )
+      : Promise.resolve([]),
+  ]);
+  return (
+    <HomeContent
+      user={user}
+      activities={activities}
+      memberCount={memberCount}
+    />
+  );
 }

@@ -13,7 +13,6 @@ describe("TimelineCreator suggestions", () => {
       <TimelineCreator
         dateKey="2026-08-13"
         isToday
-        currentMinute={615}
         suggestions={[
           {
             activity: "পড়াশোনা",
@@ -31,6 +30,9 @@ describe("TimelineCreator suggestions", () => {
 
     expect(screen.getByLabelText("Activity")).toHaveValue("পড়াশোনা");
     expect(screen.getByLabelText("Category")).toHaveValue("শেখা");
-    expect(screen.getByLabelText("শুরুর সময়")).toHaveValue("10:15");
+    expect(
+      screen.getByRole("button", { name: /সকাল ১০:০০/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("শুরুর সময়")).toHaveValue("10:00");
   });
 });

@@ -148,7 +148,6 @@ export default async function DashboardPage({
             <TimelineCreator
               dateKey={dateKey}
               isToday={isToday}
-              currentMinute={currentMinute}
               suggestions={timelineSuggestions}
             />
             <TimelineSection

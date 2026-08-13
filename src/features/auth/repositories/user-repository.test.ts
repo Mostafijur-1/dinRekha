@@ -1,8 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { canAutomaticallyLinkGoogleAccount } from "@/features/auth/repositories/user-repository";
+const { countDocuments } = vi.hoisted(() => ({ countDocuments: vi.fn() }));
+
+vi.mock("@/lib/db/collections", () => ({
+  usersCollection: vi.fn(async () => ({ countDocuments })),
+  oauthAccountsCollection: vi.fn(),
+  pushSubscriptionsCollection: vi.fn(),
+}));
+vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
+
+import {
+  canAutomaticallyLinkGoogleAccount,
+  countActiveUsers,
+} from "@/features/auth/repositories/user-repository";
 
 describe("safe Google account linking", () => {
+  beforeEach(() => vi.clearAllMocks());
+
   it("rejects an account without verified email ownership", () => {
     expect(
       canAutomaticallyLinkGoogleAccount({
@@ -25,5 +39,12 @@ describe("safe Google account linking", () => {
         emailVerifiedAt: new Date(),
       }),
     ).toBe(false);
+  });
+
+  it("counts only active member accounts", async () => {
+    countDocuments.mockResolvedValue(17);
+
+    await expect(countActiveUsers()).resolves.toBe(17);
+    expect(countDocuments).toHaveBeenCalledWith({ status: "active" });
   });
 });

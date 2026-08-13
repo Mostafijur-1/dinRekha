@@ -80,6 +80,12 @@ export async function findActiveUserById(id: string): Promise<SafeUser | null> {
   );
 }
 
+export async function countActiveUsers(): Promise<number> {
+  await ensureDatabaseIndexes();
+  const users = await usersCollection();
+  return users.countDocuments({ status: "active" });
+}
+
 export async function findOrCreateGoogleUser(input: {
   providerAccountId: string;
   email: string;

@@ -261,6 +261,13 @@ a {
   line-height: 1.6;
 }
 
+.member-count-note {
+  margin: 1rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
 .install-control {
   display: grid;
   gap: 0.55rem;
@@ -380,8 +387,12 @@ a {
   align-items: baseline;
   border-radius: 50%;
   background:
-    radial-gradient(closest-side, white 72%, transparent 74% 99%),
-    conic-gradient(var(--brand) 72%, var(--brand-soft) 0);
+    radial-gradient(
+      closest-side,
+      var(--surface-raised) 72%,
+      transparent 74% 99%
+    ),
+    conic-gradient(var(--brand) var(--home-progress, 72%), var(--brand-soft) 0);
   color: var(--brand);
 }
 
@@ -426,6 +437,23 @@ a {
   border: 1px solid #e8ebe5;
   border-radius: var(--radius-md);
   background: #fff;
+}
+.activity-empty {
+  display: flex;
+  min-height: 6.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+.activity-empty strong {
+  font-size: 0.8rem;
+}
+.activity-empty span {
+  margin-top: 0.25rem;
+  color: var(--text-faint);
+  font-size: 0.68rem;
 }
 .activity-row {
   min-height: 3.65rem;
@@ -2787,7 +2815,10 @@ a {
         var(--surface-raised) 72%,
         transparent 74% 99%
       ),
-      conic-gradient(var(--brand) 72%, var(--brand-soft) 0);
+      conic-gradient(
+        var(--brand) var(--home-progress, 72%),
+        var(--brand-soft) 0
+      );
   }
   .activity-row {
     border-color: var(--border);

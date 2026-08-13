@@ -6,18 +6,19 @@ import { initialTimelineActionState } from "@/features/timeline/action-state";
 import { createTimelineEntryAction } from "@/features/timeline/actions";
 import { TimelineFields } from "@/features/timeline/components/timeline-fields";
 import { TimelineSubmitButton } from "@/features/timeline/components/timeline-submit-button";
-import type { TimelineSuggestion } from "@/features/timeline/suggestions";
+import {
+  suggestedTimeLabel,
+  type TimelineSuggestion,
+} from "@/features/timeline/suggestions";
 import { minuteToTime } from "@/features/timeline/time";
 
 export function TimelineCreator({
   dateKey,
   isToday,
-  currentMinute,
   suggestions,
 }: {
   dateKey: string;
   isToday: boolean;
-  currentMinute: number;
   suggestions: TimelineSuggestion[];
 }) {
   const [state, action] = useActionState(
@@ -58,7 +59,9 @@ export function TimelineCreator({
                 >
                   <strong>{suggestion.activity}</strong>
                   <span>
-                    {suggestion.category} · {suggestion.reason}
+                    {suggestion.category} · সাধারণত{" "}
+                    {suggestedTimeLabel(suggestion.typicalStartMinute)} ·{" "}
+                    {suggestion.reason}
                   </span>
                 </button>
               ))}
@@ -73,7 +76,7 @@ export function TimelineCreator({
               ? {
                   activity: selected.activity,
                   category: selected.category,
-                  startTime: isToday ? minuteToTime(currentMinute) : undefined,
+                  startTime: minuteToTime(selected.typicalStartMinute),
                 }
               : undefined
           }

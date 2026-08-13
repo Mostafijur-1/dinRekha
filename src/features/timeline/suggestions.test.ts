@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { rankTimelineSuggestions } from "@/features/timeline/suggestions";
+import {
+  rankTimelineSuggestions,
+  suggestedTimeLabel,
+} from "@/features/timeline/suggestions";
 
 describe("rankTimelineSuggestions", () => {
   it("combines frequency, recency and time-of-day deterministically", () => {
@@ -43,5 +46,26 @@ describe("rankTimelineSuggestions", () => {
     expect(
       rankTimelineSuggestions(candidates, "2026-08-13", 0, 3),
     ).toHaveLength(3);
+  });
+
+  it("rounds the historical average and presents it in Bengali", () => {
+    const [suggestion] = rankTimelineSuggestions(
+      [
+        {
+          activity: "পড়াশোনা",
+          category: "শেখা",
+          uses: 2,
+          lastUsedDate: "2026-08-12",
+          typicalStartMinute: 600.5,
+        },
+      ],
+      "2026-08-13",
+      600,
+    );
+
+    expect(suggestion.typicalStartMinute).toBe(601);
+    expect(suggestedTimeLabel(suggestion.typicalStartMinute)).toBe(
+      "সকাল ১০:০১",
+    );
   });
 });

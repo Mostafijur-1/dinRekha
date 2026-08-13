@@ -50,6 +50,15 @@ describe("Timeline repository authorization and overlap", () => {
     expect(aggregate).toHaveBeenCalledWith(
       expect.arrayContaining([{ $match: { ownerId } }]),
     );
+    expect(aggregate.mock.calls[0][0]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          $group: expect.objectContaining({
+            typicalStartMinute: { $avg: "$startMinute" },
+          }),
+        }),
+      ]),
+    );
   });
 
   it("does not insert an overlapping interval", async () => {
