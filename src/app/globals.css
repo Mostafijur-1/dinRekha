@@ -1018,6 +1018,63 @@ a {
   font-size: 0.75rem;
   line-height: 1.65;
 }
+.report-streaks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.report-streaks article {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.report-streak-heading,
+.report-streak-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.report-streak-heading > div strong,
+.report-streak-heading > div span {
+  display: block;
+}
+.report-streak-heading > div span {
+  margin-top: 0.15rem;
+  color: var(--text-faint);
+  font-size: 0.65rem;
+}
+.report-streak-heading > strong {
+  color: var(--brand);
+  white-space: nowrap;
+}
+.report-streak-stats {
+  margin-top: 0.85rem;
+  color: var(--text-soft);
+  font-size: 0.65rem;
+}
+.report-streak-stats span,
+.report-streak-stats strong {
+  display: block;
+}
+.report-streak-stats strong {
+  margin-top: 0.2rem;
+  color: var(--text);
+  font-size: 0.72rem;
+}
+.report-consistency-track {
+  height: 0.4rem;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--canvas-deep);
+}
+.report-consistency-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand);
+}
 .timeline-creator {
   margin-bottom: 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
@@ -1912,6 +1969,9 @@ a {
     flex-direction: column;
   }
   .report-metric-grid {
+    grid-template-columns: 1fr;
+  }
+  .report-streaks {
     grid-template-columns: 1fr;
   }
 }

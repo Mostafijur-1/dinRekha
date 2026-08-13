@@ -29,15 +29,22 @@ describe("reports repository", () => {
       ["2026-08-07", "2026-08-13"],
       "2026-08-13",
       600,
+      ["2026-07-14", "2026-08-13"],
     );
     expect(activitiesFind).toHaveBeenCalledWith(
       expect.objectContaining({ ownerId }),
     );
     expect(progressFind).toHaveBeenCalledWith(
-      expect.objectContaining({ ownerId }),
+      expect.objectContaining({
+        ownerId,
+        dateKey: { $gte: "2026-07-14", $lte: "2026-08-13" },
+      }),
     );
     expect(timelineFind).toHaveBeenCalledWith(
-      expect.objectContaining({ ownerId }),
+      expect.objectContaining({
+        ownerId,
+        dateKey: { $gte: "2026-08-07", $lte: "2026-08-13" },
+      }),
     );
   });
 });

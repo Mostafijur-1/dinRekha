@@ -16,7 +16,16 @@ describe("productivity report engine", () => {
       dateKeys: ["2026-08-12", "2026-08-13"],
       todayKey: "2026-08-13",
       currentMinute: 720,
-      activities: [{ id: "one", target: 1, frequency: "daily", days: [] }],
+      activities: [
+        {
+          id: "one",
+          name: "পড়া",
+          category: "শেখা",
+          target: 1,
+          frequency: "daily",
+          days: [],
+        },
+      ],
       progress: [{ activityId: "one", dateKey: "2026-08-12", value: 1 }],
       timeline: [
         {
@@ -47,7 +56,14 @@ describe("productivity report engine", () => {
       todayKey: "2026-08-13",
       currentMinute: 600,
       activities: [
-        { id: "weekly", target: 1, frequency: "selected_days", days: [5] },
+        {
+          id: "weekly",
+          name: "ব্যায়াম",
+          category: "স্বাস্থ্য",
+          target: 1,
+          frequency: "selected_days",
+          days: [5],
+        },
       ],
       progress: [],
       timeline: [],

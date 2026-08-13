@@ -10,6 +10,10 @@ import {
   type ReportTimelineEntry,
 } from "@/features/reports/engine";
 import {
+  buildActivityConsistency,
+  type ActivityConsistency,
+} from "@/features/reports/streaks";
+import {
   dailyActivitiesCollection,
   dailyActivityProgressCollection,
   timelineEntriesCollection,
@@ -21,10 +25,14 @@ export async function getProductivityReport(
   dateKeys: string[],
   todayKey: string,
   currentMinute: number,
-): Promise<ProductivityReport | null> {
+  historyDateKeys = dateKeys,
+): Promise<
+  (ProductivityReport & { consistency: ActivityConsistency[] }) | null
+> {
   if (!ObjectId.isValid(ownerId) || dateKeys.length === 0) return null;
   const owner = new ObjectId(ownerId);
   const firstDate = dateKeys[0]!;
+  const progressStart = historyDateKeys[0] ?? firstDate;
   const lastDate = dateKeys.at(-1)!;
   await ensureDatabaseIndexes();
 
@@ -39,7 +47,10 @@ export async function getProductivityReport(
       })
       .toArray(),
     (await dailyActivityProgressCollection())
-      .find({ ownerId: owner, dateKey: { $gte: firstDate, $lte: lastDate } })
+      .find({
+        ownerId: owner,
+        dateKey: { $gte: progressStart, $lte: lastDate },
+      })
       .toArray(),
     (await timelineEntriesCollection())
       .find({ ownerId: owner, dateKey: { $gte: firstDate, $lte: lastDate } })
@@ -48,6 +59,8 @@ export async function getProductivityReport(
 
   const activities: ReportActivity[] = activityRows.map((activity) => ({
     id: activity._id.toHexString(),
+    name: activity.name,
+    category: activity.category,
     target: activity.target,
     frequency: activity.frequency ?? "daily",
     days: activity.days ?? [],
@@ -67,7 +80,7 @@ export async function getProductivityReport(
     endMinute: entry.endMinute,
   }));
 
-  return buildProductivityReport({
+  const report = buildProductivityReport({
     dateKeys,
     todayKey,
     currentMinute,
@@ -75,4 +88,13 @@ export async function getProductivityReport(
     progress,
     timeline,
   });
+  return {
+    ...report,
+    consistency: buildActivityConsistency({
+      dateKeys: historyDateKeys,
+      todayKey,
+      activities,
+      progress,
+    }),
+  };
 }

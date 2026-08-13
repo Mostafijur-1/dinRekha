@@ -1,5 +1,9 @@
+import { activityIsScheduled } from "@/features/reports/streaks";
+
 export type ReportActivity = {
   id: string;
+  name: string;
+  category: string;
   target: number;
   frequency: "daily" | "selected_days";
   days: number[];
@@ -46,18 +50,6 @@ export function completionScore(completed: number, planned: number) {
   return planned > 0 ? Math.round((completed / planned) * 100) : null;
 }
 
-function weekday(dateKey: string) {
-  return new Date(`${dateKey}T12:00:00Z`).getUTCDay();
-}
-
-function isScheduled(activity: ReportActivity, dateKey: string) {
-  if (activity.effectiveFrom && activity.effectiveFrom > dateKey) return false;
-  if (activity.archivedOn && activity.archivedOn < dateKey) return false;
-  return (
-    activity.frequency === "daily" || activity.days.includes(weekday(dateKey))
-  );
-}
-
 export function buildProductivityReport({
   dateKeys,
   todayKey,
@@ -84,7 +76,7 @@ export function buildProductivityReport({
   const days = dateKeys.map((dateKey) => {
     const availableMinutes = dateKey === todayKey ? currentMinute : 1440;
     const scheduled = activities.filter((activity) =>
-      isScheduled(activity, dateKey),
+      activityIsScheduled(activity, dateKey),
     );
     const dayProgress = progressByDay.get(dateKey);
     const completedActivities = scheduled.filter(

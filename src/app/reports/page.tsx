@@ -24,11 +24,15 @@ export default async function ReportsPage() {
   const dateKeys = Array.from({ length: 7 }, (_, index) =>
     shiftDateKey(todayKey, index - 6),
   ).filter((dateKey): dateKey is string => Boolean(dateKey));
+  const historyDateKeys = Array.from({ length: 31 }, (_, index) =>
+    shiftDateKey(todayKey, index - 30),
+  ).filter((dateKey): dateKey is string => Boolean(dateKey));
   const report = await getProductivityReport(
     user.id,
     dateKeys,
     todayKey,
     currentMinuteForTimezone(now, user.timezone),
+    historyDateKeys,
   );
   if (!report) redirect("/dashboard");
   const maxTracked = Math.max(
@@ -124,6 +128,67 @@ export default async function ReportsPage() {
           <section className="report-panel">
             <div className="feature-section-heading">
               <div>
+                <span>অভ্যাসের ধারাবাহিকতা</span>
+                <h2>Streak ও ৩০ দিনের consistency</h2>
+              </div>
+              <p>শুধু Activity-র নির্ধারিত দিনগুলো গণনা করা হয়েছে।</p>
+            </div>
+            {report.consistency.length ? (
+              <div className="report-streaks">
+                {report.consistency.map((item) => (
+                  <article key={item.activityId}>
+                    <div className="report-streak-heading">
+                      <div>
+                        <strong>{item.name}</strong>
+                        <span>{item.category}</span>
+                      </div>
+                      <strong>
+                        {item.currentStreak.toLocaleString("bn-BD")} দিন
+                      </strong>
+                    </div>
+                    <div className="report-streak-stats">
+                      <span>
+                        Consistency{" "}
+                        <strong>
+                          {item.consistency === null
+                            ? "—"
+                            : `${item.consistency}%`}
+                        </strong>
+                      </span>
+                      <span>
+                        সেরা streak{" "}
+                        <strong>
+                          {item.bestStreak.toLocaleString("bn-BD")} দিন
+                        </strong>
+                      </span>
+                      <span>
+                        পূরণ{" "}
+                        <strong>
+                          {item.completedDays.toLocaleString("bn-BD")} /{" "}
+                          {item.scheduledDays.toLocaleString("bn-BD")}
+                        </strong>
+                      </span>
+                    </div>
+                    <div
+                      className="report-consistency-track"
+                      aria-hidden="true"
+                    >
+                      <span style={{ width: `${item.consistency ?? 0}%` }} />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="report-empty">
+                <strong>Consistency দেখানোর মতো history নেই</strong>
+                <p>Daily Activity ব্যবহার করলে এখানে streak তৈরি হবে।</p>
+              </div>
+            )}
+          </section>
+
+          <section className="report-panel">
+            <div className="feature-section-heading">
+              <div>
                 <span>সময় কোথায় গেছে</span>
                 <h2>Category অনুযায়ী বণ্টন</h2>
               </div>
@@ -161,6 +226,11 @@ export default async function ReportsPage() {
             <p>
               শেষ ৭ দিনে নির্ধারিত Daily Activity-গুলোর মধ্যে target পূরণ হওয়া
               Activity-এর শতাংশ। বিশ্রাম বা untracked সময় score কমায় না।
+            </p>
+            <p>
+              Current streak-এ আজকের target এখনো পূরণ না হলেও গতকাল পর্যন্ত
+              চলমান streak ভাঙে না। Consistency-তে আজ বাদ দিয়ে শেষ ৩০টি সম্পূর্ণ
+              দিনের নির্ধারিত Activity গণনা করা হয়।
             </p>
           </aside>
         </div>

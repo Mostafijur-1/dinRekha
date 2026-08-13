@@ -54,5 +54,6 @@ authorization সংশ্লিষ্ট repository/service layer-এ থাক
 Daily Activities ও recurrence slice সম্পন্ন; বিস্তারিত `docs/daily-activities.md`-এ। ২৪ ঘণ্টার
 Timeline foundation এবং history-based quick suggestions-ও সম্পন্ন; বিস্তারিত `docs/timeline.md`-এ।
 Daily/weekly Reports foundation explainable completion score, tracked time এবং category distribution
-দেখায়। Monthly reports, reminders, offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে
-যোগ হয়নি।
+দেখায়। Recurrence-aware streak ও ৩০টি সম্পূর্ণ দিনের consistency একই pure report engine boundary-তে
+হিসাব হয়; চলমান দিন অসম্পূর্ণ থাকলে আগের streak আগেভাগে ভাঙে না। Monthly reports, reminders,
+offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি।
