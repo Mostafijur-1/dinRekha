@@ -65,6 +65,20 @@ export default async function SettingsPage() {
                   <dd>সক্রিয়</dd>
                 </div>
               </dl>
+              <div className="settings-export">
+                <strong>আপনার data</strong>
+                <p>
+                  Profile, Daily Activities, progress এবং Timeline-এর JSON copy
+                  download করুন।
+                </p>
+                <a
+                  className="activity-button"
+                  href="/api/account/export"
+                  download
+                >
+                  Data export করুন
+                </a>
+              </div>
             </aside>
           </div>
         </div>

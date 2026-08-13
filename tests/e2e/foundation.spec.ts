@@ -71,3 +71,9 @@ test("Settings authentication ছাড়া খোলা যায় না", async
   expect(currentUrl.pathname).toBe("/auth/sign-in");
   expect(currentUrl.searchParams.get("callbackUrl")).toBe("/settings");
 });
+
+test("Account export authentication ছাড়া data দেয় না", async ({ request }) => {
+  const response = await request.get("/api/account/export");
+  expect(response.status()).toBe(401);
+  expect(response.headers()["cache-control"]).toBeUndefined();
+});

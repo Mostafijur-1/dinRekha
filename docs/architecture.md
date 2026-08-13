@@ -64,3 +64,7 @@ query না চালিয়ে not-found response দেয়। Reports-�
 Settings-এর authenticated server action শুধু validated display name ও allowlisted IANA timezone update
 করে। Google email/identity read-only এবং form payload দিয়ে পরিবর্তনযোগ্য নয়। Timezone পরিবর্তন পরের
 request থেকে date/time boundary-তে কার্যকর হয়।
+
+Account export route current session identity থেকে owner filter তৈরি করে এবং JSON attachment-এ profile,
+Activity/progress ও Timeline data দেয়। OAuth identifiers, tokens, normalized email ও session security
+fields বাদ থাকে; authenticated response private/no-store।

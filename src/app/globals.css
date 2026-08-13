@@ -1272,6 +1272,18 @@ a {
   margin: 0;
   font-weight: 800;
 }
+.settings-export {
+  margin-top: 1.25rem;
+}
+.settings-export p {
+  color: var(--text-soft);
+  font-size: 0.7rem;
+  line-height: 1.6;
+}
+.settings-export .activity-button {
+  border: 1px solid var(--brand);
+  color: var(--brand);
+}
 .timeline-creator {
   margin-bottom: 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
