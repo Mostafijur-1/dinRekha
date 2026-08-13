@@ -4,6 +4,7 @@ import { AppNavigation } from "@/components/app-navigation";
 import { Brand } from "@/components/brand";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { ProfileForm } from "@/features/settings/components/profile-form";
+import { AccountDeletionForm } from "@/features/account/deletion-form";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "Profile ও Settings" };
@@ -81,6 +82,17 @@ export default async function SettingsPage() {
               </div>
             </aside>
           </div>
+          <section className="settings-danger-zone">
+            <span>Danger zone</span>
+            <h2>Account বন্ধ করুন</h2>
+            <p>
+              এটি আপনার সব session সঙ্গে সঙ্গে বন্ধ করবে এবং account-কে deletion
+              review-এর জন্য নিষ্ক্রিয় করবে। এই ধাপে data hard-delete হয় না;
+              প্রয়োজন হলে support-এর মাধ্যমে recovery সম্ভব। আগে Data export করে
+              রাখুন।
+            </p>
+            <AccountDeletionForm email={user.email} />
+          </section>
         </div>
       </div>
     </main>

@@ -68,3 +68,7 @@ request থেকে date/time boundary-তে কার্যকর হয়�
 Account export route current session identity থেকে owner filter তৈরি করে এবং JSON attachment-এ profile,
 Activity/progress ও Timeline data দেয়। OAuth identifiers, tokens, normalized email ও session security
 fields বাদ থাকে; authenticated response private/no-store।
+
+Account closure recoverable দুই-ধাপের lifecycle: exact current email confirmation-এর পর user status
+`pending_deletion` হয় এবং sessionVersion বাড়ায়, ফলে সব session অকার্যকর হয়। Automated hard purge
+retention policy ছাড়া চালু নয়; এই boundary accidental irreversible deletion এড়ায়।

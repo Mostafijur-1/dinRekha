@@ -1284,6 +1284,36 @@ a {
   border: 1px solid var(--brand);
   color: var(--brand);
 }
+.settings-danger-zone {
+  margin-top: 1rem;
+  padding: 1.3rem;
+  border: 1px solid #d8a6a6;
+  border-radius: var(--radius-md);
+  background: #fff8f7;
+}
+.settings-danger-zone > span {
+  color: #9b3030;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.settings-danger-zone h2 {
+  margin: 0.35rem 0;
+}
+.settings-danger-zone > p {
+  max-width: 50rem;
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+.settings-delete-form {
+  max-width: 34rem;
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.settings-delete-form button {
+  width: fit-content;
+}
 .timeline-creator {
   margin-bottom: 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));

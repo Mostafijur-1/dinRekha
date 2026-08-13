@@ -138,7 +138,10 @@ export async function markAccountForDeletion(userId: string): Promise<boolean> {
   const now = new Date();
   const result = await users.updateOne(
     { _id: new ObjectId(userId), status: "active" },
-    { $set: { status: "pending_deletion", deletedAt: now, updatedAt: now } },
+    {
+      $set: { status: "pending_deletion", deletedAt: now, updatedAt: now },
+      $inc: { sessionVersion: 1 },
+    },
   );
   return result.modifiedCount === 1;
 }
