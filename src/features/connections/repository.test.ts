@@ -1,14 +1,21 @@
 import { ObjectId } from "mongodb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { countDocuments, insertOne, findOne, findOneAndUpdate, updateOne } =
-  vi.hoisted(() => ({
-    countDocuments: vi.fn(),
-    insertOne: vi.fn(),
-    findOne: vi.fn(),
-    findOneAndUpdate: vi.fn(),
-    updateOne: vi.fn(),
-  }));
+const {
+  countDocuments,
+  insertOne,
+  findOne,
+  findOneAndUpdate,
+  updateOne,
+  deleteMany,
+} = vi.hoisted(() => ({
+  countDocuments: vi.fn(),
+  insertOne: vi.fn(),
+  findOne: vi.fn(),
+  findOneAndUpdate: vi.fn(),
+  updateOne: vi.fn(),
+  deleteMany: vi.fn(),
+}));
 vi.mock("@/lib/db/collections", () => ({
   connectionInvitationsCollection: vi.fn(async () => ({
     countDocuments,
@@ -17,6 +24,7 @@ vi.mock("@/lib/db/collections", () => ({
     findOneAndUpdate,
   })),
   connectionsCollection: vi.fn(async () => ({ updateOne })),
+  sharingPoliciesCollection: vi.fn(async () => ({ deleteMany })),
   usersCollection: vi.fn(async () => ({ findOne })),
 }));
 vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
@@ -82,5 +90,6 @@ describe("connection invitation security", () => {
       }),
       expect.anything(),
     );
+    expect(deleteMany).toHaveBeenCalledWith({ connectionId: connection });
   });
 });

@@ -5,6 +5,8 @@ import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { disconnectAction } from "@/features/connections/actions";
 import { InviteCreator } from "@/features/connections/invite-creator";
 import { listConnections } from "@/features/connections/repository";
+import { updateSharingAction } from "@/features/sharing/actions";
+import { getSharingPolicy } from "@/features/sharing/repository";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "Connections" };
@@ -14,6 +16,17 @@ export default async function ConnectionsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/sign-in?callbackUrl=%2Fconnections");
   const connections = await listConnections(user.id);
+  const policies = new Map(
+    await Promise.all(
+      connections.map(
+        async (connection) =>
+          [
+            connection.userId,
+            await getSharingPolicy(user.id, connection.userId),
+          ] as const,
+      ),
+    ),
+  );
   return (
     <main className="shell-page app-shell connections-page">
       <AppNavigation active="connections" />
@@ -62,12 +75,44 @@ export default async function ConnectionsPage() {
               <div className="connection-list">
                 {connections.map((connection) => {
                   const disconnect = disconnectAction.bind(null, connection.id);
+                  const updateSharing = updateSharingAction.bind(
+                    null,
+                    connection.userId,
+                  );
+                  const policy = policies.get(connection.userId)!;
                   return (
                     <article key={connection.id}>
                       <div>
                         <strong>{connection.name}</strong>
-                        <span>কোনো progress share করা হয়নি</span>
+                        <span>আপনার data → {connection.name}</span>
                       </div>
+                      <form action={updateSharing} className="sharing-form">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="productivitySummary"
+                            defaultChecked={policy.productivitySummary}
+                          />{" "}
+                          Productivity summary
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="streaks"
+                            defaultChecked={policy.streaks}
+                          />{" "}
+                          Activity streaks
+                        </label>
+                        <button className="activity-button" type="submit">
+                          Permission সংরক্ষণ
+                        </button>
+                      </form>
+                      <a
+                        className="report-detail-link"
+                        href={`/connections/shared/${connection.userId}`}
+                      >
+                        {connection.name} কী share করেছেন দেখুন →
+                      </a>
                       <form action={disconnect}>
                         <button
                           className="activity-button activity-button-danger"

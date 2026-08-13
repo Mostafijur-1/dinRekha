@@ -8,6 +8,7 @@ import {
   usersCollection,
   connectionInvitationsCollection,
   connectionsCollection,
+  sharingPoliciesCollection,
 } from "@/lib/db/collections";
 
 type IndexGlobal = typeof globalThis & {
@@ -25,6 +26,7 @@ async function createIndexes(): Promise<void> {
     timeline,
     invitations,
     connections,
+    policies,
   ] = await Promise.all([
     usersCollection(),
     oauthAccountsCollection(),
@@ -33,6 +35,7 @@ async function createIndexes(): Promise<void> {
     timelineEntriesCollection(),
     connectionInvitationsCollection(),
     connectionsCollection(),
+    sharingPoliciesCollection(),
   ]);
 
   await Promise.all([
@@ -85,6 +88,14 @@ async function createIndexes(): Promise<void> {
     connections.createIndex(
       { userLowId: 1, status: 1 },
       { name: "connection_low_status" },
+    ),
+    policies.createIndex(
+      { connectionId: 1, ownerId: 1, recipientId: 1 },
+      { unique: true, name: "sharing_direction_unique" },
+    ),
+    policies.createIndex(
+      { recipientId: 1, ownerId: 1 },
+      { name: "sharing_recipient_owner" },
     ),
     timeline.createIndex(
       { ownerId: 1, status: 1, dateKey: 1 },

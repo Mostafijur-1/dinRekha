@@ -76,3 +76,7 @@ retention policy ছাড়া চালু নয়; এই boundary acciden
 Connections many-to-many canonical user pair দিয়ে model করা। Invitation-এর ১৯২-bit raw token শুধু
 creator-এর response-এ ফেরে; database-এ SHA-256 hash, expiry ও single-use state থাকে। Connection নিজে
 কোনো data access দেয় না—directional sharing policy আলাদা authorization layer।
+
+Sharing policy প্রতি connection-এ owner→recipient direction-এ unique। Default policy সব false;
+active connection ও explicit permission ছাড়া shared report query চলে না। বর্তমান targets শুধু aggregate
+Productivity summary ও streaks; Timeline, category distribution, daily values এবং private notes share হয় না।

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { activitiesFind, activityFindOne, progressFind, timelineFind, toArray } =
   vi.hoisted(() => ({
@@ -25,6 +25,8 @@ import {
 } from "@/features/reports/repository";
 
 describe("reports repository", () => {
+  beforeEach(() => vi.clearAllMocks());
+
   it("does not query progress when an owned activity is not found", async () => {
     const ownerId = new ObjectId();
     const activityId = new ObjectId();
@@ -69,5 +71,22 @@ describe("reports repository", () => {
         dateKey: { $gte: "2026-08-07", $lte: "2026-08-13" },
       }),
     );
+  });
+
+  it("skips timeline storage when a shared report does not permit it", async () => {
+    activitiesFind.mockReturnValue({ toArray });
+    progressFind.mockReturnValue({ toArray });
+    const ownerId = new ObjectId();
+
+    await getProductivityReport(
+      ownerId.toHexString(),
+      ["2026-08-07", "2026-08-13"],
+      "2026-08-13",
+      600,
+      ["2026-07-14", "2026-08-13"],
+      { includeTimeline: false },
+    );
+
+    expect(timelineFind).not.toHaveBeenCalled();
   });
 });

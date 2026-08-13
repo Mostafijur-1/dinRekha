@@ -6,6 +6,7 @@ import { ObjectId } from "mongodb";
 import {
   connectionInvitationsCollection,
   connectionsCollection,
+  sharingPoliciesCollection,
   usersCollection,
 } from "@/lib/db/collections";
 import { ensureDatabaseIndexes } from "@/lib/db/indexes";
@@ -203,5 +204,11 @@ export async function disconnectConnection(
       },
     },
   );
-  return result.matchedCount === 1;
+  if (result.matchedCount !== 1) return false;
+  await (
+    await sharingPoliciesCollection()
+  ).deleteMany({
+    connectionId: new ObjectId(connectionId),
+  });
+  return true;
 }

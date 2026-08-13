@@ -101,6 +101,17 @@ export type ConnectionDocument = {
   disconnectedAt?: Date;
 };
 
+export type SharingPolicyDocument = {
+  _id: ObjectId;
+  connectionId: ObjectId;
+  ownerId: ObjectId;
+  recipientId: ObjectId;
+  productivitySummary: boolean;
+  streaks: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDatabase()).collection<UserDocument>("users");
 }
@@ -149,4 +160,12 @@ export async function connectionsCollection(): Promise<
   Collection<ConnectionDocument>
 > {
   return (await getDatabase()).collection<ConnectionDocument>("connections");
+}
+
+export async function sharingPoliciesCollection(): Promise<
+  Collection<SharingPolicyDocument>
+> {
+  return (await getDatabase()).collection<SharingPolicyDocument>(
+    "sharingPolicies",
+  );
 }

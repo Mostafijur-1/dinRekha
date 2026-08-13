@@ -89,6 +89,7 @@ export async function getProductivityReport(
   todayKey: string,
   currentMinute: number,
   historyDateKeys = dateKeys,
+  options: { includeTimeline?: boolean } = {},
 ): Promise<
   (ProductivityReport & { consistency: ActivityConsistency[] }) | null
 > {
@@ -115,9 +116,14 @@ export async function getProductivityReport(
         dateKey: { $gte: progressStart, $lte: lastDate },
       })
       .toArray(),
-    (await timelineEntriesCollection())
-      .find({ ownerId: owner, dateKey: { $gte: firstDate, $lte: lastDate } })
-      .toArray(),
+    options.includeTimeline === false
+      ? Promise.resolve([])
+      : (await timelineEntriesCollection())
+          .find({
+            ownerId: owner,
+            dateKey: { $gte: firstDate, $lte: lastDate },
+          })
+          .toArray(),
   ]);
 
   const activities: ReportActivity[] = activityRows.map((activity) => ({

@@ -92,3 +92,12 @@ test("Invite code sign-in callback-এ সংরক্ষিত থাকে", a
     `/connections/invite?code=${code}`,
   );
 });
+
+test("Shared progress URL authentication callback-এ থাকে", async ({ page }) => {
+  const ownerId = "64f000000000000000000001";
+  await page.goto(`/connections/shared/${ownerId}`);
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe(
+    `/connections/shared/${ownerId}`,
+  );
+});
