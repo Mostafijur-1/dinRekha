@@ -9,7 +9,7 @@
 - strict TypeScript ও Tailwind CSS
 - Server Components by default
 - Official MongoDB Node.js driver
-- NextAuth দিয়ে Google ও email/password authentication
+- NextAuth দিয়ে শুধু Google authentication
 - Vitest, Testing Library ও Playwright
 - Vercel deployment target
 
@@ -45,18 +45,15 @@ npm run test:e2e
 
 ## Environment
 
-| Variable               | Visibility | Purpose                                            |
-| ---------------------- | ---------- | -------------------------------------------------- |
-| `NEXT_PUBLIC_APP_URL`  | Public     | Metadata ও canonical absolute URL                  |
-| `MONGODB_URI`          | Secret     | MongoDB connection string                          |
-| `MONGODB_DB_NAME`      | Server     | Database name                                      |
-| `AUTH_SECRET`          | Secret     | Session signing/encryption secret                  |
-| `NEXTAUTH_URL`         | Server     | Authentication-এর canonical URL                    |
-| `GOOGLE_CLIENT_ID`     | Server     | Google OAuth client ID                             |
-| `GOOGLE_CLIENT_SECRET` | Secret     | Google OAuth client secret                         |
-| `RATE_LIMIT_SECRET`    | Secret     | Rate-limit HMAC; না দিলে `AUTH_SECRET` ব্যবহৃত হয় |
-| `RESEND_API_KEY`       | Secret     | Password reset email delivery                      |
-| `EMAIL_FROM`           | Server     | Verified sender identity                           |
+| Variable               | Visibility | Purpose                           |
+| ---------------------- | ---------- | --------------------------------- |
+| `NEXT_PUBLIC_APP_URL`  | Public     | Metadata ও canonical absolute URL |
+| `MONGODB_URI`          | Secret     | MongoDB connection string         |
+| `MONGODB_DB_NAME`      | Server     | Database name                     |
+| `AUTH_SECRET`          | Secret     | Session signing/encryption secret |
+| `NEXTAUTH_URL`         | Server     | Authentication-এর canonical URL   |
+| `GOOGLE_CLIENT_ID`     | Server     | Google OAuth client ID            |
+| `GOOGLE_CLIENT_SECRET` | Secret     | Google OAuth client secret        |
 
 আসল secret কখনো Git-এ commit করা যাবে না। Vercel Development, Preview ও Production
 environment আলাদাভাবে configure করতে হবে।

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("the Bangla landing page protects the private application shell", async ({
+test("বাংলা application shell শুধু Google authentication দেখায়", async ({
   page,
 }) => {
   await page.goto("/");
@@ -12,4 +12,8 @@ test("the Bangla landing page protects the private application shell", async ({
   await expect(
     page.getByRole("heading", { name: "আবার স্বাগতম" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Google দিয়ে প্রবেশ করুন" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
 });

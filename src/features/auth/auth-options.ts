@@ -1,69 +1,14 @@
 import "server-only";
 
 import type { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
-import { consumeRateLimit } from "@/features/auth/repositories/rate-limit-repository";
-import {
-  findOrCreateGoogleUser,
-  findUserByEmail,
-} from "@/features/auth/repositories/user-repository";
-import { credentialsSchema } from "@/features/auth/schemas";
-import { verifyPassword } from "@/lib/security/password";
-import { privacySafeKey } from "@/lib/security/request";
+import { findOrCreateGoogleUser } from "@/features/auth/repositories/user-repository";
 
-const providers: NextAuthOptions["providers"] = [
-  CredentialsProvider({
-    name: "Email ও Password",
-    credentials: {
-      email: { label: "Email", type: "email" },
-      password: { label: "Password", type: "password" },
-    },
-    async authorize(rawCredentials, request) {
-      const credentials = credentialsSchema.safeParse(rawCredentials);
-      if (!credentials.success) return null;
-
-      const forwardedFor = request.headers?.["x-forwarded-for"];
-      const address = Array.isArray(forwardedFor)
-        ? forwardedFor[0]
-        : forwardedFor?.split(",")[0]?.trim() || "unknown";
-      const [identityLimit, addressLimit] = await Promise.all([
-        consumeRateLimit({
-          key: privacySafeKey(
-            "sign-in",
-            address,
-            credentials.data.email.toLowerCase(),
-          ),
-          limit: 8,
-          windowMs: 15 * 60 * 1_000,
-        }),
-        consumeRateLimit({
-          key: privacySafeKey("sign-in-address", address),
-          limit: 30,
-          windowMs: 15 * 60 * 1_000,
-        }),
-      ]);
-      if (!identityLimit.allowed || !addressLimit.allowed) return null;
-
-      const user = await findUserByEmail(credentials.data.email);
-      if (!user?.passwordHash || user.status !== "active") return null;
-      if (!(await verifyPassword(credentials.data.password, user.passwordHash)))
-        return null;
-
-      return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        image: user.image,
-        sessionVersion: user.sessionVersion,
-      };
-    },
-  }),
-];
+const providers: NextAuthOptions["providers"] = [];
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  providers.unshift(
+  providers.push(
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -93,7 +38,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider !== "google") return true;
+      if (account?.provider !== "google") return false;
       const googleProfile = profile as { email_verified?: boolean } | undefined;
       if (!user.email || !account.providerAccountId) return false;
 
@@ -127,7 +72,7 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signOut() {
-      // Intentionally empty: session invalidation is handled by the encrypted cookie.
+      // Session invalidation is handled by the encrypted cookie.
     },
   },
 };

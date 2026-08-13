@@ -15,7 +15,6 @@ export type SafeUser = {
   email: string;
   name: string;
   image?: string | null;
-  passwordHash?: string;
   emailVerifiedAt?: Date;
   status: "active" | "disabled" | "pending_deletion";
   sessionVersion: number;
@@ -28,7 +27,6 @@ function toSafeUser(user: UserDocument | null): SafeUser | null {
     email: user.email,
     name: user.name,
     image: user.image,
-    passwordHash: user.passwordHash,
     emailVerifiedAt: user.emailVerifiedAt,
     status: user.status,
     sessionVersion: user.sessionVersion ?? 1,
@@ -56,36 +54,6 @@ export async function findActiveUserById(id: string): Promise<SafeUser | null> {
   return toSafeUser(
     await users.findOne({ _id: new ObjectId(id), status: "active" }),
   );
-}
-
-export async function createPasswordUser(input: {
-  email: string;
-  name: string;
-  passwordHash: string;
-}): Promise<SafeUser | null> {
-  await ensureDatabaseIndexes();
-  const users = await usersCollection();
-  const now = new Date();
-  const emailNormalized = normalizeEmail(input.email);
-
-  try {
-    const result = await users.insertOne({
-      _id: new ObjectId(),
-      email: emailNormalized,
-      emailNormalized,
-      name: input.name.trim(),
-      passwordHash: input.passwordHash,
-      status: "active",
-      sessionVersion: 1,
-      profile: { timezone: "Asia/Dhaka", initializedAt: now },
-      createdAt: now,
-      updatedAt: now,
-    });
-    return findActiveUserById(result.insertedId.toHexString());
-  } catch (error) {
-    if (error instanceof MongoServerError && error.code === 11000) return null;
-    throw error;
-  }
 }
 
 export async function findOrCreateGoogleUser(input: {
@@ -159,26 +127,6 @@ export async function findOrCreateGoogleUser(input: {
   }
 
   return toSafeUser(user);
-}
-
-export async function updatePassword(
-  userId: string,
-  passwordHash: string,
-): Promise<boolean> {
-  if (!ObjectId.isValid(userId)) return false;
-  const users = await usersCollection();
-  const result = await users.updateOne(
-    { _id: new ObjectId(userId), status: "active" },
-    {
-      $set: {
-        passwordHash,
-        emailVerifiedAt: new Date(),
-        updatedAt: new Date(),
-      },
-      $inc: { sessionVersion: 1 },
-    },
-  );
-  return result.modifiedCount === 1;
 }
 
 export async function markAccountForDeletion(userId: string): Promise<boolean> {

@@ -1,55 +1,26 @@
 # Authentication architecture
 
-## Email ও Password registration
+## Google-only প্রবেশ ও account তৈরি
 
-Browser JSON request পাঠায় `/api/auth/register`-এ। Route origin, body size, Zod schema ও privacy-safe
-rate limit যাচাই করে। Password Node.js Scrypt দিয়ে random salt সহ hash হয়; plaintext Password কোনো
-collection বা log-এ যায় না। Unique normalized email index duplicate account আটকায় এবং নতুন user-এর
-timezone/profile একসঙ্গে initialize হয়।
-Duplicate ও নতুন registration একই response এবং navigation পায়, তাই UI থেকেও account existence
-বোঝা যায় না। Registration-এর পর আলাদাভাবে Sign in করতে হয়।
+`/auth/sign-in` এবং `/auth/sign-up` আলাদা user journey দেখায়, কিন্তু উভয় page একই Google OAuth provider ব্যবহার করে। প্রথমবার verified Google identity এলে application-owned MongoDB repository নতুন user এবং OAuth account record তৈরি করে। পরিচিত Google identity হলে সেই user-ই পুনরায় প্রবেশ করে। Email/password form, credentials endpoint, password reset এবং application থেকে email পাঠানোর ব্যবস্থা নেই।
 
-## Sign in ও session
+Google provider configure না থাকলে OAuth button disabled থাকে এবং বাংলা configuration বার্তা দেখায়। Production-এ `GOOGLE_CLIENT_ID` ও `GOOGLE_CLIENT_SECRET` আবশ্যক।
 
-NextAuth Credentials provider generic failure দেয় এবং rate limit-এর পর stored Scrypt hash timing-safe
-comparison করে। সফল হলে ৩০ দিনের encrypted JWT HttpOnly cookie তৈরি হয়। Dashboard প্রতিটি request-এ
-session ID দিয়ে active user আবার যাচাই করে; disabled বা deletion-pending user-এর পুরোনো cookie access
-দেয় না। Cookie-এর session version-ও database version-এর সঙ্গে মেলে; Password reset version বাড়িয়ে
-আগের সব session বাতিল করে। NextAuth built-in CSRF protection sign-in ও sign-out endpoint রক্ষা করে।
+## নিরাপদ Google linking
 
-## Google OAuth ও safe linking
+শুধু `email_verified=true` Google profile গ্রহণ করা হয়। `(provider, providerAccountId)` unique index একই Google identity-কে একাধিক user-এর সঙ্গে যুক্ত হতে দেয় না। একই normalized email-এর কোনো legacy account থাকলে সেটিতে verified ownership marker না থাকলে automatic linking প্রত্যাখ্যাত হয়। `allowDangerousEmailAccountLinking` বন্ধ রাখা হয়েছে।
 
-Google provider কেবল `email_verified=true` profile গ্রহণ করে। Unique provider account index একটি
-Google identity-কে একাধিক user-এর সঙ্গে যুক্ত হতে দেয় না। একই email-এর password account আগে email
-ownership প্রমাণ না করলে automatic linking প্রত্যাখ্যাত হয়। Password reset সফল হওয়া email ownership
-verification হিসেবে ধরা হয়।
+## Session ও authorization
 
-## Password reset
-
-Forgot-password endpoint account থাকুক বা না থাকুক একই response দেয়। Raw 256-bit token শুধু email
-link-এ যায়; database-এ SHA-256 hash থাকে। Token ৩০ মিনিটে TTL index দিয়ে expire হয় এবং conditional
-atomic update-এ একবারই consume হয়। নতুন Password বসলে অন্য reset token মুছে যায়। Reset page token
-browser history থেকে সরায়। Email delivery Resend HTTP adapter-এর পেছনে আলাদা এবং token/email log হয় না।
+সফল OAuth-এর পরে NextAuth ৩০ দিনের signed JWT HttpOnly cookie তৈরি করে। Protected request-এ session identity-এর পাশাপাশি active MongoDB user এবং `sessionVersion` পুনরায় যাচাই করা হয়। Disabled বা deletion-pending user পুরোনো cookie দিয়েও access পায় না। NextAuth-এর built-in state/CSRF controls OAuth ও sign-out flow রক্ষা করে।
 
 ## Collections ও indexes
 
-- `users`: unique `emailNormalized`, status ও initialized profile
+- `users`: unique `emailNormalized`, account status ও initialized profile
 - `oauthAccounts`: unique `(provider, providerAccountId)` এবং indexed `userId`
-- `passwordResetTokens`: unique hash, user lookup ও TTL expiry
-- `rateLimits`: HMAC key unique ও TTL expiry
+
+পুরোনো credentials implementation-এর `passwordResetTokens` ও `rateLimits` collection application আর ব্যবহার করে না। এই পরিবর্তন কোনো production collection স্বয়ংক্রিয়ভাবে delete করে না।
 
 ## Account deletion architecture
 
-Repository active account-কে `pending_deletion` mark করতে পারে। এই status সঙ্গে সঙ্গে authorization
-বন্ধ করে। ভবিষ্যৎ deletion milestone-এ authenticated confirmation, recent reauthentication, grace
-period, related data cleanup ও irreversible purge job যুক্ত হবে। User-facing deletion control এখন নেই।
-
-## Rate limits
-
-- Sign in: ১৫ মিনিটে address+email প্রতি ৮ বার এবং address প্রতি ৩০ বার
-- Registration: ১ ঘণ্টায় address+email প্রতি ৫ বার এবং address প্রতি ২০ বার
-- Forgot Password: ১ ঘণ্টায় address+email প্রতি ৪ বার
-- Reset submission: ৩০ মিনিটে address প্রতি ৬ বার
-
-Raw email বা IP-এর বদলে HMAC key রাখা হয়। Vercel forwarded address trusted; অন্য hosting platform-এ
-proxy header trust configuration পুনরায় যাচাই করতে হবে।
+Repository active account-কে `pending_deletion` mark করতে পারে। এই status authorization সঙ্গে সঙ্গে বন্ধ করে। ভবিষ্যৎ deletion milestone-এ authenticated confirmation, recent reauthentication, grace period, related data cleanup ও irreversible purge job যুক্ত হবে। User-facing deletion control এখনো নেই।

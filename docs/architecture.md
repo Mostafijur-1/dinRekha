@@ -38,13 +38,13 @@ identity-এর পাশাপাশি active database user পুনরায
 ## Security baseline
 
 Response headers clickjacking, MIME sniffing, unnecessary device permission ও broad referrer leakage
-সীমিত করে। Authentication boundary-তে typed validation, origin checks, rate limits, secure cookie,
-password hashing, opaque token hashing এবং server-only module boundaries আছে। Feature-level
+সীমিত করে। Authentication boundary-তে Google-এর verified identity, OAuth state/CSRF controls,
+secure cookie এবং server-only module boundaries আছে। Feature-level
 authorization সংশ্লিষ্ট repository/service layer-এ থাকবে।
 
 ## Testing strategy
 
-- Vitest: security logic, schema ও repository contract
+- Vitest: authorization logic ও repository contract
 - Testing Library: component behavior ও accessible contract
 - Playwright: প্রধান browser journey, desktop ও mobile
 - GitHub Actions: format, lint, type-check, tests, production build ও E2E

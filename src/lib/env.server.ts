@@ -8,16 +8,6 @@ const serverEnvironmentSchema = z.object({
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET কমপক্ষে ৩২ অক্ষরের হতে হবে।"),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
   GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
-  RATE_LIMIT_SECRET: z.string().min(32).optional(),
-  RESEND_API_KEY: z.string().min(1).optional(),
-  EMAIL_FROM: z
-    .string()
-    .min(3)
-    .refine(
-      (value) => !/[\r\n]/.test(value),
-      "EMAIL_FROM-এ newline থাকতে পারবে না।",
-    )
-    .optional(),
 });
 
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;

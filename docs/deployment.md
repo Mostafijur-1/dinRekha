@@ -7,7 +7,7 @@
 - Vercel Production: `main` branch
 
 সব variable ও placeholder `.env.example`-এ আছে। Preview ও Production-এ আলাদা MongoDB credentials,
-Auth secret, OAuth callback URL এবং email key দিতে হবে। Google Console callback URL:
+Auth secret ও OAuth callback URL দিতে হবে। Google Console callback URL:
 
 ```text
 https://<deployment-host>/api/auth/callback/google
@@ -18,20 +18,20 @@ Changing Preview hostname ব্যবহার করলে প্রতিট�
 ## Project settings
 
 - Framework preset: Next.js
-- Install command: `npm install`
+- Install command: `npm ci`
 - Build command: `npm run build`
 - Output directory: Next.js default
 - Node.js version: 24.x
 - Production branch: `main`
-- Runtime: Node.js; MongoDB ও crypto flow Edge runtime নয়
+- Runtime: Node.js; MongoDB flow Edge runtime নয়
 
 ## Release checks
 
 1. GitHub Actions সফল।
 2. Vercel Preview build সফল।
 3. MongoDB network access Vercel থেকে অনুমোদিত এবং least-privilege database user ব্যবহৃত।
-4. Google OAuth callback ও Resend verified sender পরীক্ষা করা।
-5. Sign up, sign in, sign out, protected route ও password reset Preview-তে যাচাই করা।
+4. Google OAuth callback পরীক্ষা করা।
+5. Google Sign up, Sign in, Sign out ও protected route Preview-তে যাচাই করা।
 6. অনুমোদনের পর production promotion।
 
 GitHub push deployment success প্রমাণ করে না। Vercel deployment আলাদাভাবে যাচাই করতে হবে।

@@ -25,7 +25,7 @@ describeWithDatabase("MongoDB authentication persistence", () => {
     await client?.close();
   });
 
-  it("enforces unique identity and expiring security indexes", async () => {
+  it("enforces unique user and Google identity indexes", async () => {
     const database = client.db(databaseName);
     const users = database.collection("users");
     const now = new Date();
@@ -49,14 +49,6 @@ describeWithDatabase("MongoDB authentication persistence", () => {
     }
     expect(duplicateError).toBeInstanceOf(MongoServerError);
     expect((duplicateError as MongoServerError).code).toBe(11000);
-
-    const resetIndexes = await database
-      .collection("passwordResetTokens")
-      .indexes();
-    const expiryIndex = resetIndexes.find(
-      (index) => index.name === "password_reset_expiry",
-    );
-    expect(expiryIndex?.expireAfterSeconds).toBe(0);
 
     const accountIndexes = await database.collection("oauthAccounts").indexes();
     const identityIndex = accountIndexes.find(
