@@ -40,7 +40,10 @@ describe("reminder settings action", () => {
   });
 
   it("uses the authenticated owner and validated switches", async () => {
-    getCurrentUser.mockResolvedValue({ id: "owner" });
+    getCurrentUser.mockResolvedValue({
+      id: "owner",
+      reminders: { endOfDayTime: "21:30", dailySummaryTime: "22:00" },
+    });
     updateReminderSettings.mockResolvedValue(true);
     const result = await updateReminderSettingsAction(
       initialSettingsActionState,
@@ -55,5 +58,27 @@ describe("reminder settings action", () => {
       endOfDayTime: "21:30",
       dailySummaryTime: "22:00",
     });
+  });
+
+  it("keeps saved times when optional time inputs are empty", async () => {
+    getCurrentUser.mockResolvedValue({
+      id: "owner",
+      reminders: { endOfDayTime: "20:45", dailySummaryTime: "22:15" },
+    });
+    updateReminderSettings.mockResolvedValue(true);
+    const form = validForm();
+    form.set("endOfDayTime", "");
+    form.set("dailySummaryTime", "");
+
+    await expect(
+      updateReminderSettingsAction(initialSettingsActionState, form),
+    ).resolves.toMatchObject({ status: "success" });
+    expect(updateReminderSettings).toHaveBeenCalledWith(
+      "owner",
+      expect.objectContaining({
+        endOfDayTime: "20:45",
+        dailySummaryTime: "22:15",
+      }),
+    );
   });
 });

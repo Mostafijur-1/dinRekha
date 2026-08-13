@@ -559,7 +559,7 @@ a {
 
 .value-section {
   padding-block: 7.5rem;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--canvas-deep) 76%, var(--brand-soft));
 }
 .section-heading {
   max-width: 44rem;
@@ -586,7 +586,7 @@ a {
 }
 .value-grid article {
   padding: 0 2.5rem;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--canvas-deep) 76%, var(--brand-soft));
 }
 .value-grid article:first-child {
   padding-left: 0;
@@ -1298,7 +1298,7 @@ a {
   padding: 1.3rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: var(--surface-raised);
+  background: color-mix(in srgb, var(--surface-raised) 86%, var(--brand-soft));
   box-shadow: var(--shadow-sm);
 }
 .settings-form {
@@ -1369,7 +1369,7 @@ a {
   padding: 1.3rem;
   border: 1px solid #d8a6a6;
   border-radius: var(--radius-md);
-  background: #fff8f7;
+  background: color-mix(in srgb, var(--surface-raised) 88%, #f2b8b3);
 }
 .settings-install {
   margin-top: 1rem;
@@ -1537,7 +1537,7 @@ a {
   align-items: center;
   gap: 0.7rem;
   min-height: 2.75rem;
-  color: var(--ink-soft);
+  color: var(--text-soft);
 }
 
 .activity-reminder-toggle input {

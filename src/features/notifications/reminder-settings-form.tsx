@@ -39,7 +39,6 @@ export function ReminderSettingsForm({
           type="time"
           name="endOfDayTime"
           defaultValue={settings.endOfDayTime}
-          required
         />
       </label>
       <label className="activity-reminder-toggle">
@@ -56,7 +55,6 @@ export function ReminderSettingsForm({
           type="time"
           name="dailySummaryTime"
           defaultValue={settings.dailySummaryTime}
-          required
         />
       </label>
       <label className="activity-reminder-toggle">

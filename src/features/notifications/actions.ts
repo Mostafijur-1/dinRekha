@@ -14,13 +14,21 @@ export async function updateReminderSettingsAction(
   const user = await getCurrentUser();
   if (!user)
     return { status: "error", message: "Session শেষ হয়েছে। আবার প্রবেশ করুন।" };
+  const endOfDayTime = formData.get("endOfDayTime");
+  const dailySummaryTime = formData.get("dailySummaryTime");
   const parsed = reminderSettingsSchema.safeParse({
     activity: formData.get("activity") === "on",
     endOfDay: formData.get("endOfDay") === "on",
     dailySummary: formData.get("dailySummary") === "on",
     streak: formData.get("streak") === "on",
-    endOfDayTime: formData.get("endOfDayTime"),
-    dailySummaryTime: formData.get("dailySummaryTime"),
+    endOfDayTime:
+      typeof endOfDayTime === "string" && endOfDayTime
+        ? endOfDayTime
+        : user.reminders.endOfDayTime,
+    dailySummaryTime:
+      typeof dailySummaryTime === "string" && dailySummaryTime
+        ? dailySummaryTime
+        : user.reminders.dailySummaryTime,
   });
   if (!parsed.success)
     return { status: "error", message: "Reminder-এর সময় ঠিকভাবে দিন।" };
