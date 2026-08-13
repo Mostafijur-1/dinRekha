@@ -49,14 +49,15 @@ authorization সংশ্লিষ্ট repository/service layer-এ থাক
 - Playwright: প্রধান browser journey, desktop ও mobile
 - GitHub Actions: format, lint, type-check, tests, production build ও E2E
 
-## Deferred scope
+## Product evolution
 
 Daily Activities ও recurrence slice সম্পন্ন; বিস্তারিত `docs/daily-activities.md`-এ। ২৪ ঘণ্টার
 Timeline foundation এবং history-based quick suggestions-ও সম্পন্ন; বিস্তারিত `docs/timeline.md`-এ।
 Daily/weekly Reports foundation explainable completion score, tracked time এবং category distribution
 দেখায়। Recurrence-aware streak ও ৩০টি সম্পূর্ণ দিনের consistency একই pure report engine boundary-তে
-হিসাব হয়; চলমান দিন অসম্পূর্ণ থাকলে আগের streak আগেভাগে ভাঙে না। Monthly reports, reminders,
-offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি। প্রতিটি Activity-এর
+হিসাব হয়; চলমান দিন অসম্পূর্ণ থাকলে আগের streak আগেভাগে ভাঙে না। Monthly/custom Reports, granular
+Reminder, recoverable account closure, PWA offline shell ও Web Push foundation সম্পন্ন। পূর্ণ offline
+mutation queue/conflict resolution এখনো defer করা—private data cache না করে online-first fallback রাখা হয়েছে। প্রতিটি Activity-এর
 owner-scoped dynamic report route ৩০ দিনের target/value trend দেখায়; definition না পেলে progress
 query না চালিয়ে not-found response দেয়। Reports-এর week/month/custom range policy pure module-এ
 থাকে; custom query সর্বোচ্চ ৯০ দিনে bounded এবং ভবিষ্যৎ end date ব্যবহারকারীর আজকের দিনে clamp হয়।

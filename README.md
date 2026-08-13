@@ -45,15 +45,19 @@ npm run test:e2e
 
 ## Environment
 
-| Variable               | Visibility | Purpose                           |
-| ---------------------- | ---------- | --------------------------------- |
-| `NEXT_PUBLIC_APP_URL`  | Public     | Metadata ও canonical absolute URL |
-| `MONGODB_URI`          | Secret     | MongoDB connection string         |
-| `MONGODB_DB_NAME`      | Server     | Database name                     |
-| `AUTH_SECRET`          | Secret     | Session signing/encryption secret |
-| `NEXTAUTH_URL`         | Server     | Authentication-এর canonical URL   |
-| `GOOGLE_CLIENT_ID`     | Server     | Google OAuth client ID            |
-| `GOOGLE_CLIENT_SECRET` | Secret     | Google OAuth client secret        |
+| Variable                       | Visibility | Purpose                               |
+| ------------------------------ | ---------- | ------------------------------------- |
+| `NEXT_PUBLIC_APP_URL`          | Public     | Metadata ও canonical absolute URL     |
+| `MONGODB_URI`                  | Secret     | MongoDB connection string             |
+| `MONGODB_DB_NAME`              | Server     | Database name                         |
+| `AUTH_SECRET`                  | Secret     | Session signing/encryption secret     |
+| `NEXTAUTH_URL`                 | Server     | Authentication-এর canonical URL       |
+| `GOOGLE_CLIENT_ID`             | Server     | Google OAuth client ID                |
+| `GOOGLE_CLIENT_SECRET`         | Secret     | Google OAuth client secret            |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Public     | Browser Push subscription key         |
+| `VAPID_PRIVATE_KEY`            | Secret     | Web Push signing key                  |
+| `VAPID_SUBJECT`                | Server     | VAPID contact (`mailto:`/HTTPS)       |
+| `CRON_SECRET`                  | Secret     | Notification dispatcher authorization |
 
 `NEXT_PUBLIC_APP_URL`-এ `https://example.com` অথবা `example.vercel.app`—দুই
 format-ই গ্রহণযোগ্য। Variable-টি না থাকলে বর্তমান Vercel deployment-এর
@@ -67,6 +71,14 @@ environment আলাদাভাবে configure করতে হবে।
 `main` production branch। Feature branch বা pull request Vercel Preview তৈরি করবে। CI,
 Preview যাচাই ও অনুমোদনের পরই production promotion করা উচিত। GitHub push এবং Vercel
 deployment আলাদা ঘটনা।
+
+## বর্তমান product coverage
+
+Timeline ও smart suggestions, reusable Daily Activities, explainable daily/weekly/monthly/custom Reports,
+streak ও Activity history, Google-only authentication, account export/closure, many-to-many Connections,
+directional sharing, granular Dashboard Reminder, installable PWA/Web Push foundation এবং privacy-safe
+readiness logging বাস্তবায়িত। Background Push delivery-এর scheduler plan/configuration এবং offline mutation
+sync deployment/product follow-up; private data service-worker cache-এ রাখা হয় না।
 
 আরও তথ্য:
 

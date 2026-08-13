@@ -6,7 +6,10 @@ import { requestId, writeLog } from "@/lib/observability/logger";
 describe("privacy-safe logger", () => {
   it("reuses a bounded request id", () => {
     expect(requestId("trace-1")).toBe("trace-1");
-    expect(requestId("x".repeat(200))).toHaveLength(100);
+    expect(requestId("x".repeat(200))).toMatch(
+      /^[a-f\d]{8}-[a-f\d]{4}-4[a-f\d]{3}-[89ab][a-f\d]{3}-[a-f\d]{12}$/,
+    );
+    expect(requestId("user@example.com private text")).not.toContain("@");
   });
 
   it("emits structured allowlisted data", () => {

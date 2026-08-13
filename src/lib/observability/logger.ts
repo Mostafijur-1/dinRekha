@@ -15,7 +15,9 @@ type SafeLog = {
 };
 
 export function requestId(header?: string | null) {
-  return header?.slice(0, 100) || randomUUID();
+  return header && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/.test(header)
+    ? header
+    : randomUUID();
 }
 
 export function writeLog(level: "info" | "warn" | "error", data: SafeLog) {
