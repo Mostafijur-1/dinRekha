@@ -55,6 +55,10 @@ npm run test:e2e
 | `GOOGLE_CLIENT_ID`     | Server     | Google OAuth client ID            |
 | `GOOGLE_CLIENT_SECRET` | Secret     | Google OAuth client secret        |
 
+`NEXT_PUBLIC_APP_URL`-এ `https://example.com` অথবা `example.vercel.app`—দুই
+format-ই গ্রহণযোগ্য। Variable-টি না থাকলে বর্তমান Vercel deployment-এর
+`VERCEL_URL` ব্যবহার করা হয়।
+
 আসল secret কখনো Git-এ commit করা যাবে না। Vercel Development, Preview ও Production
 environment আলাদাভাবে configure করতে হবে।
 
