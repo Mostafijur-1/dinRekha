@@ -72,3 +72,7 @@ fields বাদ থাকে; authenticated response private/no-store।
 Account closure recoverable দুই-ধাপের lifecycle: exact current email confirmation-এর পর user status
 `pending_deletion` হয় এবং sessionVersion বাড়ায়, ফলে সব session অকার্যকর হয়। Automated hard purge
 retention policy ছাড়া চালু নয়; এই boundary accidental irreversible deletion এড়ায়।
+
+Connections many-to-many canonical user pair দিয়ে model করা। Invitation-এর ১৯২-bit raw token শুধু
+creator-এর response-এ ফেরে; database-এ SHA-256 hash, expiry ও single-use state থাকে। Connection নিজে
+কোনো data access দেয় না—directional sharing policy আলাদা authorization layer।

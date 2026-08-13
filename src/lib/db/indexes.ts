@@ -6,6 +6,8 @@ import {
   oauthAccountsCollection,
   timelineEntriesCollection,
   usersCollection,
+  connectionInvitationsCollection,
+  connectionsCollection,
 } from "@/lib/db/collections";
 
 type IndexGlobal = typeof globalThis & {
@@ -15,12 +17,22 @@ type IndexGlobal = typeof globalThis & {
 const indexGlobal = globalThis as IndexGlobal;
 
 async function createIndexes(): Promise<void> {
-  const [users, accounts, activities, progress, timeline] = await Promise.all([
+  const [
+    users,
+    accounts,
+    activities,
+    progress,
+    timeline,
+    invitations,
+    connections,
+  ] = await Promise.all([
     usersCollection(),
     oauthAccountsCollection(),
     dailyActivitiesCollection(),
     dailyActivityProgressCollection(),
     timelineEntriesCollection(),
+    connectionInvitationsCollection(),
+    connectionsCollection(),
   ]);
 
   await Promise.all([
@@ -49,6 +61,30 @@ async function createIndexes(): Promise<void> {
     timeline.createIndex(
       { ownerId: 1, dateKey: 1, startMinute: 1 },
       { name: "timeline_owner_date_start" },
+    ),
+    invitations.createIndex(
+      { tokenHash: 1 },
+      { unique: true, name: "invite_token_unique" },
+    ),
+    invitations.createIndex(
+      { inviterId: 1, status: 1, expiresAt: 1, createdAt: -1 },
+      { name: "invite_owner_status_expiry" },
+    ),
+    invitations.createIndex(
+      { expiresAt: 1 },
+      { expireAfterSeconds: 7 * 24 * 60 * 60, name: "invite_expiry_cleanup" },
+    ),
+    connections.createIndex(
+      { userLowId: 1, userHighId: 1 },
+      { unique: true, name: "connection_pair_unique" },
+    ),
+    connections.createIndex(
+      { userHighId: 1, status: 1 },
+      { name: "connection_high_status" },
+    ),
+    connections.createIndex(
+      { userLowId: 1, status: 1 },
+      { name: "connection_low_status" },
     ),
     timeline.createIndex(
       { ownerId: 1, status: 1, dateKey: 1 },

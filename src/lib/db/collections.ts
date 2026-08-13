@@ -79,6 +79,28 @@ export type TimelineEntryDocument = {
   updatedAt: Date;
 };
 
+export type ConnectionInvitationDocument = {
+  _id: ObjectId;
+  inviterId: ObjectId;
+  tokenHash: string;
+  status: "active" | "used" | "revoked";
+  expiresAt: Date;
+  usedById?: ObjectId;
+  usedAt?: Date;
+  createdAt: Date;
+};
+
+export type ConnectionDocument = {
+  _id: ObjectId;
+  userLowId: ObjectId;
+  userHighId: ObjectId;
+  status: "active" | "disconnected";
+  createdById: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+  disconnectedAt?: Date;
+};
+
 export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDatabase()).collection<UserDocument>("users");
 }
@@ -113,4 +135,18 @@ export async function timelineEntriesCollection(): Promise<
   return (await getDatabase()).collection<TimelineEntryDocument>(
     "timelineEntries",
   );
+}
+
+export async function connectionInvitationsCollection(): Promise<
+  Collection<ConnectionInvitationDocument>
+> {
+  return (await getDatabase()).collection<ConnectionInvitationDocument>(
+    "connectionInvitations",
+  );
+}
+
+export async function connectionsCollection(): Promise<
+  Collection<ConnectionDocument>
+> {
+  return (await getDatabase()).collection<ConnectionDocument>("connections");
 }

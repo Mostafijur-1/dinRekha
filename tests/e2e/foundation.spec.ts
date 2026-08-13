@@ -77,3 +77,18 @@ test("Account export authentication ছাড়া data দেয় না", async (
   expect(response.status()).toBe(401);
   expect(response.headers()["cache-control"]).toBeUndefined();
 });
+
+test("Connections authentication ছাড়া খোলা যায় না", async ({ page }) => {
+  await page.goto("/connections");
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe("/connections");
+});
+
+test("Invite code sign-in callback-এ সংরক্ষিত থাকে", async ({ page }) => {
+  const code = "a".repeat(24);
+  await page.goto(`/connections/invite?code=${code}`);
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe(
+    `/connections/invite?code=${code}`,
+  );
+});

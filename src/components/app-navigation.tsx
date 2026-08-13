@@ -8,24 +8,26 @@ const navigation = [
   { label: "Daily Activity", href: "/dashboard#daily-activities", icon: "✓" },
   { label: "Report", href: "/reports", icon: "⌁" },
   { label: "Settings", href: "/settings", icon: "⚙" },
+  { label: "Connections", href: "/connections", icon: "◎" },
 ] as const;
 
 function isActive(
-  active: "dashboard" | "reports" | "settings",
+  active: "dashboard" | "reports" | "settings" | "connections",
   item: (typeof navigation)[number],
   index: number,
 ) {
   return (
     (active === "dashboard" && index === 0) ||
     (active === "reports" && item.href === "/reports") ||
-    (active === "settings" && item.href === "/settings")
+    (active === "settings" && item.href === "/settings") ||
+    (active === "connections" && item.href === "/connections")
   );
 }
 
 export function AppNavigation({
   active = "dashboard",
 }: {
-  active?: "dashboard" | "reports" | "settings";
+  active?: "dashboard" | "reports" | "settings" | "connections";
 }) {
   return (
     <>

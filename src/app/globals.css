@@ -1314,6 +1314,85 @@ a {
 .settings-delete-form button {
   width: fit-content;
 }
+.connections-layout {
+  width: min(calc(100% - 3rem), var(--page-width));
+  margin-inline: auto;
+  padding-bottom: 5rem;
+}
+.connection-panel {
+  margin-bottom: 1rem;
+  padding: 1.3rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+.connection-invite-box {
+  display: grid;
+  gap: 0.75rem;
+}
+.connection-invite-result {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+}
+.connection-invite-result span,
+.connection-invite-result small {
+  color: var(--text-soft);
+  font-size: 0.68rem;
+}
+.connection-invite-result code {
+  overflow-wrap: anywhere;
+  color: var(--brand);
+  font-size: 0.7rem;
+}
+.connection-list {
+  display: grid;
+  gap: 0.65rem;
+}
+.connection-list article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.connection-list article strong,
+.connection-list article span {
+  display: block;
+}
+.connection-list article span {
+  margin-top: 0.2rem;
+  color: var(--text-faint);
+  font-size: 0.65rem;
+}
+.connection-invite-page {
+  width: min(calc(100% - 2rem), 38rem);
+  min-height: calc(100vh - 8rem);
+  margin-inline: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+}
+.connection-invite-page > span {
+  color: var(--brand);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.connection-invite-page h1 {
+  margin: 0.7rem 0;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+.connection-invite-page p {
+  color: var(--text-soft);
+  line-height: 1.8;
+}
 .timeline-creator {
   margin-bottom: 1rem;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
@@ -2326,7 +2405,7 @@ a {
     inset: auto 0 0;
     min-height: 4.55rem;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     padding: 0.45rem max(0.75rem, env(safe-area-inset-right))
       max(0.45rem, env(safe-area-inset-bottom))
       max(0.75rem, env(safe-area-inset-left));
@@ -2362,6 +2441,13 @@ a {
   }
   .settings-layout {
     width: min(calc(100% - 2rem), var(--page-width));
+  }
+  .connections-layout {
+    width: min(calc(100% - 2rem), var(--page-width));
+  }
+  .connection-list article {
+    align-items: stretch;
+    flex-direction: column;
   }
   .reports-layout {
     width: min(calc(100% - 2rem), var(--page-width));
