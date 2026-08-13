@@ -1,0 +1,43 @@
+import { ObjectId } from "mongodb";
+import { describe, expect, it, vi } from "vitest";
+
+const { activitiesFind, progressFind, timelineFind, toArray } = vi.hoisted(
+  () => ({
+    activitiesFind: vi.fn(),
+    progressFind: vi.fn(),
+    timelineFind: vi.fn(),
+    toArray: vi.fn(async () => []),
+  }),
+);
+vi.mock("@/lib/db/collections", () => ({
+  dailyActivitiesCollection: vi.fn(async () => ({ find: activitiesFind })),
+  dailyActivityProgressCollection: vi.fn(async () => ({ find: progressFind })),
+  timelineEntriesCollection: vi.fn(async () => ({ find: timelineFind })),
+}));
+vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
+
+import { getProductivityReport } from "@/features/reports/repository";
+
+describe("reports repository", () => {
+  it("scopes every report query to its authenticated owner", async () => {
+    activitiesFind.mockReturnValue({ toArray });
+    progressFind.mockReturnValue({ toArray });
+    timelineFind.mockReturnValue({ toArray });
+    const ownerId = new ObjectId();
+    await getProductivityReport(
+      ownerId.toHexString(),
+      ["2026-08-07", "2026-08-13"],
+      "2026-08-13",
+      600,
+    );
+    expect(activitiesFind).toHaveBeenCalledWith(
+      expect.objectContaining({ ownerId }),
+    );
+    expect(progressFind).toHaveBeenCalledWith(
+      expect.objectContaining({ ownerId }),
+    );
+    expect(timelineFind).toHaveBeenCalledWith(
+      expect.objectContaining({ ownerId }),
+    );
+  });
+});

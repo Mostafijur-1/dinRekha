@@ -52,5 +52,7 @@ authorization সংশ্লিষ্ট repository/service layer-এ থাক
 ## Deferred scope
 
 Daily Activities ও recurrence slice সম্পন্ন; বিস্তারিত `docs/daily-activities.md`-এ। ২৪ ঘণ্টার
-Timeline foundation-ও সম্পন্ন; বিস্তারিত `docs/timeline.md`-এ। Reports, reminders, smart
-suggestions, offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি।
+Timeline foundation এবং history-based quick suggestions-ও সম্পন্ন; বিস্তারিত `docs/timeline.md`-এ।
+Daily/weekly Reports foundation explainable completion score, tracked time এবং category distribution
+দেখায়। Monthly reports, reminders, offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে
+যোগ হয়নি।

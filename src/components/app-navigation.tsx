@@ -4,11 +4,16 @@ import { Brand } from "@/components/brand";
 
 const navigation = [
   { label: "আজ", href: "/dashboard", icon: "⌂" },
-  { label: "Timeline", href: "#timeline", icon: "◷" },
-  { label: "Daily Activity", href: "#daily-activities", icon: "✓" },
+  { label: "Timeline", href: "/dashboard#timeline", icon: "◷" },
+  { label: "Daily Activity", href: "/dashboard#daily-activities", icon: "✓" },
+  { label: "Report", href: "/reports", icon: "⌁" },
 ] as const;
 
-export function AppNavigation() {
+export function AppNavigation({
+  active = "dashboard",
+}: {
+  active?: "dashboard" | "reports";
+}) {
   return (
     <>
       <aside className="app-sidebar">
@@ -16,7 +21,12 @@ export function AppNavigation() {
         <nav className="app-nav" aria-label="Application navigation">
           {navigation.map((item, index) => (
             <Link
-              className={index === 0 ? "is-active" : ""}
+              className={
+                (active === "dashboard" && index === 0) ||
+                (active === "reports" && item.href === "/reports")
+                  ? "is-active"
+                  : ""
+              }
               href={item.href}
               key={item.label}
             >
@@ -24,11 +34,6 @@ export function AppNavigation() {
               {item.label}
             </Link>
           ))}
-          <span className="app-nav-disabled" aria-disabled="true">
-            <span aria-hidden="true">⌁</span>
-            Report
-            <small>শীঘ্রই</small>
-          </span>
         </nav>
         <div className="app-sidebar-note">
           <span>ব্যক্তিগত · নিরাপদ</span>
@@ -42,7 +47,12 @@ export function AppNavigation() {
       >
         {navigation.map((item, index) => (
           <Link
-            className={index === 0 ? "is-active" : ""}
+            className={
+              (active === "dashboard" && index === 0) ||
+              (active === "reports" && item.href === "/reports")
+                ? "is-active"
+                : ""
+            }
             href={item.href}
             key={item.label}
           >

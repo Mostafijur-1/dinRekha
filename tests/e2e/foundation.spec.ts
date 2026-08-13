@@ -34,3 +34,11 @@ test("নির্বাচিত দিনের protected URL sign-in callback
     "/dashboard?date=2026-08-01",
   );
 });
+
+test("Report page authentication ছাড়া খোলা যায় না", async ({ page }) => {
+  await page.goto("/reports");
+
+  await expect(page).toHaveURL(/\/auth\/sign-in/);
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe("/reports");
+});
