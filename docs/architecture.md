@@ -51,4 +51,5 @@ authorization সংশ্লিষ্ট repository/service layer-এ থাক
 
 ## Deferred scope
 
-Timeline, Daily Activities, reports ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি।
+Daily Activities-এর প্রথম production slice সম্পন্ন; বিস্তারিত `docs/daily-activities.md`-এ। Timeline,
+reports, reminders, recurrence, offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি।

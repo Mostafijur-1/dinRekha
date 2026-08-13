@@ -68,4 +68,5 @@ deployment আলাদা ঘটনা।
 
 - [Architecture](docs/architecture.md)
 - [Authentication](docs/authentication.md)
+- [Daily Activities](docs/daily-activities.md)
 - [Deployment](docs/deployment.md)

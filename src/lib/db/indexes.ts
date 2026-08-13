@@ -1,6 +1,11 @@
 import "server-only";
 
-import { oauthAccountsCollection, usersCollection } from "@/lib/db/collections";
+import {
+  dailyActivitiesCollection,
+  dailyActivityProgressCollection,
+  oauthAccountsCollection,
+  usersCollection,
+} from "@/lib/db/collections";
 
 type IndexGlobal = typeof globalThis & {
   __chondoIndexPromise?: Promise<void>;
@@ -9,9 +14,11 @@ type IndexGlobal = typeof globalThis & {
 const indexGlobal = globalThis as IndexGlobal;
 
 async function createIndexes(): Promise<void> {
-  const [users, accounts] = await Promise.all([
+  const [users, accounts, activities, progress] = await Promise.all([
     usersCollection(),
     oauthAccountsCollection(),
+    dailyActivitiesCollection(),
+    dailyActivityProgressCollection(),
   ]);
 
   await Promise.all([
@@ -25,6 +32,18 @@ async function createIndexes(): Promise<void> {
       { unique: true, name: "oauth_provider_account_unique" },
     ),
     accounts.createIndex({ userId: 1 }, { name: "oauth_user" }),
+    activities.createIndex(
+      { ownerId: 1, status: 1, sortOrder: 1, createdAt: 1 },
+      { name: "daily_activity_owner_list" },
+    ),
+    progress.createIndex(
+      { ownerId: 1, activityId: 1, dateKey: 1 },
+      { unique: true, name: "daily_progress_owner_activity_date_unique" },
+    ),
+    progress.createIndex(
+      { ownerId: 1, dateKey: 1 },
+      { name: "daily_progress_owner_date" },
+    ),
   ]);
 }
 

@@ -31,6 +31,36 @@ export type OAuthAccountDocument = {
   updatedAt: Date;
 };
 
+export type ActivityMeasurement =
+  "boolean" | "counter" | "duration" | "quantity";
+
+export type DailyActivityDocument = {
+  _id: ObjectId;
+  ownerId: ObjectId;
+  name: string;
+  description?: string;
+  category: string;
+  measurement: ActivityMeasurement;
+  target: number;
+  unit?: string;
+  status: "active" | "archived";
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+  archivedAt?: Date;
+};
+
+export type DailyActivityProgressDocument = {
+  _id: ObjectId;
+  ownerId: ObjectId;
+  activityId: ObjectId;
+  dateKey: string;
+  value: number;
+  completedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDatabase()).collection<UserDocument>("users");
 }
@@ -40,5 +70,21 @@ export async function oauthAccountsCollection(): Promise<
 > {
   return (await getDatabase()).collection<OAuthAccountDocument>(
     "oauthAccounts",
+  );
+}
+
+export async function dailyActivitiesCollection(): Promise<
+  Collection<DailyActivityDocument>
+> {
+  return (await getDatabase()).collection<DailyActivityDocument>(
+    "dailyActivities",
+  );
+}
+
+export async function dailyActivityProgressCollection(): Promise<
+  Collection<DailyActivityProgressDocument>
+> {
+  return (await getDatabase()).collection<DailyActivityProgressDocument>(
+    "dailyActivityProgress",
   );
 }

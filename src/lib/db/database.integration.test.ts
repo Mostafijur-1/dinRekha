@@ -55,5 +55,74 @@ describeWithDatabase("MongoDB authentication persistence", () => {
       (index) => index.name === "oauth_provider_account_unique",
     );
     expect(identityIndex?.unique).toBe(true);
+
+    const activityIndexes = await database
+      .collection("dailyActivities")
+      .indexes();
+    expect(
+      activityIndexes.some(
+        (index) => index.name === "daily_activity_owner_list",
+      ),
+    ).toBe(true);
+
+    const progressIndexes = await database
+      .collection("dailyActivityProgress")
+      .indexes();
+    expect(
+      progressIndexes.find(
+        (index) => index.name === "daily_progress_owner_activity_date_unique",
+      )?.unique,
+    ).toBe(true);
+  });
+
+  it("stores daily progress and rejects a different owner", async () => {
+    const ownerId = new ObjectId();
+    const otherOwnerId = new ObjectId();
+    const activityId = new ObjectId();
+    const now = new Date();
+    await client.db(databaseName).collection("dailyActivities").insertOne({
+      _id: activityId,
+      ownerId,
+      name: "হাঁটা",
+      category: "স্বাস্থ্য",
+      measurement: "duration",
+      target: 30,
+      unit: "মিনিট",
+      status: "active",
+      sortOrder: 1,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const { listDailyActivities, setDailyProgress } =
+      await import("@/features/daily-activities/repository");
+    await expect(
+      setDailyProgress(
+        otherOwnerId.toHexString(),
+        activityId.toHexString(),
+        "2026-08-13",
+        20,
+      ),
+    ).resolves.toBe(false);
+    await expect(
+      setDailyProgress(
+        ownerId.toHexString(),
+        activityId.toHexString(),
+        "2026-08-13",
+        30,
+      ),
+    ).resolves.toBe(true);
+
+    const activities = await listDailyActivities(
+      ownerId.toHexString(),
+      "2026-08-13",
+    );
+    expect(activities).toEqual([
+      expect.objectContaining({
+        id: activityId.toHexString(),
+        value: 30,
+        completed: true,
+      }),
+    ]);
   });
 });

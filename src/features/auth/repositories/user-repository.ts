@@ -18,6 +18,7 @@ export type SafeUser = {
   emailVerifiedAt?: Date;
   status: "active" | "disabled" | "pending_deletion";
   sessionVersion: number;
+  timezone: string;
 };
 
 function toSafeUser(user: UserDocument | null): SafeUser | null {
@@ -30,6 +31,7 @@ function toSafeUser(user: UserDocument | null): SafeUser | null {
     emailVerifiedAt: user.emailVerifiedAt,
     status: user.status,
     sessionVersion: user.sessionVersion ?? 1,
+    timezone: user.profile.timezone,
   };
 }
 
