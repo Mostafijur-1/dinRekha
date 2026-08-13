@@ -1,9 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { type FormEvent, useState } from "react";
 
 import type { ReminderSettings } from "@/features/auth/repositories/user-repository";
-import { updateReminderSettingsAction } from "@/features/notifications/actions";
 import { initialSettingsActionState } from "@/features/settings/action-state";
 
 export function ReminderSettingsForm({
@@ -11,12 +10,47 @@ export function ReminderSettingsForm({
 }: {
   settings: ReminderSettings;
 }) {
-  const [state, action, pending] = useActionState(
-    updateReminderSettingsAction,
-    initialSettingsActionState,
-  );
+  const [state, setState] = useState(initialSettingsActionState);
+  const [pending, setPending] = useState(false);
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPending(true);
+    setState(initialSettingsActionState);
+    const data = new FormData(event.currentTarget);
+    try {
+      const response = await fetch("/api/settings/reminders", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          activity: data.get("activity") === "on",
+          endOfDay: data.get("endOfDay") === "on",
+          dailySummary: data.get("dailySummary") === "on",
+          streak: data.get("streak") === "on",
+          endOfDayTime: data.get("endOfDayTime"),
+          dailySummaryTime: data.get("dailySummaryTime"),
+        }),
+      });
+      const result = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+      setState({
+        status: response.ok ? "success" : "error",
+        message:
+          result?.message ||
+          "Reminder Settings সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+      });
+    } catch {
+      setState({
+        status: "error",
+        message: "Network সমস্যার কারণে সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+      });
+    } finally {
+      setPending(false);
+    }
+  }
   return (
-    <form action={action} className="settings-form reminder-settings-form">
+    <form onSubmit={save} className="settings-form reminder-settings-form">
       <label className="activity-reminder-toggle">
         <input
           type="checkbox"
