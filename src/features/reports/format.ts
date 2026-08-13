@@ -15,6 +15,16 @@ export function reportDateLabel(dateKey: string): string {
   }).format(new Date(`${dateKey}T12:00:00Z`));
 }
 
+export function reportRangeLabel(start: string, end: string): string {
+  const formatter = new Intl.DateTimeFormat("bn-BD", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  return `${formatter.format(new Date(`${start}T12:00:00Z`))} – ${formatter.format(new Date(`${end}T12:00:00Z`))}`;
+}
+
 export function activityValueLabel(
   value: number,
   measurement: "boolean" | "counter" | "duration" | "quantity",

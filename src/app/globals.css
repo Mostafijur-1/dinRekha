@@ -883,6 +883,68 @@ a {
   color: var(--text-soft);
   line-height: 1.7;
 }
+.report-range-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: -1rem 0 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+}
+.report-range-controls nav,
+.report-range-controls form {
+  display: flex;
+  align-items: end;
+  gap: 0.5rem;
+}
+.report-range-controls nav a,
+.report-range-controls button {
+  min-height: 2.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.report-range-controls nav a.is-active,
+.report-range-controls button {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: white;
+}
+.report-range-controls label span {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--text-faint);
+  font-size: 0.6rem;
+  font-weight: 750;
+}
+.report-range-controls input {
+  min-height: 2.55rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.72rem;
+}
+.report-range-controls > small {
+  margin-left: auto;
+  color: var(--text-faint);
+  font-size: 0.62rem;
+}
 .report-metric-grid {
   display: grid;
   grid-template-columns: 1.15fr 1fr 1fr;
@@ -935,6 +997,11 @@ a {
   gap: 0.7rem;
   align-items: end;
   padding-top: 1rem;
+}
+.report-range-chart {
+  overflow-x: auto;
+  align-items: end;
+  padding-bottom: 0.75rem;
 }
 .report-day-chart article {
   min-width: 0;
@@ -2035,6 +2102,24 @@ a {
   }
   .report-streaks {
     grid-template-columns: 1fr;
+  }
+  .report-range-controls,
+  .report-range-controls form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .report-range-controls nav {
+    width: 100%;
+  }
+  .report-range-controls nav a {
+    flex: 1;
+  }
+  .report-range-controls input,
+  .report-range-controls button {
+    width: 100%;
+  }
+  .report-range-controls > small {
+    margin-left: 0;
   }
 }
 

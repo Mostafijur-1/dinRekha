@@ -8,23 +8,39 @@ import {
   dateKeyForTimezone,
   shiftDateKey,
 } from "@/features/daily-activities/date";
-import { minutesLabel, reportDateLabel } from "@/features/reports/format";
+import {
+  minutesLabel,
+  reportDateLabel,
+  reportRangeLabel,
+} from "@/features/reports/format";
+import { resolveReportRange } from "@/features/reports/range";
 import { getProductivityReport } from "@/features/reports/repository";
 import { currentMinuteForTimezone } from "@/features/timeline/time";
 import { getCurrentUser } from "@/lib/auth";
 
-export const metadata = { title: "সাপ্তাহিক রিপোর্ট" };
+export const metadata = { title: "Productivity রিপোর্ট" };
 export const dynamic = "force-dynamic";
 
-export default async function ReportsPage() {
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string; start?: string; end?: string }>;
+}) {
+  const query = await searchParams;
   const user = await getCurrentUser();
-  if (!user) redirect("/auth/sign-in?callbackUrl=%2Freports");
+  if (!user) {
+    const params = new URLSearchParams();
+    if (query.range) params.set("range", query.range);
+    if (query.start) params.set("start", query.start);
+    if (query.end) params.set("end", query.end);
+    const callbackUrl = params.size ? `/reports?${params}` : "/reports";
+    redirect(`/auth/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }
 
   const now = new Date();
   const todayKey = dateKeyForTimezone(now, user.timezone);
-  const dateKeys = Array.from({ length: 7 }, (_, index) =>
-    shiftDateKey(todayKey, index - 6),
-  ).filter((dateKey): dateKey is string => Boolean(dateKey));
+  const range = resolveReportRange(query, todayKey);
+  const dateKeys = range.dateKeys;
   const historyDateKeys = Array.from({ length: 31 }, (_, index) =>
     shiftDateKey(todayKey, index - 30),
   ).filter((dateKey): dateKey is string => Boolean(dateKey));
@@ -51,7 +67,7 @@ export default async function ReportsPage() {
           </div>
           <div className="app-header-context">
             <span>ব্যক্তিগত রিপোর্ট</span>
-            <strong>শেষ ৭ দিনের চিত্র</strong>
+            <strong>{reportRangeLabel(range.start, range.end)}</strong>
           </div>
           <div className="shell-account">
             <span>{user.name}</span>
@@ -69,7 +85,57 @@ export default async function ReportsPage() {
             </p>
           </section>
 
-          <section className="report-metric-grid" aria-label="সাপ্তাহিক সারাংশ">
+          <section
+            className="report-range-controls"
+            aria-label="Report-এর সময়সীমা"
+          >
+            <nav>
+              <Link
+                className={range.mode === "week" ? "is-active" : ""}
+                href="/reports"
+              >
+                শেষ ৭ দিন
+              </Link>
+              <Link
+                className={range.mode === "month" ? "is-active" : ""}
+                href="/reports?range=month"
+              >
+                এই মাস
+              </Link>
+            </nav>
+            <form action="/reports" method="get">
+              <input type="hidden" name="range" value="custom" />
+              <label>
+                <span>শুরু</span>
+                <input
+                  type="date"
+                  name="start"
+                  max={todayKey}
+                  defaultValue={
+                    range.mode === "custom" ? range.start : undefined
+                  }
+                  required
+                />
+              </label>
+              <label>
+                <span>শেষ</span>
+                <input
+                  type="date"
+                  name="end"
+                  max={todayKey}
+                  defaultValue={range.mode === "custom" ? range.end : todayKey}
+                  required
+                />
+              </label>
+              <button type="submit">Report দেখুন</button>
+            </form>
+            <small>Custom range সর্বোচ্চ ৯০ দিন।</small>
+          </section>
+
+          <section
+            className="report-metric-grid"
+            aria-label="নির্বাচিত সময়ের সারাংশ"
+          >
             <article className="report-score-card">
               <span>Productivity Score</span>
               <strong>
@@ -84,14 +150,20 @@ export default async function ReportsPage() {
             <article>
               <span>মোট track করা সময়</span>
               <strong>{minutesLabel(report.weekly.trackedMinutes)}</strong>
-              <p>শেষ ৭ দিনের Timeline entry থেকে।</p>
+              <p>
+                {dateKeys.length.toLocaleString("bn-BD")} দিনের Timeline entry
+                থেকে।
+              </p>
             </article>
             <article>
-              <span>আজ track করা</span>
+              <span>
+                {range.end === todayKey
+                  ? "আজ track করা"
+                  : `${reportDateLabel(range.end)} track করা`}
+              </span>
               <strong>{minutesLabel(report.today.trackedMinutes)}</strong>
               <p>
-                {minutesLabel(report.today.untrackedMinutes)} এখনো track করা
-                হয়নি।
+                {minutesLabel(report.today.untrackedMinutes)} track করা হয়নি।
               </p>
             </article>
           </section>
@@ -104,7 +176,12 @@ export default async function ReportsPage() {
               </div>
               <p>Bar = track করা সময়; নিচে target completion।</p>
             </div>
-            <div className="report-day-chart">
+            <div
+              className="report-day-chart report-range-chart"
+              style={{
+                gridTemplateColumns: `repeat(${dateKeys.length}, minmax(3.2rem, 1fr))`,
+              }}
+            >
               {report.days.map((day) => (
                 <article key={day.dateKey}>
                   <div className="report-bar-track" aria-hidden="true">
@@ -231,8 +308,8 @@ export default async function ReportsPage() {
           <aside className="report-explanation">
             <strong>Score কীভাবে হিসাব হয়েছে?</strong>
             <p>
-              শেষ ৭ দিনে নির্ধারিত Daily Activity-গুলোর মধ্যে target পূরণ হওয়া
-              Activity-এর শতাংশ। বিশ্রাম বা untracked সময় score কমায় না।
+              নির্বাচিত সময়ে নির্ধারিত Daily Activity-গুলোর মধ্যে target পূরণ
+              হওয়া Activity-এর শতাংশ। বিশ্রাম বা untracked সময় score কমায় না।
             </p>
             <p>
               Current streak-এ আজকের target এখনো পূরণ না হলেও গতকাল পর্যন্ত

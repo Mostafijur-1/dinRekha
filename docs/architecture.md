@@ -58,4 +58,5 @@ Daily/weekly Reports foundation explainable completion score, tracked time এ�
 হিসাব হয়; চলমান দিন অসম্পূর্ণ থাকলে আগের streak আগেভাগে ভাঙে না। Monthly reports, reminders,
 offline sync ও user-facing account deletion এখনও ইচ্ছাকৃতভাবে যোগ হয়নি। প্রতিটি Activity-এর
 owner-scoped dynamic report route ৩০ দিনের target/value trend দেখায়; definition না পেলে progress
-query না চালিয়ে not-found response দেয়।
+query না চালিয়ে not-found response দেয়। Reports-এর week/month/custom range policy pure module-এ
+থাকে; custom query সর্বোচ্চ ৯০ দিনে bounded এবং ভবিষ্যৎ end date ব্যবহারকারীর আজকের দিনে clamp হয়।

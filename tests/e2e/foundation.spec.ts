@@ -43,6 +43,15 @@ test("Report page authentication ছাড়া খোলা যায় না", as
   expect(currentUrl.searchParams.get("callbackUrl")).toBe("/reports");
 });
 
+test("Report range sign-in callback-এ সংরক্ষিত থাকে", async ({ page }) => {
+  await page.goto("/reports?range=custom&start=2026-08-01&end=2026-08-13");
+
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe(
+    "/reports?range=custom&start=2026-08-01&end=2026-08-13",
+  );
+});
+
 test("Activity history URL authentication callback-এ থাকে", async ({
   page,
 }) => {
