@@ -42,12 +42,25 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
+          set +e
           for attempt in 1 2 3; do
             npm ci \
               --fetch-retries=5 \
               --fetch-retry-mintimeout=10000 \
-              --fetch-retry-maxtimeout=60000 && exit 0
+              --fetch-retry-maxtimeout=60000 2>&1 | tee "npm-ci-attempt-${attempt}.log"
+            install_status=${PIPESTATUS[0]}
+            if [ "$install_status" -eq 0 ]; then
+              exit 0
+            fi
             if [ "$attempt" -eq 3 ]; then
+              {
+                echo "### Dependency installation failure"
+                echo '```text'
+                tail -n 80 "npm-ci-attempt-${attempt}.log"
+                echo '```'
+              } >> "$GITHUB_STEP_SUMMARY"
+              error_message=$(tail -n 30 "npm-ci-attempt-${attempt}.log" | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+              echo "::error title=Dependency installation failure::$error_message"
               exit 1
             fi
             sleep $((attempt * 10))
