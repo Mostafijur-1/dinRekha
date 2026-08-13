@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/collections";
 import { ensureDatabaseIndexes } from "@/lib/db/indexes";
 import { normalizeEmail } from "@/lib/security/email";
+import type { ProfileSettingsInput } from "@/features/settings/schema";
 
 export type SafeUser = {
   id: string;
@@ -140,4 +141,24 @@ export async function markAccountForDeletion(userId: string): Promise<boolean> {
     { $set: { status: "pending_deletion", deletedAt: now, updatedAt: now } },
   );
   return result.modifiedCount === 1;
+}
+
+export async function updateUserProfile(
+  userId: string,
+  input: ProfileSettingsInput,
+): Promise<boolean> {
+  if (!ObjectId.isValid(userId)) return false;
+  const result = await (
+    await usersCollection()
+  ).updateOne(
+    { _id: new ObjectId(userId), status: "active" },
+    {
+      $set: {
+        name: input.name,
+        "profile.timezone": input.timezone,
+        updatedAt: new Date(),
+      },
+    },
+  );
+  return result.matchedCount === 1;
 }

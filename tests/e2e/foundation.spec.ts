@@ -64,3 +64,10 @@ test("Activity history URL authentication callback-এ থাকে", async ({
     `/reports/activities/${activityId}`,
   );
 });
+
+test("Settings authentication ছাড়া খোলা যায় না", async ({ page }) => {
+  await page.goto("/settings");
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.pathname).toBe("/auth/sign-in");
+  expect(currentUrl.searchParams.get("callbackUrl")).toBe("/settings");
+});

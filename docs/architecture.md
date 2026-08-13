@@ -60,3 +60,7 @@ offline sync ও user-facing account deletion এখনও ইচ্ছাকৃ
 owner-scoped dynamic report route ৩০ দিনের target/value trend দেখায়; definition না পেলে progress
 query না চালিয়ে not-found response দেয়। Reports-এর week/month/custom range policy pure module-এ
 থাকে; custom query সর্বোচ্চ ৯০ দিনে bounded এবং ভবিষ্যৎ end date ব্যবহারকারীর আজকের দিনে clamp হয়।
+
+Settings-এর authenticated server action শুধু validated display name ও allowlisted IANA timezone update
+করে। Google email/identity read-only এবং form payload দিয়ে পরিবর্তনযোগ্য নয়। Timezone পরিবর্তন পরের
+request থেকে date/time boundary-তে কার্যকর হয়।

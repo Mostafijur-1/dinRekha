@@ -7,12 +7,25 @@ const navigation = [
   { label: "Timeline", href: "/dashboard#timeline", icon: "◷" },
   { label: "Daily Activity", href: "/dashboard#daily-activities", icon: "✓" },
   { label: "Report", href: "/reports", icon: "⌁" },
+  { label: "Settings", href: "/settings", icon: "⚙" },
 ] as const;
+
+function isActive(
+  active: "dashboard" | "reports" | "settings",
+  item: (typeof navigation)[number],
+  index: number,
+) {
+  return (
+    (active === "dashboard" && index === 0) ||
+    (active === "reports" && item.href === "/reports") ||
+    (active === "settings" && item.href === "/settings")
+  );
+}
 
 export function AppNavigation({
   active = "dashboard",
 }: {
-  active?: "dashboard" | "reports";
+  active?: "dashboard" | "reports" | "settings";
 }) {
   return (
     <>
@@ -21,12 +34,7 @@ export function AppNavigation({
         <nav className="app-nav" aria-label="Application navigation">
           {navigation.map((item, index) => (
             <Link
-              className={
-                (active === "dashboard" && index === 0) ||
-                (active === "reports" && item.href === "/reports")
-                  ? "is-active"
-                  : ""
-              }
+              className={isActive(active, item, index) ? "is-active" : ""}
               href={item.href}
               key={item.label}
             >
@@ -47,12 +55,7 @@ export function AppNavigation({
       >
         {navigation.map((item, index) => (
           <Link
-            className={
-              (active === "dashboard" && index === 0) ||
-              (active === "reports" && item.href === "/reports")
-                ? "is-active"
-                : ""
-            }
+            className={isActive(active, item, index) ? "is-active" : ""}
             href={item.href}
             key={item.label}
           >
