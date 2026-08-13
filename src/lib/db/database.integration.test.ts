@@ -73,6 +73,15 @@ describeWithDatabase("MongoDB authentication persistence", () => {
         (index) => index.name === "daily_progress_owner_activity_date_unique",
       )?.unique,
     ).toBe(true);
+
+    const timelineIndexes = await database
+      .collection("timelineEntries")
+      .indexes();
+    expect(
+      timelineIndexes.some(
+        (index) => index.name === "timeline_owner_date_start",
+      ),
+    ).toBe(true);
   });
 
   it("stores daily progress and rejects a different owner", async () => {
@@ -181,5 +190,50 @@ describeWithDatabase("MongoDB authentication persistence", () => {
         days: [1],
       }),
     ]);
+  });
+
+  it("stores owner-scoped Timeline entries and rejects overlaps", async () => {
+    const ownerId = new ObjectId();
+    const otherOwnerId = new ObjectId();
+    const { createTimelineEntry, deleteTimelineEntry, listTimelineEntries } =
+      await import("@/features/timeline/repository");
+    const first = await createTimelineEntry(
+      ownerId.toHexString(),
+      "2026-08-13",
+      {
+        activity: "পড়াশোনা",
+        category: "কাজ",
+        startTime: "09:00",
+        endTime: "10:00",
+        note: "অধ্যায় এক",
+      },
+    );
+    expect(first).toBe("success");
+    await expect(
+      createTimelineEntry(ownerId.toHexString(), "2026-08-13", {
+        activity: "হাঁটা",
+        category: "স্বাস্থ্য",
+        startTime: "09:30",
+        endTime: "10:30",
+        note: "",
+      }),
+    ).resolves.toBe("overlap");
+    const entries = await listTimelineEntries(
+      ownerId.toHexString(),
+      "2026-08-13",
+    );
+    expect(entries).toEqual([
+      expect.objectContaining({
+        activity: "পড়াশোনা",
+        startTime: "09:00",
+        endTime: "10:00",
+      }),
+    ]);
+    await expect(
+      deleteTimelineEntry(otherOwnerId.toHexString(), entries[0].id),
+    ).resolves.toBe(false);
+    await expect(
+      deleteTimelineEntry(ownerId.toHexString(), entries[0].id),
+    ).resolves.toBe(true);
   });
 });

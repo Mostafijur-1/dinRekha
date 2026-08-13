@@ -65,6 +65,20 @@ export type DailyActivityProgressDocument = {
   updatedAt: Date;
 };
 
+export type TimelineEntryDocument = {
+  _id: ObjectId;
+  ownerId: ObjectId;
+  dateKey: string;
+  activity: string;
+  category: string;
+  startMinute: number;
+  endMinute?: number;
+  note?: string;
+  status: "completed" | "in_progress";
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function usersCollection(): Promise<Collection<UserDocument>> {
   return (await getDatabase()).collection<UserDocument>("users");
 }
@@ -90,5 +104,13 @@ export async function dailyActivityProgressCollection(): Promise<
 > {
   return (await getDatabase()).collection<DailyActivityProgressDocument>(
     "dailyActivityProgress",
+  );
+}
+
+export async function timelineEntriesCollection(): Promise<
+  Collection<TimelineEntryDocument>
+> {
+  return (await getDatabase()).collection<TimelineEntryDocument>(
+    "timelineEntries",
   );
 }

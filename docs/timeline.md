@@ -1,0 +1,43 @@
+# Timeline foundation
+
+## Scope
+
+এই milestone-এ নির্বাচিত দিনের জন্য ২৪ ঘণ্টার Timeline foundation যোগ হয়েছে:
+
+- Activity, category, start time, end time ও private note
+- completed এবং বর্তমানে চলমান entry
+- edit ও delete
+- আগের দিনের entry
+- overlap rejection
+- tracked ও untracked সময়
+- authenticated owner isolation
+
+Smart suggestions, favorites, reusable recent-activity picker, reports, offline sync এবং
+special metadata এই milestone-এর অংশ নয়।
+
+## Data model
+
+`timelineEntries` collection-এ প্রতিটি entry-র `ownerId`, `dateKey`,
+`startMinute` এবং optional `endMinute` থাকে। Clock time-কে day-local minute হিসেবে রাখায়
+দিনভিত্তিক sorting ও overlap query সরল থাকে এবং server timezone-এর ওপর নির্ভর করতে হয় না।
+
+`endMinute` না থাকলে entry-টি `in_progress`; overlap calculation-এ এটি ঐ দিনের শেষ পর্যন্ত
+সময় দখল করে। `timeline_owner_date_start` index owner, date ও start time অনুযায়ী list query
+সমর্থন করে।
+
+## Validation and authorization
+
+Client form browser validation দেয়, কিন্তু server action Zod দিয়ে input পুনরায় যাচাই করে।
+Server authenticated session থেকে owner নির্ধারণ করে; client থেকে user ID নেওয়া হয় না।
+Repository-এর read, update ও delete query-তেও `ownerId` থাকে।
+
+ভবিষ্যৎ দিন বা সময় গ্রহণ করা হয় না। Historical entry-তে end time আবশ্যক। নতুন বা edited
+interval বিদ্যমান interval-এর সঙ্গে overlap করলে mutation প্রত্যাখ্যাত হয়; পাশাপাশি থাকা
+interval বৈধ।
+
+## Known limitation
+
+Overlap check এবং insert/update বর্তমানে আলাদা database operation। একই owner একই সময়ে
+একাধিক device থেকে সমান্তরাল mutation পাঠালে বিরল race condition-এ overlapping entry তৈরি
+হতে পারে। ভবিষ্যৎ synchronization milestone-এ idempotency/serialization strategy যোগ করতে
+হবে।

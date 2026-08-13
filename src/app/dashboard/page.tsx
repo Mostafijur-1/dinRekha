@@ -12,9 +12,13 @@ import {
 import { ActivityCard } from "@/features/daily-activities/components/activity-card";
 import { ActivityCreator } from "@/features/daily-activities/components/activity-creator";
 import { listDailyActivities } from "@/features/daily-activities/repository";
+import { TimelineCreator } from "@/features/timeline/components/timeline-creator";
+import { TimelineSection } from "@/features/timeline/components/timeline-section";
+import { listTimelineEntries } from "@/features/timeline/repository";
+import { currentMinuteForTimezone } from "@/features/timeline/time";
 import { getCurrentUser } from "@/lib/auth";
 
-export const metadata = { title: "আজকের Daily Activities" };
+export const metadata = { title: "আজকের Dashboard" };
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage({
@@ -38,7 +42,10 @@ export default async function DashboardPage({
   const previousDate = shiftDateKey(dateKey, -1)!;
   const nextDate = shiftDateKey(dateKey, 1)!;
   const isToday = dateKey === todayKey;
-  const activities = await listDailyActivities(user.id, dateKey);
+  const [activities, timelineEntries] = await Promise.all([
+    listDailyActivities(user.id, dateKey),
+    listTimelineEntries(user.id, dateKey),
+  ]);
   const completed = activities.filter((activity) => activity.completed).length;
   const completion = activities.length
     ? Math.round((completed / activities.length) * 100)
@@ -96,6 +103,16 @@ export default async function DashboardPage({
             </Link>
           )}
         </nav>
+
+        <TimelineCreator dateKey={dateKey} isToday={isToday} />
+        <TimelineSection
+          entries={timelineEntries}
+          dateKey={dateKey}
+          boundary={
+            isToday ? currentMinuteForTimezone(now, user.timezone) : 1440
+          }
+          isToday={isToday}
+        />
 
         {isToday && <ActivityCreator />}
 
