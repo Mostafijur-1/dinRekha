@@ -125,4 +125,61 @@ describeWithDatabase("MongoDB authentication persistence", () => {
       }),
     ]);
   });
+
+  it("shows selected-day activities only on their scheduled weekday", async () => {
+    const ownerId = new ObjectId();
+    const activityId = new ObjectId();
+    const now = new Date();
+    await client
+      .db(databaseName)
+      .collection("dailyActivities")
+      .insertOne({
+        _id: activityId,
+        ownerId,
+        name: "সাপ্তাহিক পরিকল্পনা",
+        category: "কাজ",
+        measurement: "boolean",
+        target: 1,
+        frequency: "selected_days",
+        days: [1],
+        status: "active",
+        sortOrder: 2,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+    const { listDailyActivities, setDailyProgress } =
+      await import("@/features/daily-activities/repository");
+    const monday = "2026-08-17";
+    const tuesday = "2026-08-18";
+    await expect(
+      setDailyProgress(
+        ownerId.toHexString(),
+        activityId.toHexString(),
+        tuesday,
+        1,
+      ),
+    ).resolves.toBe(false);
+    await expect(
+      listDailyActivities(ownerId.toHexString(), tuesday),
+    ).resolves.toEqual([]);
+    await expect(
+      setDailyProgress(
+        ownerId.toHexString(),
+        activityId.toHexString(),
+        monday,
+        1,
+      ),
+    ).resolves.toBe(true);
+    await expect(
+      listDailyActivities(ownerId.toHexString(), monday),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        id: activityId.toHexString(),
+        completed: true,
+        frequency: "selected_days",
+        days: [1],
+      }),
+    ]);
+  });
 });

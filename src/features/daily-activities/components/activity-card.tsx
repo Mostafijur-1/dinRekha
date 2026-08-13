@@ -1,5 +1,6 @@
 import {
   archiveActivityAction,
+  reorderActivityAction,
   setProgressAction,
 } from "@/features/daily-activities/actions";
 import { ActivityEditForm } from "@/features/daily-activities/components/activity-edit-form";
@@ -15,9 +16,25 @@ function progressText(activity: DailyActivityView): string {
   return `${activity.value} / ${activity.target} ${unit}`.trim();
 }
 
-export function ActivityCard({ activity }: { activity: DailyActivityView }) {
+const dayLabels = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি"];
+
+function scheduleText(activity: DailyActivityView): string {
+  if (activity.frequency === "daily") return "প্রতিদিন";
+  return activity.days.map((day) => dayLabels[day]).join(" · ");
+}
+
+export function ActivityCard({
+  activity,
+  dateKey,
+  canManage,
+}: {
+  activity: DailyActivityView;
+  dateKey: string;
+  canManage: boolean;
+}) {
   const setProgress = setProgressAction.bind(null, activity.id);
   const archive = archiveActivityAction.bind(null, activity.id);
+  const reorder = reorderActivityAction.bind(null, activity.id);
 
   return (
     <article
@@ -27,6 +44,7 @@ export function ActivityCard({ activity }: { activity: DailyActivityView }) {
         <div className="daily-card-copy">
           <span>{activity.category}</span>
           <h2>{activity.name}</h2>
+          <small className="daily-schedule">{scheduleText(activity)}</small>
           {activity.description && <p>{activity.description}</p>}
         </div>
         <strong className="daily-progress-label">
@@ -45,6 +63,7 @@ export function ActivityCard({ activity }: { activity: DailyActivityView }) {
       <div className="daily-card-actions">
         {activity.measurement === "boolean" ? (
           <form action={setProgress}>
+            <input type="hidden" name="dateKey" value={dateKey} />
             <input
               type="hidden"
               name="value"
@@ -58,6 +77,7 @@ export function ActivityCard({ activity }: { activity: DailyActivityView }) {
         ) : activity.measurement === "counter" ? (
           <div className="counter-actions">
             <form action={setProgress}>
+              <input type="hidden" name="dateKey" value={dateKey} />
               <input
                 type="hidden"
                 name="value"
@@ -71,6 +91,7 @@ export function ActivityCard({ activity }: { activity: DailyActivityView }) {
             </form>
             <span>{activity.value}</span>
             <form action={setProgress}>
+              <input type="hidden" name="dateKey" value={dateKey} />
               <input type="hidden" name="value" value={activity.value + 1} />
               <ActivitySubmitButton
                 idle="＋"
@@ -81,6 +102,7 @@ export function ActivityCard({ activity }: { activity: DailyActivityView }) {
           </div>
         ) : (
           <form action={setProgress} className="value-progress-form">
+            <input type="hidden" name="dateKey" value={dateKey} />
             <label>
               <span className="sr-only">আজকের অগ্রগতি</span>
               <input
@@ -97,14 +119,43 @@ export function ActivityCard({ activity }: { activity: DailyActivityView }) {
           </form>
         )}
 
-        <ActivityEditForm activity={activity} />
-        <form action={archive}>
-          <ActivitySubmitButton
-            idle="Archive"
-            pending="…"
-            className="activity-button activity-button-danger"
-          />
-        </form>
+        {canManage && (
+          <>
+            <ActivityEditForm activity={activity} />
+            <div
+              className="activity-order-actions"
+              aria-label="Activity-এর ক্রম"
+            >
+              <form action={reorder}>
+                <input type="hidden" name="dateKey" value={dateKey} />
+                <input type="hidden" name="direction" value="up" />
+                <ActivitySubmitButton
+                  idle="↑"
+                  pending="…"
+                  className="activity-step-button"
+                  disabled={!activity.canMoveUp}
+                />
+              </form>
+              <form action={reorder}>
+                <input type="hidden" name="dateKey" value={dateKey} />
+                <input type="hidden" name="direction" value="down" />
+                <ActivitySubmitButton
+                  idle="↓"
+                  pending="…"
+                  className="activity-step-button"
+                  disabled={!activity.canMoveDown}
+                />
+              </form>
+            </div>
+            <form action={archive}>
+              <ActivitySubmitButton
+                idle="Archive"
+                pending="…"
+                className="activity-button activity-button-danger"
+              />
+            </form>
+          </>
+        )}
       </div>
     </article>
   );

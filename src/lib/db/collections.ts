@@ -33,6 +33,7 @@ export type OAuthAccountDocument = {
 
 export type ActivityMeasurement =
   "boolean" | "counter" | "duration" | "quantity";
+export type ActivityFrequency = "daily" | "selected_days";
 
 export type DailyActivityDocument = {
   _id: ObjectId;
@@ -43,6 +44,9 @@ export type DailyActivityDocument = {
   measurement: ActivityMeasurement;
   target: number;
   unit?: string;
+  frequency?: ActivityFrequency;
+  days?: number[];
+  effectiveFrom?: string;
   status: "active" | "archived";
   sortOrder: number;
   createdAt: Date;

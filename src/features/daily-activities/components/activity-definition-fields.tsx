@@ -1,4 +1,7 @@
-import type { ActivityMeasurement } from "@/lib/db/collections";
+import type {
+  ActivityFrequency,
+  ActivityMeasurement,
+} from "@/lib/db/collections";
 
 const categories = [
   "ইবাদত",
@@ -7,6 +10,15 @@ const categories = [
   "কাজ",
   "ব্যক্তিগত",
   "অন্যান্য",
+];
+const weekdays = [
+  { value: 6, label: "শনি" },
+  { value: 0, label: "রবি" },
+  { value: 1, label: "সোম" },
+  { value: 2, label: "মঙ্গল" },
+  { value: 3, label: "বুধ" },
+  { value: 4, label: "বৃহস্পতি" },
+  { value: 5, label: "শুক্র" },
 ];
 
 export function ActivityDefinitionFields({
@@ -19,6 +31,8 @@ export function ActivityDefinitionFields({
     measurement: ActivityMeasurement;
     target: number;
     unit?: string;
+    frequency: ActivityFrequency;
+    days: number[];
   };
 }) {
   return (
@@ -33,6 +47,40 @@ export function ActivityDefinitionFields({
           maxLength={80}
         />
       </label>
+      <fieldset className="activity-frequency activity-field-wide">
+        <legend>কখন দেখাবেন</legend>
+        <label>
+          <input
+            type="radio"
+            name="frequency"
+            value="daily"
+            defaultChecked={!activity || activity.frequency === "daily"}
+          />
+          প্রতিদিন
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="frequency"
+            value="selected_days"
+            defaultChecked={activity?.frequency === "selected_days"}
+          />
+          নির্বাচিত দিনে
+        </label>
+        <div className="activity-weekdays">
+          {weekdays.map((day) => (
+            <label key={day.value}>
+              <input
+                type="checkbox"
+                name="days"
+                value={day.value}
+                defaultChecked={activity?.days.includes(day.value)}
+              />
+              <span>{day.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <label className="activity-field">
         <span>Category</span>
         <select

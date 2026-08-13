@@ -3,7 +3,9 @@ import "server-only";
 import { ObjectId } from "mongodb";
 
 import type { ActivityDefinitionInput } from "@/features/daily-activities/schemas";
+import { weekdayForDateKey } from "@/features/daily-activities/date";
 import {
+  type ActivityFrequency,
   dailyActivitiesCollection,
   dailyActivityProgressCollection,
   type ActivityMeasurement,
@@ -19,8 +21,12 @@ export type DailyActivityView = {
   measurement: ActivityMeasurement;
   target: number;
   unit?: string;
+  frequency: ActivityFrequency;
+  days: number[];
   value: number;
   completed: boolean;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 };
 
 function objectId(value: string): ObjectId | null {
@@ -32,12 +38,22 @@ export async function listDailyActivities(
   dateKey: string,
 ): Promise<DailyActivityView[]> {
   const owner = objectId(ownerId);
-  if (!owner) return [];
+  const weekday = weekdayForDateKey(dateKey);
+  if (!owner || weekday === null) return [];
   await ensureDatabaseIndexes();
   const activities = await dailyActivitiesCollection();
   const rows = await activities
     .aggregate<DailyActivityDocument & { progress?: { value: number } }>([
-      { $match: { ownerId: owner, status: "active" } },
+      {
+        $match: {
+          ownerId: owner,
+          status: "active",
+          $or: [
+            { effectiveFrom: { $exists: false } },
+            { effectiveFrom: { $lte: dateKey } },
+          ],
+        },
+      },
       { $sort: { sortOrder: 1, createdAt: 1 } },
       {
         $lookup: {
@@ -62,10 +78,20 @@ export async function listDailyActivities(
       },
       { $set: { progress: { $first: "$progressRows" } } },
       { $unset: "progressRows" },
+      {
+        $match: {
+          $or: [
+            { frequency: { $exists: false } },
+            { frequency: "daily" },
+            { frequency: "selected_days", days: weekday },
+            { "progress.value": { $exists: true } },
+          ],
+        },
+      },
     ])
     .toArray();
 
-  return rows.map((row) => {
+  return rows.map((row, index) => {
     const value = row.progress?.value ?? 0;
     return {
       id: row._id.toHexString(),
@@ -75,8 +101,12 @@ export async function listDailyActivities(
       measurement: row.measurement,
       target: row.target,
       unit: row.unit,
+      frequency: row.frequency ?? "daily",
+      days: row.days ?? [],
       value,
       completed: value >= row.target,
+      canMoveUp: index > 0,
+      canMoveDown: index < rows.length - 1,
     };
   });
 }
@@ -84,6 +114,7 @@ export async function listDailyActivities(
 export async function createDailyActivity(
   ownerId: string,
   input: ActivityDefinitionInput,
+  effectiveFrom: string,
 ): Promise<string | null> {
   const owner = objectId(ownerId);
   if (!owner) return null;
@@ -99,6 +130,9 @@ export async function createDailyActivity(
     target: input.target,
     ...(input.description ? { description: input.description } : {}),
     ...(input.unit ? { unit: input.unit } : {}),
+    frequency: input.frequency,
+    ...(input.frequency === "selected_days" ? { days: input.days } : {}),
+    effectiveFrom,
     status: "active",
     sortOrder: Date.now(),
     createdAt: now,
@@ -129,6 +163,8 @@ export async function updateDailyActivity(
     updatedAt: new Date(),
     ...(input.description ? { description: input.description } : {}),
     ...(input.unit ? { unit: input.unit } : {}),
+    frequency: input.frequency,
+    ...(input.frequency === "selected_days" ? { days: input.days } : {}),
   };
   const result = await activities.updateOne(
     { _id: activity, ownerId: owner, status: "active" },
@@ -137,6 +173,7 @@ export async function updateDailyActivity(
       $unset: {
         ...(input.description ? {} : { description: "" }),
         ...(input.unit ? {} : { unit: "" }),
+        ...(input.frequency === "daily" ? { days: "" } : {}),
       },
     },
   );
@@ -168,13 +205,27 @@ export async function setDailyProgress(
 ): Promise<boolean> {
   const owner = objectId(ownerId);
   const activity = objectId(activityId);
-  if (!owner || !activity) return false;
+  const weekday = weekdayForDateKey(dateKey);
+  if (!owner || !activity || weekday === null) return false;
   const definition = await (
     await dailyActivitiesCollection()
   ).findOne({
     _id: activity,
     ownerId: owner,
     status: "active",
+    $or: [
+      { frequency: { $exists: false } },
+      { frequency: "daily" },
+      { frequency: "selected_days", days: weekday },
+    ],
+    $and: [
+      {
+        $or: [
+          { effectiveFrom: { $exists: false } },
+          { effectiveFrom: { $lte: dateKey } },
+        ],
+      },
+    ],
   });
   if (!definition) return false;
   const normalizedValue =
@@ -200,4 +251,80 @@ export async function setDailyProgress(
     { upsert: true },
   );
   return true;
+}
+
+export async function reorderDailyActivity(
+  ownerId: string,
+  activityId: string,
+  direction: "up" | "down",
+  dateKey: string,
+): Promise<boolean> {
+  const owner = objectId(ownerId);
+  const activity = objectId(activityId);
+  const weekday = weekdayForDateKey(dateKey);
+  if (!owner || !activity || weekday === null) return false;
+  const activities = await dailyActivitiesCollection();
+  const current = await activities.findOne({
+    _id: activity,
+    ownerId: owner,
+    status: "active",
+    $or: [
+      { frequency: { $exists: false } },
+      { frequency: "daily" },
+      { frequency: "selected_days", days: weekday },
+    ],
+    $and: [
+      {
+        $or: [
+          { effectiveFrom: { $exists: false } },
+          { effectiveFrom: { $lte: dateKey } },
+        ],
+      },
+    ],
+  });
+  if (!current) return false;
+  const neighbor = await activities.findOne(
+    {
+      ownerId: owner,
+      status: "active",
+      $or: [
+        { frequency: { $exists: false } },
+        { frequency: "daily" },
+        { frequency: "selected_days", days: weekday },
+      ],
+      $and: [
+        {
+          $or: [
+            { effectiveFrom: { $exists: false } },
+            { effectiveFrom: { $lte: dateKey } },
+          ],
+        },
+      ],
+      sortOrder:
+        direction === "up"
+          ? { $lt: current.sortOrder }
+          : { $gt: current.sortOrder },
+    },
+    { sort: { sortOrder: direction === "up" ? -1 : 1 } },
+  );
+  if (!neighbor) return false;
+  const result = await activities.bulkWrite([
+    {
+      updateOne: {
+        filter: { _id: current._id, ownerId: owner, status: "active" },
+        update: {
+          $set: { sortOrder: neighbor.sortOrder, updatedAt: new Date() },
+        },
+      },
+    },
+    {
+      updateOne: {
+        filter: { _id: neighbor._id, ownerId: owner, status: "active" },
+        update: {
+          $set: { sortOrder: current.sortOrder, updatedAt: new Date() },
+        },
+      },
+    },
+  ]);
+  return result.matchedCount === 2;
 }

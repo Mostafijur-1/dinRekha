@@ -1,18 +1,23 @@
 import { ObjectId } from "mongodb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { activityFindOne, activityUpdateOne, progressUpdateOne } = vi.hoisted(
-  () => ({
-    activityFindOne: vi.fn(),
-    activityUpdateOne: vi.fn(),
-    progressUpdateOne: vi.fn(),
-  }),
-);
+const {
+  activityFindOne,
+  activityUpdateOne,
+  progressUpdateOne,
+  activityBulkWrite,
+} = vi.hoisted(() => ({
+  activityFindOne: vi.fn(),
+  activityUpdateOne: vi.fn(),
+  progressUpdateOne: vi.fn(),
+  activityBulkWrite: vi.fn(),
+}));
 
 vi.mock("@/lib/db/collections", () => ({
   dailyActivitiesCollection: vi.fn(async () => ({
     findOne: activityFindOne,
     updateOne: activityUpdateOne,
+    bulkWrite: activityBulkWrite,
   })),
   dailyActivityProgressCollection: vi.fn(async () => ({
     updateOne: progressUpdateOne,
@@ -22,6 +27,7 @@ vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
 
 import {
   archiveDailyActivity,
+  reorderDailyActivity,
   setDailyProgress,
   updateDailyActivity,
 } from "@/features/daily-activities/repository";
@@ -43,6 +49,8 @@ describe("Daily Activity repository authorization", () => {
       measurement: "boolean",
       target: 1,
       unit: "",
+      frequency: "daily",
+      days: [],
     });
 
     expect(activityUpdateOne).toHaveBeenNthCalledWith(
@@ -67,5 +75,18 @@ describe("Daily Activity repository authorization", () => {
     );
     expect(result).toBe(false);
     expect(progressUpdateOne).not.toHaveBeenCalled();
+  });
+
+  it("does not reorder when the activity is not owned by the caller", async () => {
+    activityFindOne.mockResolvedValue(null);
+    await expect(
+      reorderDailyActivity(
+        new ObjectId().toHexString(),
+        new ObjectId().toHexString(),
+        "up",
+        "2026-08-17",
+      ),
+    ).resolves.toBe(false);
+    expect(activityBulkWrite).not.toHaveBeenCalled();
   });
 });

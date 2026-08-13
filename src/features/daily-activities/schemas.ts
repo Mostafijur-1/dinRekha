@@ -6,6 +6,7 @@ export const measurementSchema = z.enum([
   "duration",
   "quantity",
 ]);
+export const frequencySchema = z.enum(["daily", "selected_days"]);
 
 const text = (maximum: number) => z.string().trim().max(maximum);
 
@@ -17,6 +18,8 @@ export const activityDefinitionSchema = z
     measurement: measurementSchema,
     target: z.coerce.number().finite().positive().max(1_000_000),
     unit: text(24),
+    frequency: frequencySchema,
+    days: z.array(z.coerce.number().int().min(0).max(6)).max(7),
   })
   .superRefine((value, context) => {
     if (value.measurement === "boolean" && value.target !== 1) {
@@ -34,6 +37,13 @@ export const activityDefinitionSchema = z
         message: "Quantity Activity-এর unit দিন।",
       });
     }
+    if (value.frequency === "selected_days" && value.days.length === 0) {
+      context.addIssue({
+        code: "custom",
+        path: ["days"],
+        message: "অন্তত একটি দিন নির্বাচন করুন।",
+      });
+    }
   });
 
 export const activityIdSchema = z
@@ -45,5 +55,7 @@ export const progressValueSchema = z.coerce
   .finite()
   .min(0)
   .max(1_000_000);
+export const dateKeySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+export const reorderDirectionSchema = z.enum(["up", "down"]);
 
 export type ActivityDefinitionInput = z.infer<typeof activityDefinitionSchema>;

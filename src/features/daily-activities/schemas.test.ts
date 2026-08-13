@@ -8,6 +8,8 @@ const base = {
   category: "স্বাস্থ্য",
   target: 1,
   unit: "",
+  frequency: "daily",
+  days: [],
 };
 
 describe("Daily Activity validation", () => {
@@ -35,5 +37,14 @@ describe("Daily Activity validation", () => {
       target: 30,
     });
     expect(result.unit).toBe("মিনিট");
+  });
+
+  it("requires at least one selected weekday", () => {
+    const result = activityDefinitionSchema.safeParse({
+      ...base,
+      measurement: "boolean",
+      frequency: "selected_days",
+    });
+    expect(result.success).toBe(false);
   });
 });

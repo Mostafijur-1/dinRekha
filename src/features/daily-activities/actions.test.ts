@@ -42,6 +42,19 @@ describe("Daily Activity Server Action authentication", () => {
   it("rejects progress mutation without an authenticated session", async () => {
     const data = new FormData();
     data.set("value", "1");
+    data.set("dateKey", "2026-08-13");
+    await setProgressAction(new ObjectId().toHexString(), data);
+    expect(setDailyProgress).not.toHaveBeenCalled();
+  });
+
+  it("rejects a future progress date instead of writing it to today", async () => {
+    getCurrentUser.mockResolvedValue({
+      id: new ObjectId().toHexString(),
+      timezone: "Asia/Dhaka",
+    });
+    const data = new FormData();
+    data.set("value", "1");
+    data.set("dateKey", "2999-01-01");
     await setProgressAction(new ObjectId().toHexString(), data);
     expect(setDailyProgress).not.toHaveBeenCalled();
   });

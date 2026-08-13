@@ -13,5 +13,8 @@ describe("ActivityDefinitionFields", () => {
     expect(screen.getByRole("option", { name: "কতবার" })).toBeVisible();
     expect(screen.getByRole("option", { name: "সময়" })).toBeVisible();
     expect(screen.getByRole("option", { name: "পরিমাণ" })).toBeVisible();
+    expect(screen.getByLabelText("প্রতিদিন")).toBeChecked();
+    expect(screen.getByLabelText("নির্বাচিত দিনে")).not.toBeChecked();
+    expect(screen.getByLabelText("শনি")).not.toBeChecked();
   });
 });

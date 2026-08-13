@@ -2,19 +2,21 @@
 
 ## Scope
 
-এই milestone reusable Daily Activity এবং আজকের progress-এর প্রথম production slice। User Activity তৈরি, তালিকা দেখা, definition edit, আজকের value update এবং archive করতে পারে। Recurrence, reminders, offline synchronization, historical date navigation, ordering ও reports পরে যোগ হবে।
+User Activity তৈরি, তালিকা দেখা, definition edit, নির্বাচিত দিনের value update, archive এবং তালিকার ক্রম পরিবর্তন করতে পারে। Activity প্রতিদিন বা নির্বাচিত সপ্তাহের দিনে schedule করা যায়। Reminders, offline synchronization, arbitrary calendar picker ও reports পরে যোগ হবে।
 
 ## Data model
 
-`dailyActivities` collection reusable definition রাখে: owner, name, description, category, measurement, target, unit, status ও ordering metadata। Measurement mode হলো `boolean`, `counter`, `duration` বা `quantity`। Creation-এর পরে measurement immutable; mode বদলালে পুরোনো progress-এর অর্থ বদলে যেতে পারে বলে এই সিদ্ধান্ত।
+`dailyActivities` collection reusable definition রাখে: owner, name, description, category, measurement, target, unit, frequency, weekdays, effective date, status ও ordering metadata। Measurement mode হলো `boolean`, `counter`, `duration` বা `quantity`। Creation-এর পরে measurement immutable; mode বদলালে পুরোনো progress-এর অর্থ বদলে যেতে পারে বলে এই সিদ্ধান্ত। পুরোনো document-এ frequency না থাকলে `daily` এবং effective date না থাকলে backward-compatible historical definition ধরা হয়।
 
 `dailyActivityProgress` collection owner + activity + local date key অনুযায়ী value এবং completion timestamp রাখে। Unique compound index একই Activity-এর একই দিনের duplicate progress row আটকায়। Definitions ও progress আলাদা থাকায় Activity edit/archive করলেও future historical reporting সম্ভব।
 
 ## Request flow
 
-Dashboard একটি dynamic Server Component। Session থেকে active user revalidate করে user timezone অনুযায়ী আজকের date key বানায় এবং owner-scoped aggregation-এ definitions ও progress পড়ে। কোনো private result shared cache-এ রাখা হয় না।
+Dashboard একটি dynamic Server Component। Session থেকে active user revalidate করে এবং `?date=YYYY-MM-DD` থেকে নির্বাচিত দিন নেয়। Calendar date invalid বা user timezone-এর আজকের চেয়ে ভবিষ্যৎ হলে আজকে fallback করা হয়। Owner-scoped aggregation schedule, effective date ও existing historical progress মিলিয়ে definitions দেখায়। কোনো private result shared cache-এ রাখা হয় না।
 
-Create, edit, progress ও archive React Server Actions দিয়ে হয়। প্রতিটি action আবার session যাচাই করে, Zod দিয়ে untrusted FormData validate করে এবং repository call-এ session-derived owner ID পাঠায়। Client কেবল Activity ID ও পরিবর্তন পাঠায়; owner ID কখনো client claim থেকে নেওয়া হয় না। Mutation শেষে `/dashboard` revalidate হয়।
+Create, edit, progress, archive ও reorder React Server Actions দিয়ে হয়। প্রতিটি action আবার session যাচাই করে, Zod দিয়ে untrusted FormData validate করে এবং repository call-এ session-derived owner ID পাঠায়। Client কেবল Activity ID, selected date ও পরিবর্তন পাঠায়; owner ID কখনো client claim থেকে নেওয়া হয় না। Future date ও unscheduled day-তে progress লেখা server-side প্রত্যাখ্যাত হয়। Mutation শেষে `/dashboard` revalidate হয়।
+
+Past view-এ progress সংশোধন করা যায়, কিন্তু definition edit, archive, create ও reorder শুধু আজকের view-এ থাকে। Recurrence পরে পরিবর্তিত হলেও কোনো historical date-এ progress থাকলে সেই Activity সেখানে দৃশ্যমান থাকে।
 
 ## Measurement behavior
 
@@ -22,6 +24,8 @@ Create, edit, progress ও archive React Server Actions দিয়ে হয়। �
 - Counter: বর্তমান value থেকে UI-তে `+1`/`-1` absolute update। একই মুহূর্তে একাধিক device থেকে tap করলে last-write-wins হতে পারে; offline/sync milestone-এ idempotent atomic increments যোগ করতে হবে।
 - Duration: মিনিট default unit; user আজকের মোট value লিখে update করে।
 - Quantity: explicit unit আবশ্যক; user আজকের মোট value লিখে update করে।
+
+Reorder owner-scoped adjacent `sortOrder` swap ব্যবহার করে। একই account থেকে একেবারে একই সময়ে একাধিক reorder হলে duplicate order তৈরি হতে পারে; list-এর `createdAt` tie-breaker UI স্থিতিশীল রাখে। Collaborative/offline ordering এলে versioned ordering প্রয়োজন হবে।
 
 ## Privacy and deletion
 

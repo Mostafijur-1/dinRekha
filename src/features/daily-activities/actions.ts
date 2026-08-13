@@ -3,17 +3,23 @@
 import { revalidatePath } from "next/cache";
 
 import type { ActivityActionState } from "@/features/daily-activities/action-state";
-import { dateKeyForTimezone } from "@/features/daily-activities/date";
+import {
+  allowedDateKey,
+  dateKeyForTimezone,
+} from "@/features/daily-activities/date";
 import {
   archiveDailyActivity,
   createDailyActivity,
+  reorderDailyActivity,
   setDailyProgress,
   updateDailyActivity,
 } from "@/features/daily-activities/repository";
 import {
   activityDefinitionSchema,
   activityIdSchema,
+  dateKeySchema,
   progressValueSchema,
+  reorderDirectionSchema,
 } from "@/features/daily-activities/schemas";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -25,6 +31,8 @@ function definitionFrom(formData: FormData) {
     measurement: formData.get("measurement"),
     target: formData.get("target"),
     unit: formData.get("unit") ?? "",
+    frequency: formData.get("frequency"),
+    days: [...new Set(formData.getAll("days"))],
   });
 }
 
@@ -46,7 +54,8 @@ export async function createActivityAction(
       message: parsed.error.issues[0]?.message ?? "তথ্যগুলো আবার দেখুন।",
     };
   }
-  await createDailyActivity(user.id, parsed.data);
+  const effectiveFrom = dateKeyForTimezone(new Date(), user.timezone);
+  await createDailyActivity(user.id, parsed.data, effectiveFrom);
   revalidatePath("/dashboard");
   return { status: "success", message: "Daily Activity তৈরি হয়েছে।" };
 }
@@ -91,8 +100,28 @@ export async function setProgressAction(
   const user = await authenticatedUser();
   const id = activityIdSchema.safeParse(activityId);
   const value = progressValueSchema.safeParse(formData.get("value"));
-  if (!user || !id.success || !value.success) return;
-  const dateKey = dateKeyForTimezone(new Date(), user.timezone);
+  const requestedDate = dateKeySchema.safeParse(formData.get("dateKey"));
+  if (!user || !id.success || !value.success || !requestedDate.success) return;
+  const todayKey = dateKeyForTimezone(new Date(), user.timezone);
+  const dateKey = allowedDateKey(requestedDate.data, todayKey);
+  if (dateKey !== requestedDate.data) return;
   await setDailyProgress(user.id, id.data, dateKey, value.data);
+  revalidatePath("/dashboard");
+}
+
+export async function reorderActivityAction(
+  activityId: string,
+  formData: FormData,
+): Promise<void> {
+  const user = await authenticatedUser();
+  const id = activityIdSchema.safeParse(activityId);
+  const direction = reorderDirectionSchema.safeParse(formData.get("direction"));
+  const requestedDate = dateKeySchema.safeParse(formData.get("dateKey"));
+  if (!user || !id.success || !direction.success || !requestedDate.success)
+    return;
+  const todayKey = dateKeyForTimezone(new Date(), user.timezone);
+  const dateKey = allowedDateKey(requestedDate.data, todayKey);
+  if (dateKey !== requestedDate.data) return;
+  await reorderDailyActivity(user.id, id.data, direction.data, dateKey);
   revalidatePath("/dashboard");
 }

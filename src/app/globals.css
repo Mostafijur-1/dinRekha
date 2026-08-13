@@ -642,6 +642,34 @@ a {
 .dashboard-score span {
   display: block;
 }
+.dashboard-date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin: -0.5rem 0 1.2rem;
+}
+.dashboard-date-nav a,
+.dashboard-date-nav span {
+  min-height: 2.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+.dashboard-date-nav a:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.dashboard-date-nav span[aria-disabled="true"] {
+  opacity: 0.45;
+}
 .dashboard-score strong {
   color: var(--brand);
   font-size: 1.8rem;
@@ -732,6 +760,67 @@ a {
 .activity-field select:disabled {
   opacity: 0.7;
 }
+.activity-frequency {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  padding: 0;
+  border: 0;
+}
+.activity-frequency legend {
+  width: 100%;
+  margin-bottom: 0.1rem;
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+.activity-frequency > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.activity-frequency input {
+  accent-color: var(--brand);
+}
+.activity-weekdays {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.activity-weekdays label {
+  position: relative;
+  cursor: pointer;
+}
+.activity-weekdays input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.activity-weekdays span {
+  min-width: 2.65rem;
+  min-height: 2.4rem;
+  display: grid;
+  place-items: center;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  color: var(--text-soft);
+  font-size: 0.69rem;
+  font-weight: 800;
+}
+.activity-weekdays input:checked + span {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.activity-weekdays input:focus-visible + span {
+  outline: 3px solid color-mix(in srgb, var(--brand) 55%, white);
+  outline-offset: 3px;
+}
 .activity-button {
   min-height: 2.7rem;
   padding: 0.55rem 0.9rem;
@@ -800,6 +889,13 @@ a {
   margin: 0.28rem 0 0;
   font-size: 1.12rem;
 }
+.daily-schedule {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--text-faint);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
 .daily-card-copy p {
   margin: 0.35rem 0 0;
   color: var(--text-soft);
@@ -835,10 +931,14 @@ a {
   gap: 0.55rem;
 }
 .counter-actions,
-.value-progress-form {
+.value-progress-form,
+.activity-order-actions {
   display: flex;
   align-items: center;
   gap: 0.45rem;
+}
+.activity-order-actions {
+  gap: 0.35rem;
 }
 .activity-step-button {
   width: 2.7rem;
@@ -1263,6 +1363,14 @@ a {
   }
   .dashboard-score {
     min-width: 0;
+  }
+  .dashboard-date-nav {
+    justify-content: space-between;
+  }
+  .dashboard-date-nav a,
+  .dashboard-date-nav span {
+    flex: 1;
+    padding-inline: 0.45rem;
   }
   .activity-form-grid {
     grid-template-columns: 1fr;
