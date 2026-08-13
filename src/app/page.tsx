@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Brand } from "@/components/brand";
 import { ArrowIcon, CheckIcon, ClockIcon, SparkIcon } from "@/components/icons";
+import { InstallControl } from "@/features/pwa/install-control";
 import { getCurrentUser } from "@/lib/auth";
 
 const dailyActivities = [
@@ -87,6 +88,7 @@ export function HomeContent({ user }: { user: HomeUser }) {
                 {primaryLabel}
                 <ArrowIcon />
               </Link>
+              <InstallControl compact />
               <span className="supporting-note">
                 {isSignedIn
                   ? "আপনার তথ্য প্রস্তুত—আজকের জায়গা থেকেই শুরু করুন"

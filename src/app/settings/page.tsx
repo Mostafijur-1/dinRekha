@@ -7,6 +7,7 @@ import { ProfileForm } from "@/features/settings/components/profile-form";
 import { AccountDeletionForm } from "@/features/account/deletion-form";
 import { ReminderSettingsForm } from "@/features/notifications/reminder-settings-form";
 import { PushManager } from "@/features/notifications/push-manager";
+import { InstallControl } from "@/features/pwa/install-control";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "Profile ও Settings" };
@@ -84,6 +85,19 @@ export default async function SettingsPage() {
               </div>
             </aside>
           </div>
+          <section className="settings-card settings-install">
+            <div className="feature-section-heading">
+              <div>
+                <span>দ্রুত প্রবেশ</span>
+                <h2>দিনরেখা অ্যাপ</h2>
+              </div>
+            </div>
+            <p>
+              Browser tab না খুলেও Home Screen বা desktop থেকে দিনরেখা ব্যবহার
+              করুন। ইনস্টল করলে নতুন কোনো account বা অনুমতি তৈরি হয় না।
+            </p>
+            <InstallControl />
+          </section>
           <section className="settings-card settings-reminders">
             <div className="feature-section-heading">
               <div>

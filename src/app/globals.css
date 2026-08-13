@@ -143,6 +143,10 @@ a {
   gap: 1.5rem;
 }
 
+.hero-actions {
+  flex-wrap: wrap;
+}
+
 .nav-link {
   font-size: 0.92rem;
   font-weight: 650;
@@ -255,6 +259,46 @@ a {
   color: var(--text-faint);
   font-size: 0.73rem;
   line-height: 1.6;
+}
+
+.install-control {
+  display: grid;
+  gap: 0.55rem;
+}
+.install-control button {
+  width: fit-content;
+  font-family: inherit;
+  cursor: pointer;
+}
+.install-control button > span {
+  font-size: 1rem;
+  line-height: 1;
+}
+.install-control button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.install-control p {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  line-height: 1.65;
+}
+.install-control.is-compact {
+  position: relative;
+}
+.install-control.is-compact p {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 0.55rem);
+  left: 0;
+  width: min(22rem, 80vw);
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
 }
 
 .product-preview {
@@ -1298,6 +1342,15 @@ a {
   border: 1px solid #d8a6a6;
   border-radius: var(--radius-md);
   background: #fff8f7;
+}
+.settings-install {
+  margin-top: 1rem;
+}
+.settings-install > p {
+  max-width: 48rem;
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  line-height: 1.7;
 }
 .settings-danger-zone > span {
   color: #9b3030;
@@ -2487,6 +2540,10 @@ a {
     align-items: flex-start;
     flex-direction: column;
     gap: 0.8rem;
+  }
+  .hero-actions .install-control,
+  .hero-actions .install-control button {
+    width: 100%;
   }
   .supporting-note {
     max-width: none;

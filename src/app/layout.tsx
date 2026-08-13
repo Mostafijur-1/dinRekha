@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import { publicEnv } from "@/lib/env";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { InstallProvider } from "@/features/pwa/install-provider";
 
 import "./globals.css";
 
@@ -52,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="bn" suppressHydrationWarning>
       <body>
-        {children}
+        <InstallProvider>{children}</InstallProvider>
         <ServiceWorkerRegistration />
       </body>
     </html>

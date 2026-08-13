@@ -2,10 +2,19 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { HomeContent } from "@/app/page";
+import { InstallProvider } from "@/features/pwa/install-provider";
+
+function renderHome(user: Parameters<typeof HomeContent>[0]["user"]) {
+  return render(
+    <InstallProvider>
+      <HomeContent user={user} />
+    </InstallProvider>,
+  );
+}
 
 describe("Home page", () => {
   it("presents the product purpose and a route into the application", () => {
-    render(<HomeContent user={null} />);
+    renderHome(null);
 
     expect(
       screen.getByRole("heading", { name: /প্রতিদিনের সময় ও অভ্যাস/ }),
@@ -19,11 +28,7 @@ describe("Home page", () => {
   });
 
   it("welcomes a signed-in user by their exact saved name", () => {
-    render(
-      <HomeContent
-        user={{ name: "মোস্তাফিজুর রহমান", timezone: "Asia/Dhaka" }}
-      />,
-    );
+    renderHome({ name: "মোস্তাফিজুর রহমান", timezone: "Asia/Dhaka" });
 
     expect(screen.getAllByText(/মোস্তাফিজুর রহমান/).length).toBeGreaterThan(0);
     expect(
