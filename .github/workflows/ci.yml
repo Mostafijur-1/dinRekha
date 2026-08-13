@@ -30,7 +30,7 @@ jobs:
     env:
       AUTH_SECRET: github-actions-only-auth-secret-at-least-32-characters
       MONGODB_URI: mongodb://127.0.0.1:27017
-      MONGODB_DB_NAME: chondo_ci
+      MONGODB_DB_NAME: dinrekha_ci
       MONGODB_TEST_URI: mongodb://127.0.0.1:27017
       NEXTAUTH_URL: http://127.0.0.1:3000
     steps:

@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const serverEnvironmentSchema = z.object({
   MONGODB_URI: z.string().min(1, "MONGODB_URI আবশ্যক।"),
-  MONGODB_DB_NAME: z.string().min(1).default("chondo"),
+  MONGODB_DB_NAME: z.string().min(1).default("dinrekha"),
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET কমপক্ষে ৩২ অক্ষরের হতে হবে।"),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
   GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),

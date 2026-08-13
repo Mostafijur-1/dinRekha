@@ -5,7 +5,7 @@ const testUri = process.env.MONGODB_TEST_URI;
 const describeWithDatabase = testUri ? describe : describe.skip;
 
 describeWithDatabase("MongoDB authentication persistence", () => {
-  const databaseName = `chondo_test_${process.pid}_${Date.now()}`;
+  const databaseName = `dinrekha_test_${process.pid}_${Date.now()}`;
   let client: MongoClient;
 
   beforeAll(async () => {

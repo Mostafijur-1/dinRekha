@@ -14,7 +14,7 @@ import {
 } from "@/lib/db/collections";
 
 type IndexGlobal = typeof globalThis & {
-  __chondoIndexPromise?: Promise<void>;
+  __dinrekhaIndexPromise?: Promise<void>;
 };
 
 const indexGlobal = globalThis as IndexGlobal;
@@ -124,12 +124,12 @@ async function createIndexes(): Promise<void> {
 }
 
 export function ensureDatabaseIndexes(): Promise<void> {
-  indexGlobal.__chondoIndexPromise ??= createIndexes().catch(
+  indexGlobal.__dinrekhaIndexPromise ??= createIndexes().catch(
     (error: unknown) => {
-      indexGlobal.__chondoIndexPromise = undefined;
+      indexGlobal.__dinrekhaIndexPromise = undefined;
       throw error;
     },
   );
 
-  return indexGlobal.__chondoIndexPromise;
+  return indexGlobal.__dinrekhaIndexPromise;
 }

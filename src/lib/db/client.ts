@@ -5,7 +5,7 @@ import { Db, MongoClient } from "mongodb";
 import { getServerEnvironment } from "@/lib/env.server";
 
 type MongoGlobal = typeof globalThis & {
-  __chondoMongoClientPromise?: Promise<MongoClient>;
+  __dinrekhaMongoClientPromise?: Promise<MongoClient>;
 };
 
 const mongoGlobal = globalThis as MongoGlobal;
@@ -23,14 +23,14 @@ function createClientPromise(): Promise<MongoClient> {
   });
 
   return client.connect().catch((error: unknown) => {
-    mongoGlobal.__chondoMongoClientPromise = undefined;
+    mongoGlobal.__dinrekhaMongoClientPromise = undefined;
     throw error;
   });
 }
 
 export function getMongoClient(): Promise<MongoClient> {
-  mongoGlobal.__chondoMongoClientPromise ??= createClientPromise();
-  return mongoGlobal.__chondoMongoClientPromise;
+  mongoGlobal.__dinrekhaMongoClientPromise ??= createClientPromise();
+  return mongoGlobal.__dinrekhaMongoClientPromise;
 }
 
 export async function getDatabase(): Promise<Db> {
