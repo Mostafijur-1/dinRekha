@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Brand } from "@/components/brand";
+import { AppNavigation } from "@/components/app-navigation";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import {
   allowedDateKey,
@@ -59,88 +60,117 @@ export default async function DashboardPage({
   }).format(selectedDate);
 
   return (
-    <main className="shell-page dashboard-page">
-      <header className="shell-header">
-        <Brand />
-        <div className="shell-account">
-          <span>{user.name}</span>
-          <SignOutButton />
-        </div>
-      </header>
-
-      <div className="dashboard-layout">
-        <section className="dashboard-intro">
-          <div>
-            <span>{dateLabel}</span>
-            <h1>{isToday ? "আজকের" : "নির্বাচিত দিনের"} Daily Activities</h1>
-            <p>ছোট ছোট কাজের অগ্রগতি রাখুন—দ্রুত, ব্যক্তিগত এবং নিজের ছন্দে।</p>
+    <main className="shell-page dashboard-page app-shell">
+      <AppNavigation />
+      <div className="app-main">
+        <header className="shell-header app-header">
+          <div className="app-mobile-brand">
+            <Brand />
           </div>
-          <div
-            className="dashboard-score"
-            aria-label={`${dateLabel}: ${completion}% সম্পন্ন`}
-          >
-            <strong>{completion}%</strong>
-            <span>
-              {completed} / {activities.length} সম্পন্ন
-            </span>
+          <div className="app-header-context">
+            <span>ব্যক্তিগত Dashboard</span>
+            <strong>{isToday ? "আজকের দিন" : dateLabel}</strong>
           </div>
-        </section>
+          <div className="shell-account">
+            <span>{user.name}</span>
+            <SignOutButton />
+          </div>
+        </header>
 
-        <nav className="dashboard-date-nav" aria-label="দিন পরিবর্তন করুন">
-          <Link href={`/dashboard?date=${previousDate}`}>← আগের দিন</Link>
-          {!isToday && <Link href="/dashboard">আজ</Link>}
-          {isToday ? (
-            <span aria-disabled="true">পরের দিন →</span>
-          ) : (
-            <Link
-              href={
-                nextDate === todayKey
-                  ? "/dashboard"
-                  : `/dashboard?date=${nextDate}`
-              }
+        <div className="dashboard-layout">
+          <section className="dashboard-intro">
+            <div>
+              <span>{dateLabel}</span>
+              <h1>{isToday ? "আজকের দিনরেখা" : "নির্বাচিত দিনের দিনরেখা"}</h1>
+              <p>
+                সময় ও অভ্যাসের অগ্রগতি রাখুন—দ্রুত, ব্যক্তিগত এবং পরিষ্কারভাবে।
+              </p>
+            </div>
+            <div
+              className="dashboard-score"
+              aria-label={`${dateLabel}: ${completion}% সম্পন্ন`}
             >
-              পরের দিন →
-            </Link>
-          )}
-        </nav>
-
-        <TimelineCreator dateKey={dateKey} isToday={isToday} />
-        <TimelineSection
-          entries={timelineEntries}
-          dateKey={dateKey}
-          boundary={
-            isToday ? currentMinuteForTimezone(now, user.timezone) : 1440
-          }
-          isToday={isToday}
-        />
-
-        {isToday && <ActivityCreator />}
-
-        {activities.length ? (
-          <section className="daily-grid" aria-label="আজকের Activity তালিকা">
-            {activities.map((activity) => (
-              <ActivityCard
-                activity={activity}
-                dateKey={dateKey}
-                canManage={isToday}
-                key={activity.id}
-              />
-            ))}
+              <strong>{completion}%</strong>
+              <span>
+                {completed} / {activities.length} সম্পন্ন
+              </span>
+            </div>
           </section>
-        ) : (
-          <section className="daily-empty">
-            <span aria-hidden="true">✓</span>
-            <h2>
-              {isToday
-                ? "প্রথম Daily Activity তৈরি করুন"
-                : "এই দিনের জন্য কোনো Activity নেই"}
-            </h2>
-            <p>
-              Done/Not Done, Counter, সময় বা Quantity—যেভাবে দরকার সেভাবে target
-              ঠিক করুন।
-            </p>
+
+          <nav className="dashboard-date-nav" aria-label="দিন পরিবর্তন করুন">
+            <Link href={`/dashboard?date=${previousDate}`}>← আগের দিন</Link>
+            {!isToday && <Link href="/dashboard">আজ</Link>}
+            {isToday ? (
+              <span aria-disabled="true">পরের দিন →</span>
+            ) : (
+              <Link
+                href={
+                  nextDate === todayKey
+                    ? "/dashboard"
+                    : `/dashboard?date=${nextDate}`
+                }
+              >
+                পরের দিন →
+              </Link>
+            )}
+          </nav>
+
+          <div id="timeline" className="dashboard-anchor">
+            <TimelineCreator dateKey={dateKey} isToday={isToday} />
+            <TimelineSection
+              entries={timelineEntries}
+              dateKey={dateKey}
+              boundary={
+                isToday ? currentMinuteForTimezone(now, user.timezone) : 1440
+              }
+              isToday={isToday}
+            />
+          </div>
+
+          <section
+            id="daily-activities"
+            className="dashboard-anchor activity-section"
+          >
+            <div className="feature-section-heading">
+              <div>
+                <span>নিয়মিত অগ্রগতি</span>
+                <h2>Daily Activities</h2>
+              </div>
+              <p>ছোট অভ্যাস ও লক্ষ্য—এক নজরে।</p>
+            </div>
+
+            {isToday && <ActivityCreator />}
+
+            {activities.length ? (
+              <section
+                className="daily-grid"
+                aria-label="আজকের Activity তালিকা"
+              >
+                {activities.map((activity) => (
+                  <ActivityCard
+                    activity={activity}
+                    dateKey={dateKey}
+                    canManage={isToday}
+                    key={activity.id}
+                  />
+                ))}
+              </section>
+            ) : (
+              <section className="daily-empty">
+                <span aria-hidden="true">✓</span>
+                <h2>
+                  {isToday
+                    ? "প্রথম Daily Activity তৈরি করুন"
+                    : "এই দিনের জন্য কোনো Activity নেই"}
+                </h2>
+                <p>
+                  Done/Not Done, Counter, সময় বা Quantity—যেভাবে দরকার সেভাবে
+                  target ঠিক করুন।
+                </p>
+              </section>
+            )}
           </section>
-        )}
+        </div>
       </div>
     </main>
   );

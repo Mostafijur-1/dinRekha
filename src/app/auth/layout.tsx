@@ -17,8 +17,8 @@ export default function AuthLayout({
       </header>
       <section className="auth-stage">
         <div className="auth-context" aria-hidden="true">
-          <span>ছন্দ</span>
-          <blockquote>“দিনের হিসাব নয়—নিজের ছন্দটা বুঝুন।”</blockquote>
+          <span>দিনরেখা</span>
+          <blockquote>“দিন কোথায় গেল—রেখায় দেখুন, নিজের মতো করে।”</blockquote>
           <div className="auth-context-bars">
             <i />
             <i />

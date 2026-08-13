@@ -4,7 +4,7 @@ import { publicEnv } from "@/lib/env";
 
 import "./globals.css";
 
-const title = "ছন্দ — নিজের সময়, নিজের ছন্দে";
+const title = "দিনরেখা — দিন কোথায় গেল, রেখায় দেখুন";
 const description =
   "কাজ, অভ্যাস ও মনোযোগের সময় সহজে নোট করুন এবং প্রতিদিনের অগ্রগতি পরিষ্কারভাবে বুঝুন।";
 
@@ -12,19 +12,19 @@ export const metadata: Metadata = {
   metadataBase: publicEnv.appUrl,
   title: {
     default: title,
-    template: "%s · ছন্দ",
+    template: "%s · দিনরেখা",
   },
   description,
-  applicationName: "ছন্দ",
-  authors: [{ name: "ছন্দ" }],
-  creator: "ছন্দ",
+  applicationName: "দিনরেখা",
+  authors: [{ name: "দিনরেখা" }],
+  creator: "দিনরেখা",
   formatDetection: { telephone: false },
   openGraph: {
     title,
     description,
     type: "website",
     locale: "bn_BD",
-    siteName: "ছন্দ",
+    siteName: "দিনরেখা",
   },
   twitter: {
     card: "summary_large_image",

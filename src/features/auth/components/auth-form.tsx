@@ -13,11 +13,11 @@ type AuthFormProps = {
 const content = {
   "sign-in": {
     title: "আবার স্বাগতম",
-    description: "Google account দিয়ে নিজের দিনের ছন্দে ফিরে যান।",
+    description: "Google account দিয়ে আপনার ব্যক্তিগত দিনরেখায় ফিরে যান।",
     button: "Google দিয়ে প্রবেশ করুন",
   },
   "sign-up": {
-    title: "নিজের ছন্দ শুরু করুন",
+    title: "নিজের দিনরেখা শুরু করুন",
     description: "Google account দিয়ে নিরাপদে নতুন account তৈরি করুন।",
     button: "Google দিয়ে account তৈরি করুন",
   },

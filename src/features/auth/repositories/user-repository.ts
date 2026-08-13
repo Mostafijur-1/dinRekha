@@ -89,7 +89,7 @@ export async function findOrCreateGoogleUser(input: {
         _id: new ObjectId(),
         email: emailNormalized,
         emailNormalized,
-        name: input.name.trim() || "ছন্দ ব্যবহারকারী",
+        name: input.name.trim() || "দিনরেখা ব্যবহারকারী",
         image: input.image,
         emailVerifiedAt: now,
         status: "active",

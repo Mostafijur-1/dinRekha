@@ -8,10 +8,13 @@ describe("Home page", () => {
     render(<Home />);
 
     expect(
-      screen.getByRole("heading", { name: /সময় কোথায় যায়/ }),
+      screen.getByRole("heading", { name: /দিন কোথায় গেল/ }),
     ).toBeVisible();
     expect(
-      screen.getByRole("link", { name: /আজকের দিন দেখুন/ }),
-    ).toHaveAttribute("href", "/dashboard");
+      screen.getByRole("link", { name: /^বিনামূল্যে শুরু করুন/ }),
+    ).toHaveAttribute("href", "/auth/sign-up");
+    expect(
+      screen.getAllByRole("link", { name: "দিনরেখা হোম" })[0],
+    ).toBeVisible();
   });
 });

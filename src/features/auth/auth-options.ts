@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
       const internalUser = await findOrCreateGoogleUser({
         providerAccountId: account.providerAccountId,
         email: user.email,
-        name: user.name ?? "ছন্দ ব্যবহারকারী",
+        name: user.name ?? "দিনরেখা ব্যবহারকারী",
         image: user.image,
         emailVerified: googleProfile?.email_verified === true,
       });

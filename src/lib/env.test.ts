@@ -10,8 +10,8 @@ describe("public environment", () => {
 
   it("normalizes a Vercel hostname without a protocol", () => {
     expect(
-      resolvePublicAppUrl({ NEXT_PUBLIC_APP_URL: "chondo.vercel.app" }).href,
-    ).toBe("https://chondo.vercel.app/");
+      resolvePublicAppUrl({ NEXT_PUBLIC_APP_URL: "dinrekha.vercel.app" }).href,
+    ).toBe("https://dinrekha.vercel.app/");
   });
 
   it("uses the current Vercel deployment URL when no canonical URL is set", () => {

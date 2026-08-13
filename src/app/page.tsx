@@ -17,7 +17,7 @@ const values = [
   },
   {
     number: "০২",
-    title: "নিজের ছন্দ বুঝুন",
+    title: "নিজের দিন বুঝুন",
     body: "দিনের Timeline, সম্পন্ন কাজ আর সময়ের বণ্টন—সবকিছু এক জায়গায় পরিষ্কারভাবে দেখুন।",
   },
   {
@@ -34,11 +34,11 @@ export default function Home() {
         <nav className="site-nav" aria-label="প্রধান নেভিগেশন">
           <Brand />
           <div className="nav-actions">
-            <a className="nav-link" href="#কেন-ছন্দ">
-              কেন ছন্দ
+            <a className="nav-link" href="#কেন-দিনরেখা">
+              কেন দিনরেখা
             </a>
-            <Link className="button button-quiet" href="/dashboard">
-              ডেমো দেখুন
+            <Link className="button button-quiet" href="/auth/sign-in">
+              প্রবেশ করুন
             </Link>
           </div>
         </nav>
@@ -47,19 +47,19 @@ export default function Home() {
           <div className="hero-copy">
             <div className="eyebrow">
               <SparkIcon />
-              আপনার দিনের পরিষ্কার ছবি
+              সময় ও অভ্যাস—একটি পরিষ্কার রেখায়
             </div>
             <h1>
-              সময় কোথায় যায়,
-              <span> এবার দেখুন সহজে।</span>
+              দিন কোথায় গেল,
+              <span> রেখায় দেখুন।</span>
             </h1>
             <p className="hero-description">
-              কাজ, অভ্যাস ও মনোযোগের সময় দ্রুত নোট করুন। ছন্দ আপনাকে চাপ না
-              দিয়ে প্রতিদিনের অগ্রগতি বুঝতে সাহায্য করে।
+              Timeline-এ সময় লিখুন, Daily Activity-তে অভ্যাস ধরে রাখুন। দিনরেখা
+              আপনার দিনকে বিচার করে না—শুধু পরিষ্কারভাবে দেখতে সাহায্য করে।
             </p>
             <div className="hero-actions">
-              <Link className="button button-primary" href="/dashboard">
-                আজকের দিন দেখুন
+              <Link className="button button-primary" href="/auth/sign-up">
+                বিনামূল্যে শুরু করুন
                 <ArrowIcon />
               </Link>
               <span className="supporting-note">
@@ -68,7 +68,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="product-preview" aria-label="ছন্দ ড্যাশবোর্ডের নমুনা">
+          <div
+            className="product-preview"
+            aria-label="দিনরেখা Dashboard-এর নমুনা"
+          >
             <div className="preview-topbar">
               <div>
                 <p>আজ, ১৩ আগস্ট</p>
@@ -86,7 +89,7 @@ export default function Home() {
               </div>
               <div className="score-copy">
                 <span>আজকের অগ্রগতি</span>
-                <strong>ভালো ছন্দে আছেন</strong>
+                <strong>দিনটি এগোচ্ছে সুন্দরভাবে</strong>
                 <p>৫টির মধ্যে ৩টি গুরুত্বপূর্ণ কাজ হয়েছে</p>
               </div>
             </div>
@@ -139,11 +142,11 @@ export default function Home() {
         <div className="hero-glow" aria-hidden="true" />
       </section>
 
-      <section className="value-section" id="কেন-ছন্দ">
+      <section className="value-section" id="কেন-দিনরেখা">
         <div className="page-width">
           <div className="section-heading">
-            <p>দিন গুনবেন না, দিন বুঝবেন</p>
-            <h2>Tracking যেন আরেকটি কাজ হয়ে না দাঁড়ায়।</h2>
+            <p>সময় লিখুন, অভ্যাস দেখুন, দিন বুঝুন</p>
+            <h2>দিনের হিসাব রাখা সহজ, ব্যক্তিগত এবং শান্ত।</h2>
           </div>
           <div className="value-grid">
             {values.map((value) => (
@@ -157,10 +160,27 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="trust-section">
+        <div className="page-width trust-grid">
+          <div>
+            <span>আপনার তথ্য, আপনার নিয়ন্ত্রণে</span>
+            <h2>ব্যক্তিগত দিন ব্যক্তিগতই থাকে।</h2>
+          </div>
+          <p>
+            Google দিয়ে নিরাপদ প্রবেশ, server-side authorization এবং
+            owner-scoped data access—দিনরেখা আপনার Activity ও note অন্য কারও
+            সামনে প্রকাশ করে না।
+          </p>
+          <Link className="button button-primary" href="/auth/sign-up">
+            নিজের দিনরেখা তৈরি করুন <ArrowIcon />
+          </Link>
+        </div>
+      </section>
+
       <footer className="site-footer page-width">
         <Brand />
-        <p>নিজের সময়, নিজের ছন্দে।</p>
-        <span>© ২০২৬ ছন্দ</span>
+        <p>দিন কোথায় গেল—রেখায় দেখুন।</p>
+        <span>© ২০২৬ দিনরেখা</span>
       </footer>
     </main>
   );

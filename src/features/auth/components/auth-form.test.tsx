@@ -10,7 +10,7 @@ describe("AuthForm", () => {
     render(<AuthForm mode="sign-up" googleEnabled />);
 
     expect(
-      screen.getByRole("heading", { name: "নিজের ছন্দ শুরু করুন" }),
+      screen.getByRole("heading", { name: "নিজের দিনরেখা শুরু করুন" }),
     ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Google দিয়ে account তৈরি করুন" }),

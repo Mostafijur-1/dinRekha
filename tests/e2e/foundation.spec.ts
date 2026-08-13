@@ -5,9 +5,14 @@ test("বাংলা application shell শুধু Google authentication দ�
 }) => {
   await page.goto("/");
 
-  await expect(page).toHaveTitle(/ছন্দ/);
+  await expect(page).toHaveTitle(/দিনরেখা/);
   await expect(page.locator("html")).toHaveAttribute("lang", "bn");
-  await page.getByRole("link", { name: /আজকের দিন দেখুন/ }).click();
+  await expect(
+    page
+      .getByRole("navigation", { name: "প্রধান নেভিগেশন" })
+      .getByRole("link", { name: "দিনরেখা হোম" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "প্রবেশ করুন" }).click();
   await expect(page).toHaveURL(/\/auth\/sign-in/);
   await expect(
     page.getByRole("heading", { name: "আবার স্বাগতম" }),

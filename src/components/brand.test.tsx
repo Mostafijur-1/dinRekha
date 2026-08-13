@@ -7,10 +7,10 @@ describe("Brand", () => {
   it("links the Bangla brand name to the home page", () => {
     render(<Brand />);
 
-    expect(screen.getByRole("link", { name: "ছন্দ হোম" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "দিনরেখা হোম" })).toHaveAttribute(
       "href",
       "/",
     );
-    expect(screen.getByText("ছন্দ")).toBeVisible();
+    expect(screen.getByText("দিনরেখা")).toBeVisible();
   });
 });

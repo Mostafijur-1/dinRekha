@@ -96,9 +96,12 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 1.55rem;
+  font-size: 1.45rem;
   font-weight: 750;
   letter-spacing: -0.04em;
+}
+.brand > span:last-child {
+  letter-spacing: -0.055em;
 }
 
 .brand-mark {
@@ -546,12 +549,155 @@ a {
 .site-footer > span {
   font-size: 0.72rem;
 }
+.trust-section {
+  padding-block: 6rem;
+  background: var(--text);
+  color: white;
+}
+.trust-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr) auto;
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+}
+.trust-grid > div > span {
+  color: #8dd5a8;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.trust-grid h2 {
+  max-width: 28rem;
+  margin: 0.7rem 0 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.25;
+  letter-spacing: -0.05em;
+}
+.trust-grid > p {
+  margin: 0;
+  color: #c6d2c9;
+  font-size: 0.88rem;
+  line-height: 1.85;
+}
+.trust-grid .button-primary {
+  white-space: nowrap;
+  background: #74c993;
+  color: #102217;
+}
 
 .shell-page {
   min-height: 100vh;
   background:
     radial-gradient(circle at 50% 15%, var(--brand-soft), transparent 27rem),
     var(--canvas);
+}
+.app-shell {
+  display: grid;
+  grid-template-columns: 15.5rem minmax(0, 1fr);
+  background: var(--canvas);
+}
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.7rem 1.25rem;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-raised) 94%, var(--brand-soft));
+}
+.app-sidebar .brand {
+  padding-inline: 0.45rem;
+}
+.app-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 2.5rem;
+}
+.app-nav > a,
+.app-nav-disabled {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.8rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+.app-nav > a > span,
+.app-nav-disabled > span {
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: var(--canvas-deep);
+  color: var(--text-soft);
+  font-size: 0.85rem;
+}
+.app-nav > a:hover,
+.app-nav > a.is-active {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.app-nav > a.is-active > span {
+  background: var(--brand);
+  color: white;
+}
+.app-nav-disabled {
+  opacity: 0.55;
+}
+.app-nav-disabled small {
+  margin-left: auto;
+  padding: 0.18rem 0.35rem;
+  border-radius: 99px;
+  background: var(--canvas-deep);
+  font-size: 0.55rem;
+}
+.app-sidebar-note {
+  margin-top: auto;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+}
+.app-sidebar-note span {
+  color: var(--brand);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+.app-sidebar-note p {
+  margin: 0.4rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+.app-main {
+  min-width: 0;
+}
+.app-header {
+  width: min(calc(100% - 3rem), var(--page-width));
+  border-bottom: 1px solid var(--border);
+}
+.app-mobile-brand,
+.app-mobile-nav {
+  display: none;
+}
+.app-header-context {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+}
+.app-header-context span {
+  color: var(--text-faint);
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+.app-header-context strong {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
 }
 .shell-header {
   width: min(calc(100% - 2rem), var(--page-width));
@@ -604,8 +750,35 @@ a {
   padding-bottom: 5rem;
 }
 .dashboard-layout {
-  width: min(calc(100% - 2rem), var(--page-width));
+  width: min(calc(100% - 3rem), var(--page-width));
   margin-inline: auto;
+}
+.dashboard-anchor {
+  scroll-margin-top: 1rem;
+}
+.activity-section {
+  padding-top: 0.25rem;
+}
+.feature-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.feature-section-heading span {
+  color: var(--brand);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.feature-section-heading h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.55rem;
+}
+.feature-section-heading p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.75rem;
 }
 .dashboard-intro {
   display: flex;
@@ -1522,6 +1695,13 @@ a {
   .daily-grid {
     grid-template-columns: 1fr;
   }
+  .trust-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .trust-grid .button-primary {
+    width: fit-content;
+  }
   .timeline-heading {
     align-items: stretch;
     flex-direction: column;
@@ -1589,6 +1769,69 @@ a {
   .shell-account > span {
     display: none;
   }
+  .app-shell {
+    display: block;
+    padding-bottom: 5.25rem;
+  }
+  .app-sidebar {
+    display: none;
+  }
+  .app-mobile-brand {
+    display: block;
+  }
+  .app-mobile-brand .brand {
+    font-size: 1.18rem;
+  }
+  .app-mobile-brand .brand-mark {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .app-header-context {
+    display: none;
+  }
+  .app-header {
+    width: min(calc(100% - 2rem), var(--page-width));
+  }
+  .app-mobile-nav {
+    position: fixed;
+    z-index: 20;
+    inset: auto 0 0;
+    min-height: 4.55rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0.45rem max(0.75rem, env(safe-area-inset-right))
+      max(0.45rem, env(safe-area-inset-bottom))
+      max(0.75rem, env(safe-area-inset-left));
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface-raised) 94%, transparent);
+    box-shadow: 0 -10px 30px rgb(16 31 21 / 0.08);
+    backdrop-filter: blur(18px);
+  }
+  .app-mobile-nav a {
+    min-height: 3.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.15rem;
+    border-radius: 0.75rem;
+    color: var(--text-faint);
+  }
+  .app-mobile-nav a.is-active {
+    background: var(--brand-soft);
+    color: var(--brand);
+  }
+  .app-mobile-nav a > span {
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .app-mobile-nav a > small {
+    font-size: 0.58rem;
+    font-weight: 800;
+  }
+  .dashboard-layout {
+    width: min(calc(100% - 2rem), var(--page-width));
+  }
   .dashboard-intro {
     align-items: stretch;
     flex-direction: column;
@@ -1596,6 +1839,11 @@ a {
   }
   .dashboard-score {
     min-width: 0;
+  }
+  .feature-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
   }
   .dashboard-date-nav {
     justify-content: space-between;
