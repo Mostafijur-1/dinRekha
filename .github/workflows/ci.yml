@@ -39,7 +39,19 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - name: Install dependencies
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            npm ci \
+              --fetch-retries=5 \
+              --fetch-retry-mintimeout=10000 \
+              --fetch-retry-maxtimeout=60000 && exit 0
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck

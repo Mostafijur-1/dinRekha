@@ -26,3 +26,9 @@
 - selected Activity/category-level sharing beyond current aggregate summary/streak targets
 - AI reflection/ranking; core product AI ছাড়া কার্যকর
 - external error monitoring/analytics vendor, consent ও retention policy অনুমোদনের পরে
+
+## CI reliability
+
+Dependency installation registry/network failure-এর জন্য সর্বোচ্চ তিনটি bounded `npm ci` attempt ব্যবহার
+করে। প্রতিটি attempt clean install; install সফল না হলে quality job থেমে যায় এবং কোনো test/build skip করে
+success দেখানো হয় না।
