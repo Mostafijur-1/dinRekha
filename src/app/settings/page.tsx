@@ -15,20 +15,10 @@ import { getCurrentUser } from "@/lib/auth";
 export const metadata = { title: "Profile ও Settings" };
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ restore?: string | string[] }>;
-}) {
+export default async function SettingsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/sign-in?callbackUrl=%2Fsettings");
-  const [archivedActivities, query] = await Promise.all([
-    listArchivedDailyActivities(user.id),
-    searchParams,
-  ]);
-  const restoreStatus = Array.isArray(query.restore)
-    ? query.restore[0]
-    : query.restore;
+  const archivedActivities = await listArchivedDailyActivities(user.id);
   return (
     <main className="shell-page app-shell settings-page">
       <AppNavigation active="settings" />
@@ -122,16 +112,6 @@ export default async function SettingsPage({
               Archive করা Activity আবার ব্যবহার করতে Restore করুন। আগের progress
               অক্ষত থাকবে এবং Activity নির্ধারিত দিনের তালিকার শেষে ফিরে আসবে।
             </p>
-            {restoreStatus === "success" && (
-              <p className="settings-archive-message is-success" role="status">
-                Activity Restore হয়েছে।
-              </p>
-            )}
-            {restoreStatus === "failed" && (
-              <p className="settings-archive-message is-error" role="alert">
-                Activity Restore করা যায়নি। আবার চেষ্টা করুন।
-              </p>
-            )}
             <ArchivedActivityList activities={archivedActivities} />
           </section>
           <section className="settings-card settings-reminders">

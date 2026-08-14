@@ -13,8 +13,8 @@ Home, Dashboard ও Report একই proportional score ব্যবহার �
 
 Settings owner-এর archived Activity তালিকা দেখায়। Restore action authenticated owner ও
 archived status দিয়ে mutation scope করে, একই definition-কে active করে, `archivedAt` সরায় এবং
-তালিকার শেষে রাখে। Form Activity ID সরাসরি `FormData`-তে দেয় এবং mutation-এর পর Settings-এ
-server redirect করে success/failure message দেখায়। পুরোনো progress row অপরিবর্তিত থাকে। বর্তমান model আলাদা active/archive
+তালিকার শেষে রাখে। Client same-origin JSON API-তে Activity ID পাঠায়; API explicit status ও safe
+message দেয় এবং success হলে client Settings data refresh করে। পুরোনো progress row অপরিবর্তিত থাকে। বর্তমান model আলাদা active/archive
 period history রাখে না; তাই restore-এর আগের archived gap historical report-এ আলাদা করে বাদ দেওয়া
 যায় না।
 
