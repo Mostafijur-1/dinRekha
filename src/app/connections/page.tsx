@@ -157,7 +157,7 @@ export default async function ConnectionsPage({
                         className="report-detail-link"
                         href={`/connections/shared/${connection.userId}`}
                       >
-                        {connection.name} কী দেখাচ্ছেন দেখুন →
+                        আপনার সংযোগ →
                       </a>
                       <form action={disconnect}>
                         <button

@@ -2,12 +2,14 @@
 
 ## Scope
 
-নির্বাচিত দিনের Timeline এখন ০০:০০–২৩:০০ পর্যন্ত ২৪টি স্থায়ী hour slot দেখায়:
+নির্বাচিত দিনের Timeline-এ ০০:০০–০৫:০০ পর্যন্ত একটি default `ঘুম` slot এবং
+০৫:০০–২৩:০০ পর্যন্ত ঘণ্টাভিত্তিক স্থায়ী slot দেখায়:
 
 - ব্যবহারকারী সংশ্লিষ্ট ঘণ্টা খুলে শুধু কাজের নাম লেখেন; start/end সময় slot থেকে তৈরি হয়
 - বর্তমান ঘণ্টার entry end time ছাড়া in-progress হিসেবে থাকে
 - প্রতিটি slot ওই সময়ের কাছাকাছি historical কাজকে suggestion হিসেবে আগে দেখায়
 - occupied ও future slot overlap বা future-time mutation তৈরি করতে দেয় না
+- প্রথম slot-এ বাস্তব entry না থাকলে `ঘুম` presentation default হিসেবে tracked হয়; page load database write করে না
 
 - Activity, category, start time, end time ও private note
 - completed এবং বর্তমানে চলমান entry

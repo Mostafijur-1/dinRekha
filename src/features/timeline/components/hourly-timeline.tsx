@@ -20,29 +20,35 @@ import {
 
 function HourEntryForm({
   dateKey,
-  hour,
+  startMinute,
+  endMinute,
   isToday,
   boundary,
   suggestions,
+  defaultActivity = "",
+  defaultCategory = "সাধারণ",
+  summary = "এই ঘণ্টায় কী করেছেন লিখুন",
 }: {
   dateKey: string;
-  hour: number;
+  startMinute: number;
+  endMinute: number;
   isToday: boolean;
   boundary: number;
   suggestions: TimelineSuggestion[];
+  defaultActivity?: string;
+  defaultCategory?: string;
+  summary?: string;
 }) {
   const [state, action] = useActionState(
     createTimelineEntryAction,
     initialTimelineActionState,
   );
-  const [activity, setActivity] = useState("");
-  const [category, setCategory] = useState("সাধারণ");
-  const startMinute = hour * 60;
-  const endMinute = Math.min(1439, startMinute + 60);
-  const isCurrentHour =
-    isToday && boundary >= startMinute && boundary < startMinute + 60;
+  const [activity, setActivity] = useState(defaultActivity);
+  const [category, setCategory] = useState(defaultCategory);
+  const isCurrentSlot =
+    isToday && boundary >= startMinute && boundary < endMinute;
   const startTime = minuteToTime(startMinute);
-  const endTime = isCurrentHour ? "" : minuteToTime(endMinute);
+  const endTime = isCurrentSlot ? "" : minuteToTime(Math.min(1439, endMinute));
   const hourSuggestions = suggestionsForTimelineHour(
     suggestions,
     dateKey,
@@ -53,7 +59,7 @@ function HourEntryForm({
     <details className="timeline-hour-entry">
       <summary>
         <span aria-hidden="true">+</span>
-        এই ঘণ্টায় কী করেছেন লিখুন
+        {summary}
       </summary>
       <form action={action} className="timeline-hour-form">
         <input type="hidden" name="dateKey" value={dateKey} />
@@ -116,6 +122,18 @@ function HourEntryForm({
   );
 }
 
+const defaultSleepEntry: TimelineEntryView = {
+  id: "default-sleep",
+  activity: "ঘুম",
+  category: "বিশ্রাম",
+  startMinute: 0,
+  endMinute: 300,
+  startTime: "00:00",
+  endTime: "05:00",
+  status: "completed",
+  duration: 300,
+};
+
 export function HourlyTimeline({
   entries,
   dateKey,
@@ -129,13 +147,33 @@ export function HourlyTimeline({
   isToday: boolean;
   suggestions: TimelineSuggestion[];
 }) {
-  const hours = Array.from({ length: 24 }, (_, hour) => hour);
-  const gaps = timelineGaps(entries, boundary).filter(
+  const slots = [
+    { startMinute: 0, endMinute: 300, isDefaultSleep: true },
+    ...Array.from({ length: 19 }, (_, index) => {
+      const startMinute = (index + 5) * 60;
+      return {
+        startMinute,
+        endMinute: startMinute + 60,
+        isDefaultSleep: false,
+      };
+    }),
+  ];
+  const hasEarlyEntry = entries.some(
+    (entry) => entry.startMinute < 300 && (entry.endMinute ?? boundary) > 0,
+  );
+  const effectiveEntries = hasEarlyEntry
+    ? entries
+    : [defaultSleepEntry, ...entries];
+  const gaps = timelineGaps(effectiveEntries, boundary).filter(
     (gap) => gap.endMinute > gap.startMinute,
   );
-  const tracked = entries.reduce(
+  const tracked = effectiveEntries.reduce(
     (total, entry) =>
-      total + Math.max(0, (entry.endMinute ?? boundary) - entry.startMinute),
+      total +
+      Math.max(
+        0,
+        Math.min(entry.endMinute ?? boundary, boundary) - entry.startMinute,
+      ),
     0,
   );
   const untracked = gaps.reduce(
@@ -162,9 +200,7 @@ export function HourlyTimeline({
       </div>
 
       <div className="timeline-hour-list">
-        {hours.map((hour) => {
-          const startMinute = hour * 60;
-          const endMinute = startMinute + 60;
+        {slots.map(({ startMinute, endMinute, isDefaultSleep }) => {
           const startingEntries = entries.filter(
             (entry) =>
               entry.startMinute >= startMinute && entry.startMinute < endMinute,
@@ -181,11 +217,17 @@ export function HourlyTimeline({
           return (
             <article
               className={`timeline-hour-slot ${isFuture ? "is-future" : ""} ${isCurrent ? "is-current" : ""}`}
-              key={hour}
+              key={startMinute}
             >
               <div className="timeline-hour-label">
-                <strong>{minuteToTime(startMinute)}</strong>
-                <span>{suggestedTimeLabel(startMinute)}</span>
+                <strong>
+                  {isDefaultSleep ? "00:00–05:00" : minuteToTime(startMinute)}
+                </strong>
+                <span>
+                  {isDefaultSleep
+                    ? "রাতের বিশ্রাম"
+                    : suggestedTimeLabel(startMinute)}
+                </span>
               </div>
               <div className="timeline-hour-content">
                 {startingEntries.map((entry) => (
@@ -196,7 +238,30 @@ export function HourlyTimeline({
                     key={entry.id}
                   />
                 ))}
-                {isFuture ? (
+                {isDefaultSleep && !hasEarlyEntry ? (
+                  <div className="timeline-default-sleep">
+                    <div>
+                      <span>বিশ্রাম · ডিফল্ট</span>
+                      <h3>ঘুম</h3>
+                      <small>
+                        {isToday && boundary < 300
+                          ? `${durationLabel(boundary)} চলছে`
+                          : "৫ ঘণ্টা"}
+                      </small>
+                    </div>
+                    <HourEntryForm
+                      dateKey={dateKey}
+                      startMinute={startMinute}
+                      endMinute={endMinute}
+                      isToday={isToday}
+                      boundary={boundary}
+                      suggestions={suggestions}
+                      defaultActivity="ঘুম"
+                      defaultCategory="বিশ্রাম"
+                      summary="পরিবর্তন করুন"
+                    />
+                  </div>
+                ) : isFuture ? (
                   <p className="timeline-hour-state">এই সময় এখনো আসেনি</p>
                 ) : overlappingEntry ? (
                   startingEntries.length === 0 && (
@@ -207,7 +272,8 @@ export function HourlyTimeline({
                 ) : (
                   <HourEntryForm
                     dateKey={dateKey}
-                    hour={hour}
+                    startMinute={startMinute}
+                    endMinute={endMinute}
                     isToday={isToday}
                     boundary={boundary}
                     suggestions={suggestions}

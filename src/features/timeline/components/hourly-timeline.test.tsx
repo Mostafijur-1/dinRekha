@@ -31,7 +31,22 @@ describe("HourlyTimeline", () => {
       />,
     );
 
-    expect(container.querySelectorAll(".timeline-hour-slot")).toHaveLength(24);
+    expect(container.querySelectorAll(".timeline-hour-slot")).toHaveLength(20);
+    expect(screen.getByText("00:00–05:00")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "ঘুম" })).toBeVisible();
+    const sleepSlot = screen.getByText("00:00–05:00").closest("article");
+    fireEvent.click(within(sleepSlot!).getByText("পরিবর্তন করুন"));
+    const sleepInput = within(sleepSlot!).getByRole("textbox", {
+      name: /কী করেছেন/,
+    });
+    expect(sleepInput).toHaveValue("ঘুম");
+    fireEvent.change(sleepInput, { target: { value: "ভোরের প্রস্তুতি" } });
+    expect(
+      sleepSlot!.querySelector<HTMLInputElement>('input[name="category"]'),
+    ).toHaveValue("সাধারণ");
+    expect(
+      sleepSlot!.querySelector<HTMLInputElement>('input[name="endTime"]'),
+    ).toHaveValue("05:00");
     const tenOClockSlot = screen.getByText("10:00").closest("article");
     expect(tenOClockSlot).not.toBeNull();
     fireEvent.click(

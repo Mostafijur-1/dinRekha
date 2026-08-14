@@ -71,7 +71,6 @@ export default async function SharedProgressPage({
       <section className="shared-progress-page">
         <span>আপনার সঙ্গে share করা</span>
         <h1>{owner.name}-এর অগ্রগতি</h1>
-        <p>শুধু তিনি যে permission দিয়েছেন সেটুকুই দেখা যাচ্ছে।</p>
         {permissions.productivitySummary && (
           <div className="report-metric-grid">
             <article className="report-score-card">
