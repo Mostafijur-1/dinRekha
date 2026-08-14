@@ -10,10 +10,11 @@ import {
 import {
   createTimelineEntry,
   deleteTimelineEntry,
-  updateTimelineEntry,
+  updateTimelineActivity,
 } from "@/features/timeline/repository";
 import {
   timelineEntryIdSchema,
+  timelineActivitySchema,
   timelineEntrySchema,
 } from "@/features/timeline/schemas";
 import {
@@ -111,7 +112,9 @@ export async function updateTimelineEntryAction(
   if (!user || !id.success) {
     return { status: "error", message: "Timeline entry পাওয়া যায়নি।" };
   }
-  const parsed = inputFrom(formData);
+  const parsed = timelineActivitySchema.safeParse({
+    activity: formData.get("activity"),
+  });
   const todayKey = dateKeyForTimezone(new Date(), user.timezone);
   const dateKey = validatedDate(formData.get("dateKey"), todayKey);
   if (!parsed.success || !dateKey) {
@@ -122,19 +125,11 @@ export async function updateTimelineEntryAction(
         : (parsed.error.issues[0]?.message ?? "তথ্যগুলো আবার দেখুন।"),
     };
   }
-  const error = temporalError(
-    dateKey,
-    todayKey,
-    parsed.data.endTime,
-    parsed.data.startTime,
-    currentMinuteForTimezone(new Date(), user.timezone),
-  );
-  if (error) return { status: "error", message: error };
-  const result = await updateTimelineEntry(
+  const result = await updateTimelineActivity(
     user.id,
     id.data,
     dateKey,
-    parsed.data,
+    parsed.data.activity,
   );
   const failure = messageFor(result);
   if (failure) return { status: "error", message: failure };

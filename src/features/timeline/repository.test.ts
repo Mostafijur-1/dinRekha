@@ -26,7 +26,7 @@ import {
   createTimelineEntry,
   deleteTimelineEntry,
   listTimelineSuggestions,
-  updateTimelineEntry,
+  updateTimelineActivity,
 } from "@/features/timeline/repository";
 
 const input = {
@@ -71,24 +71,27 @@ describe("Timeline repository authorization and overlap", () => {
     expect(insertOne).not.toHaveBeenCalled();
   });
 
-  it("scopes update lookup to owner and date", async () => {
+  it("updates only the activity within the owner and date boundary", async () => {
     const ownerId = new ObjectId();
     const entryId = new ObjectId();
-    findOne.mockResolvedValueOnce(null);
+    updateOne.mockResolvedValueOnce({ matchedCount: 0 });
     await expect(
-      updateTimelineEntry(
+      updateTimelineActivity(
         ownerId.toHexString(),
         entryId.toHexString(),
         "2026-08-13",
-        input,
+        "নতুন কাজ",
       ),
     ).resolves.toBe("not_found");
-    expect(findOne).toHaveBeenCalledWith({
-      _id: entryId,
-      ownerId,
-      dateKey: "2026-08-13",
-    });
-    expect(updateOne).not.toHaveBeenCalled();
+    expect(updateOne).toHaveBeenCalledWith(
+      { _id: entryId, ownerId, dateKey: "2026-08-13" },
+      {
+        $set: {
+          activity: "নতুন কাজ",
+          updatedAt: expect.any(Date),
+        },
+      },
+    );
   });
 
   it("scopes deletion to the authenticated owner", async () => {

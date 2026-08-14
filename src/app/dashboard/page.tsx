@@ -13,6 +13,7 @@ import {
 import { ActivityCard } from "@/features/daily-activities/components/activity-card";
 import { ActivityCreator } from "@/features/daily-activities/components/activity-creator";
 import { listDailyActivities } from "@/features/daily-activities/repository";
+import { proportionalActivityScore } from "@/features/daily-activities/progress";
 import { HourlyTimeline } from "@/features/timeline/components/hourly-timeline";
 import {
   listTimelineEntries,
@@ -53,9 +54,7 @@ export default async function DashboardPage({
     listTimelineSuggestions(user.id, todayKey, currentMinute, 100),
   ]);
   const completed = activities.filter((activity) => activity.completed).length;
-  const completion = activities.length
-    ? Math.round((completed / activities.length) * 100)
-    : 0;
+  const completion = proportionalActivityScore(activities) ?? 0;
   const reminders = isToday
     ? buildDashboardReminders(user.reminders, activities, currentMinute)
     : [];
@@ -177,7 +176,7 @@ export default async function DashboardPage({
                     activity={activity}
                     dateKey={dateKey}
                     canManage={isToday}
-                    key={activity.id}
+                    key={`${activity.id}:${dateKey}`}
                   />
                 ))}
               </section>

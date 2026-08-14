@@ -1,5 +1,14 @@
 # Daily Activities architecture
 
+## Progress and score
+
+Counter Activity-এর `+`/`-` button ও সরাসরি number input একই controlled value ব্যবহার করে।
+Button চাপলে input সঙ্গে সঙ্গে বদলায় এবং সেই absolute value server action-এ সংরক্ষণ হয়।
+
+Home, Dashboard ও Report একই proportional score ব্যবহার করে: প্রতিটি Activity-এর
+`min(value / target, 1)` completion ratio-এর গড়কে শতকরা হিসেবে দেখানো হয়। ফলে আংশিক
+অগ্রগতিও score-এ যোগ হয়, কিন্তু target-এর বেশি value ১০০%-এর বেশি contribution দেয় না।
+
 ## Scope
 
 User Activity তৈরি, তালিকা দেখা, definition edit, নির্বাচিত দিনের value update, archive এবং তালিকার ক্রম পরিবর্তন করতে পারে। Activity প্রতিদিন বা নির্বাচিত সপ্তাহের দিনে schedule করা যায়। Reminders, offline synchronization, arbitrary calendar picker ও reports পরে যোগ হবে।

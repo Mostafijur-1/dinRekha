@@ -1,4 +1,5 @@
 import { activityIsScheduled } from "@/features/reports/streaks";
+import { proportionalActivityScore } from "@/features/daily-activities/progress";
 
 export type ReportActivity = {
   id: string;
@@ -46,10 +47,6 @@ export type ProductivityReport = {
   categories: Array<{ category: string; minutes: number; percentage: number }>;
 };
 
-export function completionScore(completed: number, planned: number) {
-  return planned > 0 ? Math.round((completed / planned) * 100) : null;
-}
-
 export function buildProductivityReport({
   dateKeys,
   todayKey,
@@ -73,6 +70,7 @@ export function buildProductivityReport({
   }
 
   const categoryMinutes = new Map<string, number>();
+  const weeklyActivityProgress: Array<{ value: number; target: number }> = [];
   const days = dateKeys.map((dateKey) => {
     const availableMinutes = dateKey === todayKey ? currentMinute : 1440;
     const scheduled = activities.filter((activity) =>
@@ -82,6 +80,11 @@ export function buildProductivityReport({
     const completedActivities = scheduled.filter(
       (activity) => (dayProgress?.get(activity.id) ?? 0) >= activity.target,
     ).length;
+    const activityProgress = scheduled.map((activity) => ({
+      value: dayProgress?.get(activity.id) ?? 0,
+      target: activity.target,
+    }));
+    weeklyActivityProgress.push(...activityProgress);
     const trackedMinutes = timeline
       .filter((entry) => entry.dateKey === dateKey)
       .reduce((total, entry) => {
@@ -108,7 +111,7 @@ export function buildProductivityReport({
       untrackedMinutes: Math.max(0, availableMinutes - trackedMinutes),
       plannedActivities: scheduled.length,
       completedActivities,
-      score: completionScore(completedActivities, scheduled.length),
+      score: proportionalActivityScore(activityProgress),
     };
   });
 
@@ -126,10 +129,7 @@ export function buildProductivityReport({
       score: null as number | null,
     },
   );
-  weekly.score = completionScore(
-    weekly.completedActivities,
-    weekly.plannedActivities,
-  );
+  weekly.score = proportionalActivityScore(weeklyActivityProgress);
   const categoryTotal = [...categoryMinutes.values()].reduce(
     (total, minutes) => total + minutes,
     0,

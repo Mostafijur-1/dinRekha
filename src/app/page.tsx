@@ -5,6 +5,7 @@ import { Brand } from "@/components/brand";
 import { ArrowIcon, CheckIcon, ClockIcon, SparkIcon } from "@/components/icons";
 import { countActiveUsers } from "@/features/auth/repositories/user-repository";
 import { dateKeyForTimezone } from "@/features/daily-activities/date";
+import { proportionalActivityScore } from "@/features/daily-activities/progress";
 import {
   listDailyActivities,
   type DailyActivityView,
@@ -22,7 +23,7 @@ const values = [
   {
     number: "০১",
     title: "দ্রুত লিখুন",
-    body: "বারবার টাইপ নয়। পরিচিত কাজ, সাম্প্রতিক অভ্যাস আর সময়ভিত্তিক পরামর্শ থেকে এক ট্যাপে শুরু করুন।",
+    body: "বারবার টাইপ নয়। পরিচিত কাজ, সাম্প্রতিক Activity আর সময়ভিত্তিক পরামর্শ থেকে এক ট্যাপে শুরু করুন।",
   },
   {
     number: "০২",
@@ -32,7 +33,7 @@ const values = [
   {
     number: "০৩",
     title: "নিয়ন্ত্রণ আপনার",
-    body: "আপনার কাজ ও অভ্যাস ব্যক্তিগত। কী রাখবেন, কাকে কতটুকু দেখাবেন—সেই সিদ্ধান্তও শুধু আপনার।",
+    body: "আপনার কাজ ও Activity ব্যক্তিগত। কী রাখবেন, কাকে কতটুকু দেখাবেন—সেই সিদ্ধান্তও শুধু আপনার।",
   },
 ];
 
@@ -91,9 +92,7 @@ export function HomeContent({
     (activity) => activity.completed,
   ).length;
   const completion = isSignedIn
-    ? activities.length
-      ? Math.round((completedCount / activities.length) * 100)
-      : 0
+    ? (proportionalActivityScore(activities) ?? 0)
     : 72;
   const visibleActivities = isSignedIn
     ? activities.slice(0, 3).map((activity) => ({
@@ -137,11 +136,11 @@ export function HomeContent({
               {welcome}
             </div>
             <h1>
-              প্রতিদিনের সময় ও অভ্যাস,
+              প্রতিদিনের সময় ও Activity,
               <span> এক জায়গায় বুঝে নিন।</span>
             </h1>
             <p className="hero-description">
-              কখন কী করলেন, কোন অভ্যাসটি এগোচ্ছে এবং কোথায় মনোযোগ দরকার—দিনরেখা
+              কখন কী করলেন, কোন Activity এগোচ্ছে এবং কোথায় মনোযোগ দরকার—দিনরেখা
               সহজ ভাষায় আপনার দিনের পরিষ্কার ছবি দেখায়।
             </p>
             <div className="hero-actions">
@@ -190,22 +189,22 @@ export function HomeContent({
                 <strong>
                   {isSignedIn
                     ? activities.length === 0
-                      ? "আজকের প্রথম অভ্যাসটি তৈরি করুন"
+                      ? "আজকের প্রথম Activity তৈরি করুন"
                       : completion === 100
-                        ? "আজকের সব অভ্যাস সম্পন্ন"
+                        ? "আজকের সব Activity সম্পন্ন"
                         : "নিজের ছন্দে দিনটি এগিয়ে নিন"
                     : "দিনটি এগোচ্ছে সুন্দরভাবে"}
                 </strong>
                 <p>
                   {isSignedIn
-                    ? `${bengaliNumber(activities.length)}টির মধ্যে ${bengaliNumber(completedCount)}টি অভ্যাস সম্পন্ন`
+                    ? `${bengaliNumber(activities.length)}টির মধ্যে ${bengaliNumber(completedCount)}টি Activity সম্পন্ন`
                     : "৫টির মধ্যে ৩টি গুরুত্বপূর্ণ কাজ হয়েছে"}
                 </p>
               </div>
             </div>
 
             <div className="preview-section-title">
-              <strong>আজকের অভ্যাস</strong>
+              <strong>আজকের Activity</strong>
               {isSignedIn ? (
                 <Link href="/dashboard">সব দেখুন</Link>
               ) : (
@@ -215,8 +214,8 @@ export function HomeContent({
             <div className="activity-list">
               {visibleActivities.length === 0 ? (
                 <div className="activity-empty">
-                  <strong>আজকের কোনো অভ্যাস নেই</strong>
-                  <span>ড্যাশবোর্ড থেকে প্রথম অভ্যাসটি যোগ করুন।</span>
+                  <strong>আজকের কোনো Activity নেই</strong>
+                  <span>ড্যাশবোর্ড থেকে প্রথম Activity যোগ করুন।</span>
                 </div>
               ) : (
                 visibleActivities.map((activity) => (
@@ -256,7 +255,7 @@ export function HomeContent({
                 <small>
                   {isSignedIn
                     ? nextActivity
-                      ? "পরের অভ্যাস"
+                      ? "পরের Activity"
                       : "আজকের অবস্থা"
                     : "এখন চলছে"}
                 </small>
@@ -264,8 +263,8 @@ export function HomeContent({
                   {isSignedIn
                     ? nextActivity?.name ||
                       (activities.length
-                        ? "সব অভ্যাস সম্পন্ন"
-                        : "একটি অভ্যাস যোগ করুন")
+                        ? "সব Activity সম্পন্ন"
+                        : "একটি Activity যোগ করুন")
                     : "গভীর মনোযোগ"}
                 </strong>
               </span>
@@ -281,7 +280,7 @@ export function HomeContent({
       <section className="value-section" id="কেন-দিনরেখা">
         <div className="page-width">
           <div className="section-heading">
-            <p>সময় লিখুন · অভ্যাস দেখুন · নিজের ছন্দ বুঝুন</p>
+            <p>সময় লিখুন · Activity দেখুন · নিজের ছন্দ বুঝুন</p>
             <h2>দিনের হিসাব রাখুন চাপ নয়, স্বচ্ছতা নিয়ে।</h2>
           </div>
           <div className="value-grid">

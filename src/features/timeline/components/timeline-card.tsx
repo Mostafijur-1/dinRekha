@@ -7,7 +7,6 @@ import {
   deleteTimelineEntryAction,
   updateTimelineEntryAction,
 } from "@/features/timeline/actions";
-import { TimelineFields } from "@/features/timeline/components/timeline-fields";
 import { TimelineSubmitButton } from "@/features/timeline/components/timeline-submit-button";
 import type { TimelineEntryView } from "@/features/timeline/repository";
 import { durationLabel } from "@/features/timeline/time";
@@ -15,11 +14,9 @@ import { durationLabel } from "@/features/timeline/time";
 export function TimelineCard({
   entry,
   dateKey,
-  isToday,
 }: {
   entry: TimelineEntryView;
   dateKey: string;
-  isToday: boolean;
 }) {
   const updateAction = updateTimelineEntryAction.bind(null, entry.id);
   const deleteAction = deleteTimelineEntryAction.bind(null, entry.id);
@@ -42,10 +39,19 @@ export function TimelineCard({
         {entry.duration > 0 && <small>{durationLabel(entry.duration)}</small>}
       </div>
       <details className="timeline-edit">
-        <summary>পরিবর্তন</summary>
+        <summary>Edit</summary>
         <form action={action} className="timeline-form">
           <input type="hidden" name="dateKey" value={dateKey} />
-          <TimelineFields entry={entry} allowInProgress={isToday} />
+          <label className="activity-field">
+            <span>Activity</span>
+            <input
+              name="activity"
+              defaultValue={entry.activity}
+              maxLength={80}
+              minLength={2}
+              required
+            />
+          </label>
           <div className="timeline-form-actions">
             <TimelineSubmitButton label="সংরক্ষণ করুন" />
             <button

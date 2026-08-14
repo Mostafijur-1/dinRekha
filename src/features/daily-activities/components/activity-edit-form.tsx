@@ -18,7 +18,7 @@ export function ActivityEditForm({
 
   return (
     <details className="activity-edit">
-      <summary>সম্পাদনা</summary>
+      <summary>Edit</summary>
       <form action={action} className="activity-definition-form">
         <ActivityDefinitionFields activity={activity} />
         {state.message && (

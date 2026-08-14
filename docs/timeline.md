@@ -1,5 +1,11 @@
 # Timeline foundation
 
+## Edit boundary
+
+বিদ্যমান Timeline entry-তে `Edit` থেকে শুধু Activity-এর নাম পরিবর্তন করা যায়।
+Start time, end time, category এবং note edit form-এ পাঠানো হয় না; server action-ও এসব field
+গ্রহণ করে না। সময় বা অন্য metadata বদলাতে হলে entry মুছে সঠিক slot-এ নতুন entry তৈরি করতে হবে।
+
 ## Scope
 
 নির্বাচিত দিনের Timeline-এ ০০:০০–০৫:০০ পর্যন্ত একটি default `ঘুম` slot এবং

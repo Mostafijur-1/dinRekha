@@ -20,7 +20,7 @@ describe("Home page", () => {
     renderHome(null);
 
     expect(
-      screen.getByRole("heading", { name: /প্রতিদিনের সময় ও অভ্যাস/ }),
+      screen.getByRole("heading", { name: /প্রতিদিনের সময় ও Activity/ }),
     ).toBeVisible();
     expect(
       screen.getByRole("link", { name: /^Google দিয়ে শুরু করুন/ }),
@@ -51,7 +51,7 @@ describe("Home page", () => {
     ).toBeVisible();
   });
 
-  it("uses a signed-in user's real habits and progress", () => {
+  it("uses a signed-in user's real activities and proportional progress", () => {
     renderHome(
       { name: "মোস্তাফিজুর রহমান", timezone: "Asia/Dhaka" },
       {
@@ -81,8 +81,8 @@ describe("Home page", () => {
       },
     );
 
-    expect(screen.getByLabelText("আজকের অগ্রগতি ৫০ শতাংশ")).toBeVisible();
-    expect(screen.getByText("২টির মধ্যে ১টি অভ্যাস সম্পন্ন")).toBeVisible();
+    expect(screen.getByLabelText("আজকের অগ্রগতি ৬৭ শতাংশ")).toBeVisible();
+    expect(screen.getByText("২টির মধ্যে ১টি Activity সম্পন্ন")).toBeVisible();
     expect(screen.getByText("সকালের ব্যায়াম")).toBeVisible();
     expect(screen.getAllByText("বই পড়া").length).toBeGreaterThan(0);
     expect(screen.queryByText("গভীর মনোযোগ")).not.toBeInTheDocument();

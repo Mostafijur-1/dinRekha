@@ -5,6 +5,7 @@ import {
 } from "@/features/daily-activities/actions";
 import { ActivityEditForm } from "@/features/daily-activities/components/activity-edit-form";
 import { ActivitySubmitButton } from "@/features/daily-activities/components/activity-submit-button";
+import { CounterProgressControls } from "@/features/daily-activities/components/counter-progress-controls";
 import type { DailyActivityView } from "@/features/daily-activities/repository";
 
 function progressText(activity: DailyActivityView): string {
@@ -75,47 +76,11 @@ export function ActivityCard({
             />
           </form>
         ) : activity.measurement === "counter" ? (
-          <div className="counter-actions">
-            <form action={setProgress}>
-              <input type="hidden" name="dateKey" value={dateKey} />
-              <input
-                type="hidden"
-                name="value"
-                value={Math.max(0, activity.value - 1)}
-              />
-              <ActivitySubmitButton
-                idle="−"
-                pending="…"
-                className="activity-step-button"
-              />
-            </form>
-            <form action={setProgress} className="counter-direct-form">
-              <input type="hidden" name="dateKey" value={dateKey} />
-              <label>
-                <span className="sr-only">সরাসরি সংখ্যা লিখুন</span>
-                <input
-                  type="number"
-                  name="value"
-                  min="0"
-                  max="1000000"
-                  step="1"
-                  defaultValue={activity.value}
-                  inputMode="numeric"
-                  required
-                />
-              </label>
-              <ActivitySubmitButton idle="রাখুন" pending="…" />
-            </form>
-            <form action={setProgress}>
-              <input type="hidden" name="dateKey" value={dateKey} />
-              <input type="hidden" name="value" value={activity.value + 1} />
-              <ActivitySubmitButton
-                idle="＋"
-                pending="…"
-                className="activity-step-button"
-              />
-            </form>
-          </div>
+          <CounterProgressControls
+            activityId={activity.id}
+            dateKey={dateKey}
+            initialValue={activity.value}
+          />
         ) : (
           <form action={setProgress} className="value-progress-form">
             <input type="hidden" name="dateKey" value={dateKey} />

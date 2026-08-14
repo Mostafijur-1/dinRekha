@@ -9,10 +9,7 @@ import {
   type TimelineSuggestionCandidate,
 } from "@/features/timeline/suggestions";
 import { minuteToTime, timeToMinute } from "@/features/timeline/time";
-import {
-  timelineEntriesCollection,
-  type TimelineEntryDocument,
-} from "@/lib/db/collections";
+import { timelineEntriesCollection } from "@/lib/db/collections";
 import { ensureDatabaseIndexes } from "@/lib/db/indexes";
 
 export type TimelineEntryView = {
@@ -151,46 +148,23 @@ export async function createTimelineEntry(
   return "success";
 }
 
-export async function updateTimelineEntry(
+export async function updateTimelineActivity(
   ownerId: string,
   entryId: string,
   dateKey: string,
-  input: TimelineEntryInput,
+  activity: string,
 ): Promise<TimelineMutationResult> {
   const owner = objectId(ownerId);
   const entry = objectId(entryId);
   if (!owner || !entry) return "not_found";
   const timeline = await timelineEntriesCollection();
-  const existing = await timeline.findOne({
-    _id: entry,
-    ownerId: owner,
-    dateKey,
-  });
-  if (!existing) return "not_found";
-  const { startMinute, endMinute, occupiedEnd } = interval(input);
-  if (await overlaps(owner, dateKey, startMinute, occupiedEnd, entry)) {
-    return "overlap";
-  }
-  const fields: Partial<TimelineEntryDocument> = {
-    activity: input.activity,
-    category: input.category,
-    startMinute,
-    status: endMinute === undefined ? "in_progress" : "completed",
-    updatedAt: new Date(),
-    ...(endMinute === undefined ? {} : { endMinute }),
-    ...(input.note ? { note: input.note } : {}),
-  };
-  await timeline.updateOne(
+  const result = await timeline.updateOne(
     { _id: entry, ownerId: owner, dateKey },
     {
-      $set: fields,
-      $unset: {
-        ...(endMinute === undefined ? { endMinute: "" } : {}),
-        ...(input.note ? {} : { note: "" }),
-      },
+      $set: { activity, updatedAt: new Date() },
     },
   );
-  return "success";
+  return result.matchedCount === 1 ? "success" : "not_found";
 }
 
 export async function deleteTimelineEntry(

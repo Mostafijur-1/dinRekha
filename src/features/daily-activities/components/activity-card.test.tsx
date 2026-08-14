@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/daily-activities/actions", () => ({
@@ -7,10 +7,11 @@ vi.mock("@/features/daily-activities/actions", () => ({
   setProgressAction: vi.fn(),
 }));
 
+import { setProgressAction } from "@/features/daily-activities/actions";
 import { ActivityCard } from "@/features/daily-activities/components/activity-card";
 
 describe("ActivityCard counter input", () => {
-  it("offers step controls and a direct numeric value", () => {
+  it("updates the direct input immediately when step controls are used", async () => {
     render(
       <ActivityCard
         dateKey="2026-08-14"
@@ -32,9 +33,20 @@ describe("ActivityCard counter input", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "−" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "＋" })).toBeVisible();
-    expect(screen.getByLabelText("সরাসরি সংখ্যা লিখুন")).toHaveValue(3);
+    const input = screen.getByLabelText("সরাসরি সংখ্যা লিখুন");
+    expect(input).toHaveValue(3);
+    fireEvent.click(screen.getByRole("button", { name: "এক বাড়ান" }));
+    expect(input).toHaveValue(4);
+    fireEvent.click(screen.getByRole("button", { name: "এক বাড়ান" }));
+    expect(input).toHaveValue(5);
+    await waitFor(() =>
+      expect(vi.mocked(setProgressAction)).toHaveBeenCalledTimes(2),
+    );
+    expect(
+      vi
+        .mocked(setProgressAction)
+        .mock.calls.map(([, formData]) => formData.get("value")),
+    ).toEqual(["4", "5"]);
     expect(screen.getByRole("button", { name: "রাখুন" })).toBeVisible();
   });
 });

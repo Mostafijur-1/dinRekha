@@ -1,16 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  buildProductivityReport,
-  completionScore,
-} from "@/features/reports/engine";
+import { buildProductivityReport } from "@/features/reports/engine";
 
 describe("productivity report engine", () => {
-  it("explains completion score and avoids a false zero", () => {
-    expect(completionScore(3, 4)).toBe(75);
-    expect(completionScore(0, 0)).toBeNull();
-  });
-
   it("aggregates scheduled targets, tracked time and categories", () => {
     const report = buildProductivityReport({
       dateKeys: ["2026-08-12", "2026-08-13"],
@@ -70,5 +62,40 @@ describe("productivity report engine", () => {
     });
     expect(report.today.plannedActivities).toBe(0);
     expect(report.today.score).toBeNull();
+  });
+
+  it("uses partial activity progress in the final score", () => {
+    const report = buildProductivityReport({
+      dateKeys: ["2026-08-13"],
+      todayKey: "2026-08-13",
+      currentMinute: 600,
+      activities: [
+        {
+          id: "one",
+          name: "পড়া",
+          category: "শেখা",
+          target: 10,
+          frequency: "daily",
+          days: [],
+        },
+        {
+          id: "two",
+          name: "হাঁটা",
+          category: "স্বাস্থ্য",
+          target: 10,
+          frequency: "daily",
+          days: [],
+        },
+      ],
+      progress: [
+        { activityId: "one", dateKey: "2026-08-13", value: 10 },
+        { activityId: "two", dateKey: "2026-08-13", value: 5 },
+      ],
+      timeline: [],
+    });
+
+    expect(report.today.score).toBe(75);
+    expect(report.weekly.score).toBe(75);
+    expect(report.today.completedActivities).toBe(1);
   });
 });

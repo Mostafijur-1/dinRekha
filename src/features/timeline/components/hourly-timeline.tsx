@@ -224,7 +224,6 @@ export function HourlyTimeline({
                   <TimelineCard
                     entry={entry}
                     dateKey={dateKey}
-                    isToday={isToday}
                     key={entry.id}
                   />
                 ))}

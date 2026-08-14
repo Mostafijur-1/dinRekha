@@ -4,10 +4,18 @@ const text = (maximum: number) => z.string().trim().max(maximum);
 const timeSchema = z
   .string()
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "সঠিক সময় নির্বাচন করুন।");
+const activityNameSchema = text(80).min(
+  2,
+  "Activity-এর নাম কমপক্ষে ২ অক্ষরের হতে হবে।",
+);
+
+export const timelineActivitySchema = z.object({
+  activity: activityNameSchema,
+});
 
 export const timelineEntrySchema = z
   .object({
-    activity: text(80).min(2, "Activity-এর নাম কমপক্ষে ২ অক্ষরের হতে হবে।"),
+    activity: activityNameSchema,
     category: text(40).min(1, "Category লিখুন।"),
     startTime: timeSchema,
     endTime: z.union([timeSchema, z.literal("")]),
@@ -36,3 +44,4 @@ export const timelineEntryIdSchema = z
   .regex(/^[a-f\d]{24}$/i);
 
 export type TimelineEntryInput = z.infer<typeof timelineEntrySchema>;
+export type TimelineActivityInput = z.infer<typeof timelineActivitySchema>;

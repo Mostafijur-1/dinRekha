@@ -308,8 +308,9 @@ export default async function ReportsPage({
           <aside className="report-explanation">
             <strong>Score কীভাবে হিসাব হয়েছে?</strong>
             <p>
-              নির্বাচিত সময়ে নির্ধারিত Daily Activity-গুলোর মধ্যে target পূরণ
-              হওয়া Activity-এর শতাংশ। বিশ্রাম বা untracked সময় score কমায় না।
+              প্রতিটি নির্ধারিত Daily Activity target-এর যত শতাংশ পূরণ হয়েছে,
+              তার গড়ই score। Target-এর বেশি অগ্রগতি ১০০% হিসেবেই ধরা হয়। বিশ্রাম
+              বা untracked সময় score কমায় না।
             </p>
             <p>
               Current streak-এ আজকের target এখনো পূরণ না হলেও গতকাল পর্যন্ত
