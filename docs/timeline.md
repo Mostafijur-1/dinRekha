@@ -2,7 +2,12 @@
 
 ## Scope
 
-এই milestone-এ নির্বাচিত দিনের জন্য ২৪ ঘণ্টার Timeline foundation যোগ হয়েছে:
+নির্বাচিত দিনের Timeline এখন ০০:০০–২৩:০০ পর্যন্ত ২৪টি স্থায়ী hour slot দেখায়:
+
+- ব্যবহারকারী সংশ্লিষ্ট ঘণ্টা খুলে শুধু কাজের নাম লেখেন; start/end সময় slot থেকে তৈরি হয়
+- বর্তমান ঘণ্টার entry end time ছাড়া in-progress হিসেবে থাকে
+- প্রতিটি slot ওই সময়ের কাছাকাছি historical কাজকে suggestion হিসেবে আগে দেখায়
+- occupied ও future slot overlap বা future-time mutation তৈরি করতে দেয় না
 
 - Activity, category, start time, end time ও private note
 - completed এবং বর্তমানে চলমান entry
@@ -12,8 +17,7 @@
 - tracked ও untracked সময়
 - authenticated owner isolation
 
-Smart suggestions, favorites, reusable recent-activity picker, reports, offline sync এবং
-special metadata এই milestone-এর অংশ নয়।
+Favorites, reports, offline sync এবং special metadata এই milestone-এর অংশ নয়।
 
 ## Data model
 

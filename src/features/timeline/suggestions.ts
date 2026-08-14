@@ -93,3 +93,25 @@ export function rankTimelineSuggestions(
       reason: suggestion.reason,
     }));
 }
+
+export function suggestionsForTimelineHour(
+  candidates: TimelineSuggestionCandidate[],
+  dateKey: string,
+  hourStartMinute: number,
+  limit = 4,
+): TimelineSuggestion[] {
+  const hourCenter = normalizeSuggestedMinute(hourStartMinute + 30);
+  const nearby = candidates.filter(
+    (candidate) =>
+      Math.abs(
+        normalizeSuggestedMinute(candidate.typicalStartMinute) - hourCenter,
+      ) <= 120,
+  );
+
+  return rankTimelineSuggestions(
+    nearby.length > 0 ? nearby : candidates,
+    dateKey,
+    hourCenter,
+    limit,
+  );
+}

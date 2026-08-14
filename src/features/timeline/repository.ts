@@ -92,6 +92,7 @@ export async function listTimelineSuggestions(
   ownerId: string,
   todayKey: string,
   currentMinute: number,
+  limit = 5,
 ): Promise<TimelineSuggestion[]> {
   const owner = objectId(ownerId);
   if (!owner) return [];
@@ -112,12 +113,12 @@ export async function listTimelineSuggestions(
         },
       },
       { $sort: { uses: -1, lastUsedDate: -1 } },
-      { $limit: 30 },
+      { $limit: 100 },
       { $project: { _id: 0 } },
     ])
     .toArray();
 
-  return rankTimelineSuggestions(candidates, todayKey, currentMinute);
+  return rankTimelineSuggestions(candidates, todayKey, currentMinute, limit);
 }
 
 export async function createTimelineEntry(

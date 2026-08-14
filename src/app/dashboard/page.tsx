@@ -13,8 +13,7 @@ import {
 import { ActivityCard } from "@/features/daily-activities/components/activity-card";
 import { ActivityCreator } from "@/features/daily-activities/components/activity-creator";
 import { listDailyActivities } from "@/features/daily-activities/repository";
-import { TimelineCreator } from "@/features/timeline/components/timeline-creator";
-import { TimelineSection } from "@/features/timeline/components/timeline-section";
+import { HourlyTimeline } from "@/features/timeline/components/hourly-timeline";
 import {
   listTimelineEntries,
   listTimelineSuggestions,
@@ -51,7 +50,7 @@ export default async function DashboardPage({
   const [activities, timelineEntries, timelineSuggestions] = await Promise.all([
     listDailyActivities(user.id, dateKey),
     listTimelineEntries(user.id, dateKey),
-    listTimelineSuggestions(user.id, todayKey, currentMinute),
+    listTimelineSuggestions(user.id, todayKey, currentMinute, 100),
   ]);
   const completed = activities.filter((activity) => activity.completed).length;
   const completion = activities.length
@@ -145,16 +144,12 @@ export default async function DashboardPage({
           )}
 
           <div id="timeline" className="dashboard-anchor">
-            <TimelineCreator
-              dateKey={dateKey}
-              isToday={isToday}
-              suggestions={timelineSuggestions}
-            />
-            <TimelineSection
+            <HourlyTimeline
               entries={timelineEntries}
               dateKey={dateKey}
               boundary={isToday ? currentMinute : 1440}
               isToday={isToday}
+              suggestions={timelineSuggestions}
             />
           </div>
 

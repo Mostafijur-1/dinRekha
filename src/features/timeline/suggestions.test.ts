@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   rankTimelineSuggestions,
   suggestedTimeLabel,
+  suggestionsForTimelineHour,
 } from "@/features/timeline/suggestions";
 
 describe("rankTimelineSuggestions", () => {
@@ -66,6 +67,34 @@ describe("rankTimelineSuggestions", () => {
     expect(suggestion.typicalStartMinute).toBe(601);
     expect(suggestedTimeLabel(suggestion.typicalStartMinute)).toBe(
       "সকাল ১০:০১",
+    );
+  });
+
+  it("prefers historical work close to the selected hour", () => {
+    const suggestions = suggestionsForTimelineHour(
+      [
+        {
+          activity: "সকালের পড়া",
+          category: "শেখা",
+          uses: 2,
+          lastUsedDate: "2026-08-12",
+          typicalStartMinute: 610,
+        },
+        {
+          activity: "রাতের হাঁটা",
+          category: "স্বাস্থ্য",
+          uses: 10,
+          lastUsedDate: "2026-08-12",
+          typicalStartMinute: 1260,
+        },
+      ],
+      "2026-08-13",
+      600,
+    );
+
+    expect(suggestions[0]?.activity).toBe("সকালের পড়া");
+    expect(suggestions).not.toContainEqual(
+      expect.objectContaining({ activity: "রাতের হাঁটা" }),
     );
   });
 });

@@ -1784,6 +1784,11 @@ a {
   margin: 0.25rem 0 0;
   font-size: 1.55rem;
 }
+.timeline-heading > div:first-child > p {
+  margin: 0.4rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.76rem;
+}
 .timeline-stats {
   display: flex;
   gap: 0.5rem;
@@ -1800,6 +1805,153 @@ a {
 .timeline-stats strong {
   color: var(--text);
   font-size: 0.73rem;
+}
+.timeline-hour-list {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+.timeline-hour-slot {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  min-height: 5.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.timeline-hour-slot:last-child {
+  border-bottom: 0;
+}
+.timeline-hour-slot.is-future {
+  background: color-mix(in srgb, var(--canvas) 76%, transparent);
+}
+.timeline-hour-slot.is-current {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-raised));
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.timeline-hour-slot.is-current .timeline-hour-label {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+.timeline-hour-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.9rem 1rem;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--brand-soft) 34%, var(--surface));
+}
+.timeline-hour-label strong {
+  color: var(--brand);
+  font-size: 1rem;
+}
+.timeline-hour-label span {
+  margin-top: 0.2rem;
+  color: var(--text-faint);
+  font-size: 0.65rem;
+}
+.timeline-hour-content {
+  min-width: 0;
+  padding: 0.65rem;
+}
+.timeline-hour-content .timeline-card {
+  grid-template-columns: 5rem minmax(0, 1fr) auto;
+  box-shadow: none;
+}
+.timeline-hour-content .timeline-card::before {
+  display: none;
+}
+.timeline-hour-entry > summary {
+  min-height: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px dashed color-mix(in srgb, var(--brand) 35%, var(--border));
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+.timeline-hour-entry > summary::-webkit-details-marker {
+  display: none;
+}
+.timeline-hour-entry > summary span {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 1rem;
+}
+.timeline-hour-entry[open] > summary {
+  border-style: solid;
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand-soft) 35%, var(--surface));
+}
+.timeline-hour-form {
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: var(--surface);
+}
+.timeline-hour-suggestions {
+  margin-bottom: 0.8rem;
+}
+.timeline-hour-suggestions > span {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--text-faint);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+.timeline-hour-suggestions > div {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+}
+.timeline-hour-suggestions button {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  color: var(--text);
+  cursor: pointer;
+}
+.timeline-hour-suggestions button:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.timeline-hour-suggestions button strong,
+.timeline-hour-suggestions button small {
+  display: block;
+}
+.timeline-hour-suggestions button small {
+  margin-top: 0.1rem;
+  color: var(--text-faint);
+  font-size: 0.58rem;
+}
+.timeline-hour-activity-field small {
+  color: var(--text-faint);
+  font-size: 0.65rem;
+}
+.timeline-hour-form > .activity-button-primary {
+  margin-top: 0.7rem;
+}
+.timeline-hour-state {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  margin: 0;
+  padding-inline: 0.8rem;
+  color: var(--text-faint);
+  font-size: 0.72rem;
 }
 .timeline-list {
   position: relative;
@@ -2802,6 +2954,16 @@ a {
   }
   .timeline-card {
     grid-template-columns: 4.8rem minmax(0, 1fr);
+  }
+  .timeline-hour-slot {
+    grid-template-columns: 5.4rem minmax(0, 1fr);
+  }
+  .timeline-hour-label {
+    justify-content: flex-start;
+    padding: 1rem 0.65rem;
+  }
+  .timeline-hour-content .timeline-card {
+    grid-template-columns: 1fr;
   }
   .timeline-edit {
     grid-column: 1 / -1;
