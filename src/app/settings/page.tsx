@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { AppNavigation } from "@/components/app-navigation";
 import { Brand } from "@/components/brand";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { ArchivedActivityList } from "@/features/daily-activities/components/archived-activity-list";
+import { listArchivedDailyActivities } from "@/features/daily-activities/repository";
 import { ProfileForm } from "@/features/settings/components/profile-form";
 import { AccountDeletionForm } from "@/features/account/deletion-form";
 import { ReminderSettingsForm } from "@/features/notifications/reminder-settings-form";
@@ -16,6 +18,7 @@ export const dynamic = "force-dynamic";
 export default async function SettingsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/sign-in?callbackUrl=%2Fsettings");
+  const archivedActivities = await listArchivedDailyActivities(user.id);
   return (
     <main className="shell-page app-shell settings-page">
       <AppNavigation active="settings" />
@@ -97,6 +100,19 @@ export default async function SettingsPage() {
               করুন। ইনস্টল করলে নতুন কোনো account বা অনুমতি তৈরি হয় না।
             </p>
             <InstallControl />
+          </section>
+          <section className="settings-card settings-archive">
+            <div className="feature-section-heading">
+              <div>
+                <span>সংরক্ষিত তালিকা</span>
+                <h2>Archived Activities</h2>
+              </div>
+            </div>
+            <p>
+              Archive করা Activity আবার ব্যবহার করতে Restore করুন। আগের progress
+              অক্ষত থাকবে এবং Activity নির্ধারিত দিনের তালিকার শেষে ফিরে আসবে।
+            </p>
+            <ArchivedActivityList activities={archivedActivities} />
           </section>
           <section className="settings-card settings-reminders">
             <div className="feature-section-heading">

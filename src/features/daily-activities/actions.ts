@@ -11,6 +11,7 @@ import {
   archiveDailyActivity,
   createDailyActivity,
   reorderDailyActivity,
+  restoreDailyActivity,
   setDailyProgress,
   updateDailyActivity,
 } from "@/features/daily-activities/repository";
@@ -93,6 +94,17 @@ export async function archiveActivityAction(activityId: string): Promise<void> {
   if (!user || !id.success) return;
   await archiveDailyActivity(user.id, id.data);
   revalidatePath("/dashboard");
+}
+
+export async function restoreActivityAction(activityId: string): Promise<void> {
+  const user = await authenticatedUser();
+  const id = activityIdSchema.safeParse(activityId);
+  if (!user || !id.success) return;
+  await restoreDailyActivity(user.id, id.data);
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+  revalidatePath("/");
+  revalidatePath("/reports");
 }
 
 export async function setProgressAction(

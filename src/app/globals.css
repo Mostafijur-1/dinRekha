@@ -1375,6 +1375,39 @@ a {
 .settings-install {
   margin-top: 1rem;
 }
+.settings-archive {
+  margin-top: 1rem;
+}
+.settings-archive > p,
+.settings-archive-empty {
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  line-height: 1.65;
+}
+.settings-archive-list {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+.settings-archive-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.settings-archive-item strong,
+.settings-archive-item span {
+  display: block;
+}
+.settings-archive-item span {
+  margin-top: 0.2rem;
+  color: var(--text-faint);
+  font-size: 0.68rem;
+}
 .settings-install > p {
   max-width: 48rem;
   color: var(--text-soft);

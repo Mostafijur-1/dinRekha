@@ -9,6 +9,14 @@ Home, Dashboard ও Report একই proportional score ব্যবহার �
 `min(value / target, 1)` completion ratio-এর গড়কে শতকরা হিসেবে দেখানো হয়। ফলে আংশিক
 অগ্রগতিও score-এ যোগ হয়, কিন্তু target-এর বেশি value ১০০%-এর বেশি contribution দেয় না।
 
+## Archive restoration
+
+Settings owner-এর archived Activity তালিকা দেখায়। Restore action authenticated owner ও
+archived status দিয়ে mutation scope করে, একই definition-কে active করে, `archivedAt` সরায় এবং
+তালিকার শেষে রাখে। পুরোনো progress row অপরিবর্তিত থাকে। বর্তমান model আলাদা active/archive
+period history রাখে না; তাই restore-এর আগের archived gap historical report-এ আলাদা করে বাদ দেওয়া
+যায় না।
+
 ## Scope
 
 User Activity তৈরি, তালিকা দেখা, definition edit, নির্বাচিত দিনের value update, archive এবং তালিকার ক্রম পরিবর্তন করতে পারে। Activity প্রতিদিন বা নির্বাচিত সপ্তাহের দিনে schedule করা যায়। Reminders, offline synchronization, arbitrary calendar picker ও reports পরে যোগ হবে।

@@ -31,6 +31,12 @@ export type DailyActivityView = {
   canMoveDown: boolean;
 };
 
+export type ArchivedDailyActivityView = {
+  id: string;
+  name: string;
+  category: string;
+};
+
 function objectId(value: string): ObjectId | null {
   return ObjectId.isValid(value) ? new ObjectId(value) : null;
 }
@@ -202,6 +208,49 @@ export async function archiveDailyActivity(
   ).updateOne(
     { _id: activity, ownerId: owner, status: "active" },
     { $set: { status: "archived", archivedAt: now, updatedAt: now } },
+  );
+  return result.matchedCount === 1;
+}
+
+export async function listArchivedDailyActivities(
+  ownerId: string,
+): Promise<ArchivedDailyActivityView[]> {
+  const owner = objectId(ownerId);
+  if (!owner) return [];
+  await ensureDatabaseIndexes();
+  const rows = await (
+    await dailyActivitiesCollection()
+  )
+    .find({ ownerId: owner, status: "archived" })
+    .sort({ archivedAt: -1, createdAt: -1 })
+    .toArray();
+  return rows.map((row) => ({
+    id: row._id.toHexString(),
+    name: row.name,
+    category: row.category,
+  }));
+}
+
+export async function restoreDailyActivity(
+  ownerId: string,
+  activityId: string,
+): Promise<boolean> {
+  const owner = objectId(ownerId);
+  const activity = objectId(activityId);
+  if (!owner || !activity) return false;
+  const now = new Date();
+  const result = await (
+    await dailyActivitiesCollection()
+  ).updateOne(
+    { _id: activity, ownerId: owner, status: "archived" },
+    {
+      $set: {
+        status: "active",
+        sortOrder: Date.now(),
+        updatedAt: now,
+      },
+      $unset: { archivedAt: "" },
+    },
   );
   return result.matchedCount === 1;
 }
