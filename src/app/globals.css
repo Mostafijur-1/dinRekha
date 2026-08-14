@@ -1591,6 +1591,17 @@ a {
   flex-wrap: wrap;
   gap: 0.65rem;
 }
+.connection-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.connection-progress-link {
+  margin-top: 0;
+}
+.connection-disconnect-form {
+  margin: 0;
+}
 
 .shared-data-list {
   display: grid;
@@ -2982,6 +2993,35 @@ a {
   .connection-list article {
     align-items: stretch;
     flex-direction: column;
+  }
+  .connection-actions {
+    display: grid;
+    gap: 1rem;
+    margin-top: 0.35rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .connection-progress-link {
+    width: 100%;
+    min-height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--border));
+    border-radius: 0.8rem;
+    background: var(--brand-soft);
+    text-align: center;
+  }
+  .connection-disconnect-form {
+    padding: 0.75rem;
+    border: 1px solid color-mix(in srgb, #a13a27 30%, var(--border));
+    border-radius: 0.8rem;
+    background: color-mix(in srgb, var(--surface) 90%, #f2b8b3);
+  }
+  .connection-disconnect-form .activity-button {
+    width: 100%;
+    min-height: 3.2rem;
   }
   .reports-layout {
     width: min(calc(100% - 2rem), var(--page-width));

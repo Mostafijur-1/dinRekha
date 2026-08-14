@@ -3,6 +3,7 @@ import { AppNavigation } from "@/components/app-navigation";
 import { Brand } from "@/components/brand";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { disconnectAction } from "@/features/connections/actions";
+import { ConnectionDisconnectButton } from "@/features/connections/connection-disconnect-button";
 import { InviteCreator } from "@/features/connections/invite-creator";
 import { InviteLinkOpener } from "@/features/connections/invite-link-opener";
 import { listConnections } from "@/features/connections/repository";
@@ -136,20 +137,20 @@ export default async function ConnectionsPage({
                           অনুমতি সংরক্ষণ
                         </button>
                       </form>
-                      <a
-                        className="report-detail-link"
-                        href={`/connections/shared/${connection.userId}`}
-                      >
-                        {connection.name}-এর অগ্রগতি →
-                      </a>
-                      <form action={disconnect}>
-                        <button
-                          className="activity-button activity-button-danger"
-                          type="submit"
+                      <div className="connection-actions">
+                        <a
+                          className="report-detail-link connection-progress-link"
+                          href={`/connections/shared/${connection.userId}`}
                         >
-                          সংযোগ বিচ্ছিন্ন করুন
-                        </button>
-                      </form>
+                          {connection.name}-এর অগ্রগতি →
+                        </a>
+                        <form
+                          action={disconnect}
+                          className="connection-disconnect-form"
+                        >
+                          <ConnectionDisconnectButton name={connection.name} />
+                        </form>
+                      </div>
                     </article>
                   );
                 })}
