@@ -5,7 +5,7 @@ import { redeemInviteAction } from "@/features/connections/actions";
 import { previewConnectionInvite } from "@/features/connections/repository";
 import { getCurrentUser } from "@/lib/auth";
 
-export const metadata = { title: "সংযোগের আমন্ত্রণ" };
+export const metadata = { title: "সংযোগের Invitation" };
 export const dynamic = "force-dynamic";
 
 export default async function InvitePage({
@@ -45,12 +45,12 @@ export default async function InvitePage({
           </>
         ) : preview && redeem ? (
           <>
-            <span>সংযোগের আমন্ত্রণ</span>
+            <span>সংযোগের Invitation</span>
             <h1>{preview.inviterName} আপনার সঙ্গে যুক্ত হতে চান</h1>
             <p>
-              নিশ্চিত করলে সংযোগ তৈরি হবে এবং দুজনের সারাংশ, streak, আজকের Daily
-              Activities ও Timeline ডিফল্টভাবে share হবে। পরে সংযোগের পাতা থেকে
-              যেটি গোপন রাখতে চান সেটির permission বন্ধ করতে পারবেন।
+              নিশ্চিত করলে সংযোগ তৈরি হবে এবং আজকের Daily Activities ডিফল্টভাবে
+              share হবে। আজকের Timeline দেখাতে চাইলে সংযোগের পাতা থেকে আলাদাভাবে
+              permission চালু করতে হবে।
             </p>
             <form action={redeem}>
               <button
@@ -63,10 +63,10 @@ export default async function InvitePage({
           </>
         ) : (
           <>
-            <span>আমন্ত্রণ পাওয়া যায়নি</span>
+            <span>Invitation পাওয়া যায়নি</span>
             <h1>লিংকটি আর সক্রিয় নেই</h1>
             <p>
-              আমন্ত্রণটি ব্যবহৃত, বাতিল বা মেয়াদোত্তীর্ণ হতে পারে। নতুন লিংক
+              Invitation-টি ব্যবহৃত, বাতিল বা মেয়াদোত্তীর্ণ হতে পারে। নতুন লিংক
               চাইুন।
             </p>
           </>

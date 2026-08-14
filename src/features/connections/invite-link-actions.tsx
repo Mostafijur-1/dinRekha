@@ -25,7 +25,7 @@ export function InviteLinkActions({
     if (!navigator.share) return copyLink();
     try {
       await navigator.share({
-        title: "দিনরেখায় যুক্ত হওয়ার আমন্ত্রণ",
+        title: "দিনরেখায় যুক্ত হওয়ার Invitation",
         text: "দিনরেখায় আমার সঙ্গে যুক্ত হোন।",
         url: absoluteUrl,
       });
@@ -39,7 +39,7 @@ export function InviteLinkActions({
   return (
     <div className="invite-link-actions">
       <input
-        aria-label="সম্পূর্ণ আমন্ত্রণের লিংক"
+        aria-label="সম্পূর্ণ Invitation-এর লিংক"
         readOnly
         value={absoluteUrl}
       />

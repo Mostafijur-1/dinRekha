@@ -11,8 +11,6 @@ export async function updateSharingAction(
   const user = await getCurrentUser();
   if (!user) return;
   await setSharingPolicy(user.id, recipientId, {
-    productivitySummary: formData.get("productivitySummary") === "on",
-    streaks: formData.get("streaks") === "on",
     dailyActivities: formData.get("dailyActivities") === "on",
     timeline: formData.get("timeline") === "on",
   });

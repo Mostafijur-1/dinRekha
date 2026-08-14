@@ -22,13 +22,13 @@ export async function createInviteAction(
     return {
       status: "error",
       message:
-        "আজকের আমন্ত্রণের সীমা শেষ হয়েছে বা ইতিমধ্যে ৫টি আমন্ত্রণ সক্রিয় আছে।",
+        "আজকের Invitation সীমা শেষ হয়েছে বা ইতিমধ্যে ৫টি Invitation সক্রিয় আছে।",
     };
   if (result.status !== "success")
-    return { status: "error", message: "আমন্ত্রণ তৈরি করা যায়নি।" };
+    return { status: "error", message: "Invitation তৈরি করা যায়নি।" };
   return {
     status: "success",
-    message: "আমন্ত্রণটি ২৪ ঘণ্টার জন্য তৈরি হয়েছে।",
+    message: "Invitation-টি ২৪ ঘণ্টার জন্য তৈরি হয়েছে।",
     token: result.token,
   };
 }

@@ -11,12 +11,15 @@ describe("InviteLinkOpener", () => {
 
   it("opens a valid local invite URL", () => {
     render(<InviteLinkOpener />);
-    fireEvent.change(screen.getByLabelText("আপনার কাছে আসা আমন্ত্রণের লিংক"), {
-      target: {
-        value:
-          "http://localhost:3000/connections/invite?code=abcdefghijklmnopqrstuvwx",
+    fireEvent.change(
+      screen.getByLabelText("আপনার কাছে আসা Invitation-এর লিংক"),
+      {
+        target: {
+          value:
+            "http://localhost:3000/connections/invite?code=abcdefghijklmnopqrstuvwx",
+        },
       },
-    });
+    );
     fireEvent.click(screen.getByRole("button", { name: "লিংক খুলুন" }));
     expect(push).toHaveBeenCalledWith(
       "/connections/invite?code=abcdefghijklmnopqrstuvwx",
@@ -25,12 +28,15 @@ describe("InviteLinkOpener", () => {
 
   it("extracts only the code and always opens the internal invite route", () => {
     render(<InviteLinkOpener />);
-    fireEvent.change(screen.getByLabelText("আপনার কাছে আসা আমন্ত্রণের লিংক"), {
-      target: {
-        value:
-          "https://example.com/connections/invite?code=abcdefghijklmnopqrstuvwx",
+    fireEvent.change(
+      screen.getByLabelText("আপনার কাছে আসা Invitation-এর লিংক"),
+      {
+        target: {
+          value:
+            "https://example.com/connections/invite?code=abcdefghijklmnopqrstuvwx",
+        },
       },
-    });
+    );
     fireEvent.click(screen.getByRole("button", { name: "লিংক খুলুন" }));
     expect(push).toHaveBeenCalledWith(
       "/connections/invite?code=abcdefghijklmnopqrstuvwx",
@@ -39,14 +45,19 @@ describe("InviteLinkOpener", () => {
 
   it("rejects a URL that is not an invite path", () => {
     render(<InviteLinkOpener />);
-    fireEvent.change(screen.getByLabelText("আপনার কাছে আসা আমন্ত্রণের লিংক"), {
-      target: {
-        value:
-          "https://example.com/not-an-invite?code=abcdefghijklmnopqrstuvwx",
+    fireEvent.change(
+      screen.getByLabelText("আপনার কাছে আসা Invitation-এর লিংক"),
+      {
+        target: {
+          value:
+            "https://example.com/not-an-invite?code=abcdefghijklmnopqrstuvwx",
+        },
       },
-    });
+    );
     fireEvent.click(screen.getByRole("button", { name: "লিংক খুলুন" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("সঠিক আমন্ত্রণের লিংক");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "সঠিক Invitation-এর লিংক",
+    );
     expect(push).not.toHaveBeenCalled();
   });
 });

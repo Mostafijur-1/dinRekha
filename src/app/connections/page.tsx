@@ -56,18 +56,17 @@ export default async function ConnectionsPage({
             <span>আপনার নিয়ন্ত্রণে</span>
             <h1>বিশ্বস্ত মানুষের সঙ্গে যুক্ত হোন</h1>
             <p>
-              সংযোগ তৈরি হলে সারাংশ, streak, আজকের Daily Activities ও Timeline
-              share হবে। যেটি দেখাতে চান না, শুধু সেটির permission বন্ধ করে
-              সংরক্ষণ করুন।
+              সংযোগ তৈরি হলে আজকের Daily Activities share হবে। আজকের Timeline
+              দেখাতে চাইলে আলাদাভাবে permission চালু করুন।
             </p>
           </section>
           <section className="connection-panel">
             <div className="feature-section-heading">
               <div>
-                <span>নিরাপদ আমন্ত্রণ</span>
+                <span>নিরাপদ Invitation</span>
                 <h2>নতুন সংযোগ</h2>
               </div>
-              <p>দিনে সর্বোচ্চ ১০টি; একসঙ্গে ৫টি সক্রিয় আমন্ত্রণ।</p>
+              <p>দিনে সর্বোচ্চ ১০টি; একসঙ্গে ৫টি সক্রিয় Invitation।</p>
             </div>
             <InviteCreator appOrigin={publicEnv.appUrl.origin} />
             <div className="connection-invite-divider">
@@ -78,8 +77,8 @@ export default async function ConnectionsPage({
           <section className="connection-panel">
             {connected === "1" && (
               <p className="connection-success" role="status">
-                সংযোগ সফল হয়েছে। সব তথ্য share করা চালু আছে; প্রয়োজন হলে নিচে
-                নির্দিষ্ট permission বন্ধ করুন।
+                সংযোগ সফল হয়েছে। আজকের Daily Activities share হচ্ছে; Timeline
+                দেখাতে চাইলে নিচে permission চালু করুন।
               </p>
             )}
             {connected === "already" && (
@@ -120,22 +119,6 @@ export default async function ConnectionsPage({
                         <label>
                           <input
                             type="checkbox"
-                            name="productivitySummary"
-                            defaultChecked={policy.productivitySummary}
-                          />{" "}
-                          কাজের অগ্রগতির সারাংশ
-                        </label>
-                        <label>
-                          <input
-                            type="checkbox"
-                            name="streaks"
-                            defaultChecked={policy.streaks}
-                          />{" "}
-                          অভ্যাস ধরে রাখার ধারা
-                        </label>
-                        <label>
-                          <input
-                            type="checkbox"
                             name="dailyActivities"
                             defaultChecked={policy.dailyActivities}
                           />{" "}
@@ -157,7 +140,7 @@ export default async function ConnectionsPage({
                         className="report-detail-link"
                         href={`/connections/shared/${connection.userId}`}
                       >
-                        আপনার সংযোগ →
+                        {connection.name}-এর অগ্রগতি →
                       </a>
                       <form action={disconnect}>
                         <button
@@ -174,7 +157,7 @@ export default async function ConnectionsPage({
             ) : (
               <div className="report-empty">
                 <strong>এখনো কোনো সংযোগ নেই</strong>
-                <p>আমন্ত্রণের লিংক তৈরি করে বিশ্বস্ত কাউকে পাঠান।</p>
+                <p>Invitation-এর লিংক তৈরি করে বিশ্বস্ত কাউকে পাঠান।</p>
               </div>
             )}
           </section>

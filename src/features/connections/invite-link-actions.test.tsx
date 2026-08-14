@@ -19,7 +19,7 @@ describe("InviteLinkActions", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByLabelText("সম্পূর্ণ আমন্ত্রণের লিংক")).toHaveValue(
+      expect(screen.getByLabelText("সম্পূর্ণ Invitation-এর লিংক")).toHaveValue(
         "http://localhost:3000/connections/invite?code=abcdefghijklmnopqrstuvwx",
       ),
     );

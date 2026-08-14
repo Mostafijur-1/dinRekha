@@ -22,22 +22,18 @@ import {
 
 describe("directional sharing authorization", () => {
   beforeEach(() => vi.clearAllMocks());
-  it("defaults to sharing everything for an active connection", async () => {
+  it("shares today's activities but keeps timeline private by default", async () => {
     connectionFindOne.mockResolvedValue({ _id: new ObjectId() });
     policyFindOne.mockResolvedValue(null);
     const owner = new ObjectId().toHexString();
     const viewer = new ObjectId().toHexString();
     await expect(getSharingPolicy(owner, viewer)).resolves.toEqual({
-      productivitySummary: true,
-      streaks: true,
       dailyActivities: true,
-      timeline: true,
+      timeline: false,
     });
     await expect(authorizeSharedReport(owner, viewer)).resolves.toEqual({
-      productivitySummary: true,
-      streaks: true,
       dailyActivities: true,
-      timeline: true,
+      timeline: false,
     });
   });
   it("rejects permission updates without an active connection", async () => {
@@ -47,8 +43,6 @@ describe("directional sharing authorization", () => {
         new ObjectId().toHexString(),
         new ObjectId().toHexString(),
         {
-          productivitySummary: true,
-          streaks: true,
           dailyActivities: true,
           timeline: true,
         },
@@ -62,15 +56,13 @@ describe("directional sharing authorization", () => {
     const viewer = new ObjectId().toHexString();
 
     await expect(getSharingPolicy(owner, viewer)).resolves.toEqual({
-      productivitySummary: false,
-      streaks: false,
       dailyActivities: false,
       timeline: false,
     });
     await expect(authorizeSharedReport(owner, viewer)).resolves.toBeNull();
   });
 
-  it("treats missing new fields in a legacy policy as shared", async () => {
+  it("keeps a missing legacy timeline permission private", async () => {
     connectionFindOne.mockResolvedValue({ _id: new ObjectId() });
     policyFindOne.mockResolvedValue({
       productivitySummary: true,
@@ -83,10 +75,8 @@ describe("directional sharing authorization", () => {
         new ObjectId().toHexString(),
       ),
     ).resolves.toEqual({
-      productivitySummary: true,
-      streaks: false,
       dailyActivities: true,
-      timeline: true,
+      timeline: false,
     });
   });
   it("stores the exact owner to recipient direction", async () => {
@@ -96,8 +86,6 @@ describe("directional sharing authorization", () => {
     connectionFindOne.mockResolvedValue({ _id: connectionId });
     updateOne.mockResolvedValue({ matchedCount: 1 });
     await setSharingPolicy(owner.toHexString(), recipient.toHexString(), {
-      productivitySummary: true,
-      streaks: false,
       dailyActivities: false,
       timeline: true,
     });
@@ -105,8 +93,6 @@ describe("directional sharing authorization", () => {
       { connectionId, ownerId: owner, recipientId: recipient },
       expect.objectContaining({
         $set: expect.objectContaining({
-          productivitySummary: true,
-          streaks: false,
           dailyActivities: false,
           timeline: true,
         }),

@@ -78,10 +78,11 @@ Connections many-to-many canonical user pair দিয়ে model করা। 
 creator-এর response-এ ফেরে; database-এ SHA-256 hash, expiry ও single-use state থাকে। Data access কেবল
 active connection এবং directional sharing policy authorization layer-এর মাধ্যমে হয়।
 
-Sharing policy প্রতি connection-এ owner→recipient direction-এ unique। Active connection-এ Productivity
-summary, streaks, আজকের Daily Activities ও আজকের Timeline default-enabled; owner যেকোনো target explicit
-false করে বন্ধ করতে পারেন। Denied data type shared page query করে না। Timeline-এর private note এবং Daily
-Activity description shared response-এ অন্তর্ভুক্ত হয় না। Active connection না থাকলে সব permission false।
+Sharing policy প্রতি connection-এ owner→recipient direction-এ unique। Active connection-এ শুধু আজকের
+Daily Activities default-enabled; আজকের Timeline owner explicit permission দিলে share হয়। Summary,
+streaks বা historical data connection-এর মাধ্যমে share হয় না। Denied data type shared page query করে না।
+Timeline-এর private note এবং Daily Activity description shared response-এ অন্তর্ভুক্ত হয় না। Active
+connection না থাকলে সব permission false।
 
 Reminder schedule user timezone-এ minute precision-এ নির্ধারিত। Activity-level preferred time এবং
 user-level granular switches থেকে একই deterministic engine Dashboard reminder তৈরি করে; ভবিষ্যৎ Web Push

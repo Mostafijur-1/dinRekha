@@ -28,7 +28,7 @@ export function InviteLinkOpener() {
     const data = new FormData(event.currentTarget);
     const path = invitePath(String(data.get("inviteLink") || ""));
     if (!path) {
-      setMessage("দিনরেখার সঠিক আমন্ত্রণের লিংক দিন।");
+      setMessage("দিনরেখার সঠিক Invitation-এর লিংক দিন।");
       return;
     }
     router.push(path);
@@ -36,7 +36,7 @@ export function InviteLinkOpener() {
 
   return (
     <form className="invite-link-opener" onSubmit={submit}>
-      <label htmlFor="invite-link">আপনার কাছে আসা আমন্ত্রণের লিংক</label>
+      <label htmlFor="invite-link">আপনার কাছে আসা Invitation-এর লিংক</label>
       <div>
         <input
           id="invite-link"

@@ -21,7 +21,7 @@ export function InviteCreator({ appOrigin }: { appOrigin: string }) {
           disabled={pending}
           type="submit"
         >
-          {pending ? "আমন্ত্রণ তৈরি হচ্ছে…" : "নতুন আমন্ত্রণ তৈরি করুন"}
+          {pending ? "Invitation তৈরি হচ্ছে…" : "নতুন Invitation তৈরি করুন"}
         </button>
       </form>
       {state.message && (
