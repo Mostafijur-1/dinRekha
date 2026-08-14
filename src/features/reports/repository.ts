@@ -126,6 +126,7 @@ export async function getProductivityReport(
           .find({
             ownerId: owner,
             dateKey: { $gte: firstDate, $lte: lastDate },
+            startMinute: { $gte: 300 },
           })
           .toArray(),
   ]);

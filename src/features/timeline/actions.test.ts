@@ -72,4 +72,22 @@ describe("Timeline Server Action boundaries", () => {
     });
     expect(createTimelineEntry).not.toHaveBeenCalled();
   });
+
+  it("rejects creation during the reserved sleep period", async () => {
+    getCurrentUser.mockResolvedValue({
+      id: new ObjectId().toHexString(),
+      timezone: "Asia/Dhaka",
+    });
+
+    const result = await createTimelineEntryAction(
+      initialTimelineActionState,
+      data("2020-01-01", "04:00", "05:00"),
+    );
+
+    expect(result).toEqual({
+      status: "error",
+      message: "০০:০০–০৫:০০ সময়টি ঘুমের জন্য নির্ধারিত।",
+    });
+    expect(createTimelineEntry).not.toHaveBeenCalled();
+  });
 });

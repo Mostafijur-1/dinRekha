@@ -14,6 +14,13 @@ export const timelineEntrySchema = z
     note: text(500),
   })
   .superRefine((value, context) => {
+    if (value.startTime < "05:00") {
+      context.addIssue({
+        code: "custom",
+        path: ["startTime"],
+        message: "০০:০০–০৫:০০ সময়টি ঘুমের জন্য নির্ধারিত।",
+      });
+    }
     if (value.endTime && value.endTime <= value.startTime) {
       context.addIssue({
         code: "custom",

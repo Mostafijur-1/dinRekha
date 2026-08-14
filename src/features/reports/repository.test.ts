@@ -69,6 +69,7 @@ describe("reports repository", () => {
       expect.objectContaining({
         ownerId,
         dateKey: { $gte: "2026-08-07", $lte: "2026-08-13" },
+        startMinute: { $gte: 300 },
       }),
     );
   });

@@ -48,7 +48,9 @@ describe("Timeline repository authorization and overlap", () => {
     await listTimelineSuggestions(ownerId.toHexString(), "2026-08-13", 600);
 
     expect(aggregate).toHaveBeenCalledWith(
-      expect.arrayContaining([{ $match: { ownerId } }]),
+      expect.arrayContaining([
+        { $match: { ownerId, startMinute: { $gte: 300 } } },
+      ]),
     );
     expect(aggregate.mock.calls[0][0]).toEqual(
       expect.arrayContaining([

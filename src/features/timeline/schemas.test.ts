@@ -29,4 +29,17 @@ describe("Timeline validation", () => {
       timelineEntrySchema.safeParse({ ...valid, startTime: "24:00" }).success,
     ).toBe(false);
   });
+
+  it("reserves midnight to five o'clock for sleep", () => {
+    const result = timelineEntrySchema.safeParse({
+      ...valid,
+      startTime: "04:59",
+      endTime: "05:30",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toBe(
+      "০০:০০–০৫:০০ সময়টি ঘুমের জন্য নির্ধারিত।",
+    );
+  });
 });

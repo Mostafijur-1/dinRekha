@@ -9,8 +9,8 @@
 - বর্তমান ঘণ্টার entry end time ছাড়া in-progress হিসেবে থাকে
 - প্রতিটি slot ওই সময়ের কাছাকাছি historical কাজকে suggestion হিসেবে আগে দেখায়
 - occupied ও future slot overlap বা future-time mutation তৈরি করতে দেয় না
-- প্রথম slot-এ বাস্তব entry না থাকলে `ঘুম` presentation default হিসেবে tracked হয়; page load database write করে না
-- default `ঘুম` slot-টি একটি একক activity block; এখানে আলাদা activity input বা suggestion নেই
+- প্রথম slot-এ সবসময় `ঘুম` presentation default হিসেবে tracked হয়; page load database write করে না
+- `০০:০০–০৫:০০` একটি সংরক্ষিত, একক activity block; এখানে পুরোনো entry, আলাদা input বা suggestion দেখানো হয় না এবং নতুন entry তৈরি করা যায় না
 
 - Activity, category, start time, end time ও private note
 - completed এবং বর্তমানে চলমান entry

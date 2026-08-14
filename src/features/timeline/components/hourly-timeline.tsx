@@ -152,12 +152,8 @@ export function HourlyTimeline({
       };
     }),
   ];
-  const hasEarlyEntry = entries.some(
-    (entry) => entry.startMinute < 300 && (entry.endMinute ?? boundary) > 0,
-  );
-  const effectiveEntries = hasEarlyEntry
-    ? entries
-    : [defaultSleepEntry, ...entries];
+  const daytimeEntries = entries.filter((entry) => entry.startMinute >= 300);
+  const effectiveEntries = [defaultSleepEntry, ...daytimeEntries];
   const gaps = timelineGaps(effectiveEntries, boundary).filter(
     (gap) => gap.endMinute > gap.startMinute,
   );
@@ -195,11 +191,11 @@ export function HourlyTimeline({
 
       <div className="timeline-hour-list">
         {slots.map(({ startMinute, endMinute, isDefaultSleep }) => {
-          const startingEntries = entries.filter(
+          const startingEntries = daytimeEntries.filter(
             (entry) =>
               entry.startMinute >= startMinute && entry.startMinute < endMinute,
           );
-          const overlappingEntry = entries.find(
+          const overlappingEntry = daytimeEntries.find(
             (entry) =>
               entry.startMinute < endMinute &&
               (entry.endMinute ?? boundary) > startMinute,
@@ -232,7 +228,7 @@ export function HourlyTimeline({
                     key={entry.id}
                   />
                 ))}
-                {isDefaultSleep && !hasEarlyEntry ? (
+                {isDefaultSleep ? (
                   <div className="timeline-default-sleep">
                     <div>
                       <span>বিশ্রাম · ডিফল্ট</span>

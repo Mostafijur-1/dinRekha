@@ -53,7 +53,7 @@ async function overlaps(
       ownerId,
       dateKey,
       ...(excludedId ? { _id: { $ne: excludedId } } : {}),
-      startMinute: { $lt: occupiedEnd },
+      startMinute: { $gte: 300, $lt: occupiedEnd },
       $expr: {
         $gt: [{ $ifNull: ["$endMinute", 1440] }, startMinute],
       },
@@ -71,7 +71,7 @@ export async function listTimelineEntries(
   const rows = await (
     await timelineEntriesCollection()
   )
-    .find({ ownerId: owner, dateKey })
+    .find({ ownerId: owner, dateKey, startMinute: { $gte: 300 } })
     .sort({ startMinute: 1, createdAt: 1 })
     .toArray();
   return rows.map((row) => ({
@@ -101,7 +101,7 @@ export async function listTimelineSuggestions(
     await timelineEntriesCollection()
   )
     .aggregate<TimelineSuggestionCandidate>([
-      { $match: { ownerId: owner } },
+      { $match: { ownerId: owner, startMinute: { $gte: 300 } } },
       {
         $group: {
           _id: { activity: "$activity", category: "$category" },

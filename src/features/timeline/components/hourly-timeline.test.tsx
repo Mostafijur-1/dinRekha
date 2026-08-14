@@ -14,7 +14,30 @@ describe("HourlyTimeline", () => {
   it("renders every hour and prefills work from that time's history", () => {
     const { container } = render(
       <HourlyTimeline
-        entries={[]}
+        entries={[
+          {
+            id: "64f000000000000000000001",
+            activity: "রাতের পুরোনো কাজ",
+            category: "কাজ",
+            startMinute: 60,
+            endMinute: 120,
+            startTime: "01:00",
+            endTime: "02:00",
+            status: "completed",
+            duration: 60,
+          },
+          {
+            id: "64f000000000000000000002",
+            activity: "আরেকটি পুরোনো কাজ",
+            category: "কাজ",
+            startMinute: 180,
+            endMinute: 240,
+            startTime: "03:00",
+            endTime: "04:00",
+            status: "completed",
+            duration: 60,
+          },
+        ]}
         dateKey="2026-08-13"
         boundary={1440}
         isToday={false}
@@ -34,6 +57,10 @@ describe("HourlyTimeline", () => {
     expect(container.querySelectorAll(".timeline-hour-slot")).toHaveLength(20);
     expect(screen.getByText("00:00–05:00")).toBeVisible();
     expect(screen.getByRole("heading", { name: "ঘুম" })).toBeVisible();
+    expect(container.querySelectorAll(".timeline-default-sleep")).toHaveLength(
+      1,
+    );
+    expect(screen.queryByText("সংরক্ষিত কাজ")).not.toBeInTheDocument();
     const sleepSlot = screen.getByText("00:00–05:00").closest("article");
     expect(
       within(sleepSlot!).queryByText("এই ঘণ্টায় কী করেছেন লিখুন"),
