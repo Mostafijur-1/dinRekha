@@ -24,6 +24,9 @@ describe("ArchivedActivityList", () => {
     expect(screen.getByText("পানি পান")).toBeVisible();
     expect(screen.getByText("স্বাস্থ্য")).toBeVisible();
     expect(screen.getByRole("button", { name: "Restore" })).toBeVisible();
+    expect(document.querySelector('input[name="activityId"]')).toHaveValue(
+      "689df5b7c86e59b05192b886",
+    );
   });
 
   it("shows an explicit empty state", () => {

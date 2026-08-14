@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import type { ActivityActionState } from "@/features/daily-activities/action-state";
 import {
@@ -96,15 +97,18 @@ export async function archiveActivityAction(activityId: string): Promise<void> {
   revalidatePath("/dashboard");
 }
 
-export async function restoreActivityAction(activityId: string): Promise<void> {
+export async function restoreActivityAction(formData: FormData): Promise<void> {
   const user = await authenticatedUser();
-  const id = activityIdSchema.safeParse(activityId);
-  if (!user || !id.success) return;
-  await restoreDailyActivity(user.id, id.data);
+  if (!user) redirect("/auth/sign-in?callbackUrl=%2Fsettings");
+  const id = activityIdSchema.safeParse(formData.get("activityId"));
+  if (!id.success) redirect("/settings?restore=failed");
+  const restored = await restoreDailyActivity(user.id, id.data);
+  if (!restored) redirect("/settings?restore=failed");
   revalidatePath("/settings");
   revalidatePath("/dashboard");
   revalidatePath("/");
   revalidatePath("/reports");
+  redirect("/settings?restore=success");
 }
 
 export async function setProgressAction(

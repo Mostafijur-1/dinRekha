@@ -1389,6 +1389,22 @@ a {
   gap: 0.65rem;
   margin-top: 1rem;
 }
+.settings-archive-message {
+  margin: 0.8rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-weight: 700;
+}
+.settings-archive-message.is-success {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--border));
+  color: var(--brand);
+}
+.settings-archive-message.is-error {
+  border-color: color-mix(in srgb, #a13a27 45%, var(--border));
+  color: #a13a27;
+}
 .settings-archive-item {
   display: flex;
   align-items: center;

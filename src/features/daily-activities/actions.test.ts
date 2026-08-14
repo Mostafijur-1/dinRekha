@@ -6,14 +6,19 @@ const {
   createDailyActivity,
   setDailyProgress,
   restoreDailyActivity,
+  redirect,
 } = vi.hoisted(() => ({
   getCurrentUser: vi.fn(),
   createDailyActivity: vi.fn(),
   setDailyProgress: vi.fn(),
   restoreDailyActivity: vi.fn(),
+  redirect: vi.fn(() => {
+    throw new Error("NEXT_REDIRECT");
+  }),
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/navigation", () => ({ redirect }));
 vi.mock("@/lib/auth", () => ({ getCurrentUser }));
 vi.mock("@/features/daily-activities/repository", () => ({
   createDailyActivity,
@@ -67,12 +72,29 @@ describe("Daily Activity Server Action authentication", () => {
 
   it("restores an archived activity only for an authenticated user", async () => {
     const activityId = new ObjectId().toHexString();
-    await restoreActivityAction(activityId);
+    const data = new FormData();
+    data.set("activityId", activityId);
+    await expect(restoreActivityAction(data)).rejects.toThrow("NEXT_REDIRECT");
     expect(restoreDailyActivity).not.toHaveBeenCalled();
 
     const userId = new ObjectId().toHexString();
     getCurrentUser.mockResolvedValue({ id: userId, timezone: "Asia/Dhaka" });
-    await restoreActivityAction(activityId);
+    restoreDailyActivity.mockResolvedValue(true);
+    await expect(restoreActivityAction(data)).rejects.toThrow("NEXT_REDIRECT");
     expect(restoreDailyActivity).toHaveBeenCalledWith(userId, activityId);
+    expect(redirect).toHaveBeenLastCalledWith("/settings?restore=success");
+  });
+
+  it("shows an explicit failure when the archived activity cannot be restored", async () => {
+    getCurrentUser.mockResolvedValue({
+      id: new ObjectId().toHexString(),
+      timezone: "Asia/Dhaka",
+    });
+    restoreDailyActivity.mockResolvedValue(false);
+    const data = new FormData();
+    data.set("activityId", new ObjectId().toHexString());
+
+    await expect(restoreActivityAction(data)).rejects.toThrow("NEXT_REDIRECT");
+    expect(redirect).toHaveBeenLastCalledWith("/settings?restore=failed");
   });
 });

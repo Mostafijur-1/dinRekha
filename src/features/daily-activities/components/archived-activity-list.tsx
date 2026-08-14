@@ -16,14 +16,14 @@ export function ArchivedActivityList({
   return (
     <div className="settings-archive-list">
       {activities.map((activity) => {
-        const restore = restoreActivityAction.bind(null, activity.id);
         return (
           <article className="settings-archive-item" key={activity.id}>
             <div>
               <strong>{activity.name}</strong>
               <span>{activity.category}</span>
             </div>
-            <form action={restore}>
+            <form action={restoreActivityAction}>
+              <input name="activityId" type="hidden" value={activity.id} />
               <ActivitySubmitButton
                 className="activity-button activity-button-primary"
                 idle="Restore"
