@@ -65,10 +65,7 @@ export default async function InvitePage({
           <>
             <span>Invitation পাওয়া যায়নি</span>
             <h1>লিংকটি আর সক্রিয় নেই</h1>
-            <p>
-              Invitation-টি ব্যবহৃত, বাতিল বা মেয়াদোত্তীর্ণ হতে পারে। নতুন লিংক
-              চাইুন।
-            </p>
+            <p>Invitation-টি ব্যবহৃত, বাতিল বা মেয়াদোত্তীর্ণ হতে পারে।</p>
           </>
         )}
       </section>
