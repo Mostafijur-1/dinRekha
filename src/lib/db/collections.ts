@@ -118,6 +118,8 @@ export type SharingPolicyDocument = {
   recipientId: ObjectId;
   productivitySummary: boolean;
   streaks: boolean;
+  dailyActivities?: boolean;
+  timeline?: boolean;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -13,6 +13,8 @@ export async function updateSharingAction(
   await setSharingPolicy(user.id, recipientId, {
     productivitySummary: formData.get("productivitySummary") === "on",
     streaks: formData.get("streaks") === "on",
+    dailyActivities: formData.get("dailyActivities") === "on",
+    timeline: formData.get("timeline") === "on",
   });
   revalidatePath("/connections");
 }

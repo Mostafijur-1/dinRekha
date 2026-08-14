@@ -23,7 +23,7 @@ vi.mock("@/lib/db/collections", () => ({
     findOne,
     findOneAndUpdate,
   })),
-  connectionsCollection: vi.fn(async () => ({ updateOne })),
+  connectionsCollection: vi.fn(async () => ({ findOne, updateOne })),
   sharingPoliciesCollection: vi.fn(async () => ({ deleteMany })),
   usersCollection: vi.fn(async () => ({ findOne })),
 }));
@@ -32,6 +32,7 @@ vi.mock("@/lib/db/indexes", () => ({ ensureDatabaseIndexes: vi.fn() }));
 import {
   createConnectionInvite,
   disconnectConnection,
+  previewConnectionInvite,
   redeemConnectionInvite,
 } from "@/features/connections/repository";
 
@@ -59,10 +60,11 @@ describe("connection invitation security", () => {
     const inviterId = new ObjectId();
     const recipientId = new ObjectId();
     findOneAndUpdate.mockResolvedValue({ inviterId });
+    findOne.mockResolvedValue(null);
     updateOne.mockResolvedValue({ matchedCount: 1 });
     await expect(
       redeemConnectionInvite("a".repeat(24), recipientId.toHexString()),
-    ).resolves.toBe(true);
+    ).resolves.toBe("success");
     expect(findOneAndUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "active",
@@ -76,6 +78,37 @@ describe("connection invitation security", () => {
       }),
       { returnDocument: "after" },
     );
+  });
+
+  it("marks an invite preview when the users are already connected", async () => {
+    const inviterId = new ObjectId();
+    const viewerId = new ObjectId();
+    findOne
+      .mockResolvedValueOnce({
+        inviterId,
+        expiresAt: new Date("2026-08-15T00:00:00Z"),
+      })
+      .mockResolvedValueOnce({ name: "বন্ধু" })
+      .mockResolvedValueOnce({ _id: new ObjectId(), status: "active" });
+
+    await expect(
+      previewConnectionInvite("a".repeat(24), viewerId.toHexString()),
+    ).resolves.toMatchObject({
+      inviterName: "বন্ধু",
+      alreadyConnected: true,
+    });
+  });
+
+  it("does not report a duplicate when redeeming into an active connection", async () => {
+    const inviterId = new ObjectId();
+    const recipientId = new ObjectId();
+    findOneAndUpdate.mockResolvedValue({ inviterId });
+    findOne.mockResolvedValue({ _id: new ObjectId(), status: "active" });
+    updateOne.mockResolvedValue({ matchedCount: 1 });
+
+    await expect(
+      redeemConnectionInvite("a".repeat(24), recipientId.toHexString()),
+    ).resolves.toBe("already_connected");
   });
 
   it("allows disconnect only for a member of the connection", async () => {

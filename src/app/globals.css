@@ -1508,6 +1508,16 @@ a {
   font-size: 0.76rem;
   line-height: 1.6;
 }
+.connection-error {
+  margin: 0 0 1rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid color-mix(in srgb, #a13a27 35%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-raised) 88%, #f2b8b3);
+  color: #a13a27;
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
 .connection-list {
   display: grid;
   gap: 0.65rem;
@@ -1531,6 +1541,33 @@ a {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.65rem;
+}
+
+.shared-data-list {
+  display: grid;
+  gap: 0.6rem;
+}
+.shared-data-list article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.shared-data-list article > span {
+  display: flex;
+  flex-direction: column;
+}
+.shared-data-list small {
+  color: var(--text-faint);
+}
+.shared-data-list time,
+.shared-data-list article > strong {
+  color: var(--brand);
+  font-size: 0.78rem;
 }
 
 .activity-reminder-toggle {
@@ -2173,6 +2210,27 @@ a {
   min-width: 2rem;
   text-align: center;
   font-weight: 800;
+}
+.counter-direct-form {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.counter-direct-form input {
+  width: 5.25rem;
+  min-height: 2.7rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--canvas);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+}
+.counter-direct-form input:focus {
+  border-color: var(--brand);
+  outline: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 15%, transparent);
 }
 .value-progress-form {
   flex: 1 1 12rem;

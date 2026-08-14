@@ -75,12 +75,13 @@ Account closure recoverable দুই-ধাপের lifecycle: exact current e
 retention policy ছাড়া চালু নয়; এই boundary accidental irreversible deletion এড়ায়।
 
 Connections many-to-many canonical user pair দিয়ে model করা। Invitation-এর ১৯২-bit raw token শুধু
-creator-এর response-এ ফেরে; database-এ SHA-256 hash, expiry ও single-use state থাকে। Connection নিজে
-কোনো data access দেয় না—directional sharing policy আলাদা authorization layer।
+creator-এর response-এ ফেরে; database-এ SHA-256 hash, expiry ও single-use state থাকে। Data access কেবল
+active connection এবং directional sharing policy authorization layer-এর মাধ্যমে হয়।
 
-Sharing policy প্রতি connection-এ owner→recipient direction-এ unique। Default policy সব false;
-active connection ও explicit permission ছাড়া shared report query চলে না। বর্তমান targets শুধু aggregate
-Productivity summary ও streaks; Timeline, category distribution, daily values এবং private notes share হয় না।
+Sharing policy প্রতি connection-এ owner→recipient direction-এ unique। Active connection-এ Productivity
+summary, streaks, আজকের Daily Activities ও আজকের Timeline default-enabled; owner যেকোনো target explicit
+false করে বন্ধ করতে পারেন। Denied data type shared page query করে না। Timeline-এর private note এবং Daily
+Activity description shared response-এ অন্তর্ভুক্ত হয় না। Active connection না থাকলে সব permission false।
 
 Reminder schedule user timezone-এ minute precision-এ নির্ধারিত। Activity-level preferred time এবং
 user-level granular switches থেকে একই deterministic engine Dashboard reminder তৈরি করে; ভবিষ্যৎ Web Push

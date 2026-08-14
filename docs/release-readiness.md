@@ -6,7 +6,7 @@
 - ২৪ ঘণ্টার Timeline, overlap validation, untracked gaps, history ও deterministic suggestions
 - user-defined Daily Activities, recurrence, four measurement modes ও progress
 - explainable Reports: day, week, month, custom range, streak ও Activity history
-- many-to-many Connections, expiring single-use invitation ও directional default-deny sharing
+- many-to-many Connections, expiring single-use invitation ও directional, owner-controlled sharing
 - Profile/timezone, private export ও recoverable account closure
 - granular Reminder, installable PWA, safe offline shell ও Web Push delivery foundation
 - privacy-safe structured logging, error UX ও MongoDB readiness probe
@@ -23,7 +23,7 @@
 
 - Offline mutation queue, conflict resolution ও background sync
 - extensible special-domain Activity metadata
-- selected Activity/category-level sharing beyond current aggregate summary/streak targets
+- selected individual Activity/Timeline-entry ও category-level sharing beyond current data-type permissions
 - AI reflection/ranking; core product AI ছাড়া কার্যকর
 - external error monitoring/analytics vendor, consent ও retention policy অনুমোদনের পরে
 

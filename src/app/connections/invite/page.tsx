@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/brand";
 import { redeemInviteAction } from "@/features/connections/actions";
@@ -27,13 +28,29 @@ export default async function InvitePage({
         <Brand />
       </header>
       <section className="connection-invite-page">
-        {preview && redeem ? (
+        {preview?.alreadyConnected ? (
+          <>
+            <span>ইতিমধ্যেই সংযুক্ত</span>
+            <h1>{preview.inviterName}-এর সঙ্গে আপনার সংযোগ আগে থেকেই আছে</h1>
+            <p>
+              নতুন করে নিশ্চিত করার প্রয়োজন নেই। সংযোগের পাতা থেকে শেয়ার করা
+              তথ্য ও অনুমতি দেখুন।
+            </p>
+            <Link
+              className="activity-button activity-button-primary"
+              href="/connections"
+            >
+              সংযোগগুলো দেখুন
+            </Link>
+          </>
+        ) : preview && redeem ? (
           <>
             <span>সংযোগের আমন্ত্রণ</span>
             <h1>{preview.inviterName} আপনার সঙ্গে যুক্ত হতে চান</h1>
             <p>
-              নিশ্চিত করলে শুধু সংযোগ তৈরি হবে। আপনার কোনো কাজ, সময়রেখা বা
-              প্রতিবেদন প্রকাশ হবে না।
+              নিশ্চিত করলে সংযোগ তৈরি হবে এবং দুজনের সারাংশ, streak, আজকের Daily
+              Activities ও Timeline ডিফল্টভাবে share হবে। পরে সংযোগের পাতা থেকে
+              যেটি গোপন রাখতে চান সেটির permission বন্ধ করতে পারবেন।
             </p>
             <form action={redeem}>
               <button

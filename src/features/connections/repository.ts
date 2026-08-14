@@ -23,7 +23,11 @@ function pair(a: ObjectId, b: ObjectId) {
     : { userLowId: b, userHighId: a };
 }
 
-export type InvitePreview = { inviterName: string; expiresAt: Date };
+export type InvitePreview = {
+  inviterName: string;
+  expiresAt: Date;
+  alreadyConnected: boolean;
+};
 export type ConnectionView = {
   id: string;
   userId: string;
@@ -84,9 +88,15 @@ export async function previewConnectionInvite(
     { _id: invitation.inviterId, status: "active" },
     { projection: { name: 1 } },
   );
-  return inviter
-    ? { inviterName: inviter.name, expiresAt: invitation.expiresAt }
-    : null;
+  if (!inviter) return null;
+  const existingConnection = await (
+    await connectionsCollection()
+  ).findOne({ ...pair(invitation.inviterId, viewer), status: "active" });
+  return {
+    inviterName: inviter.name,
+    expiresAt: invitation.expiresAt,
+    alreadyConnected: Boolean(existingConnection),
+  };
 }
 
 export async function redeemConnectionInvite(
@@ -94,7 +104,7 @@ export async function redeemConnectionInvite(
   recipientId: string,
 ) {
   if (!ObjectId.isValid(recipientId) || token.length < 20 || token.length > 100)
-    return false;
+    return "invalid" as const;
   await ensureDatabaseIndexes();
   const recipient = new ObjectId(recipientId);
   const now = new Date();
@@ -110,11 +120,11 @@ export async function redeemConnectionInvite(
     { $set: { status: "used", usedById: recipient, usedAt: now } },
     { returnDocument: "after" },
   );
-  if (!invitation) return false;
+  if (!invitation) return "invalid" as const;
   const connectionPair = pair(invitation.inviterId, recipient);
-  await (
-    await connectionsCollection()
-  ).updateOne(
+  const connections = await connectionsCollection();
+  const existingConnection = await connections.findOne(connectionPair);
+  await connections.updateOne(
     connectionPair,
     {
       $set: { status: "active", updatedAt: now },
@@ -127,7 +137,9 @@ export async function redeemConnectionInvite(
     },
     { upsert: true },
   );
-  return true;
+  return existingConnection?.status === "active"
+    ? ("already_connected" as const)
+    : ("success" as const);
 }
 
 export async function listConnections(

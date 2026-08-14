@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function ConnectionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ connected?: string }>;
+  searchParams: Promise<{ connected?: "1" | "already" | "error" }>;
 }) {
   const { connected } = await searchParams;
   const user = await getCurrentUser();
@@ -56,8 +56,9 @@ export default async function ConnectionsPage({
             <span>আপনার নিয়ন্ত্রণে</span>
             <h1>বিশ্বস্ত মানুষের সঙ্গে যুক্ত হোন</h1>
             <p>
-              সংযোগ তৈরি হলেও কোনো অগ্রগতি নিজে থেকে প্রকাশ হয় না। কোন তথ্য
-              দেখাবেন, তা আপনি আলাদাভাবে ঠিক করবেন।
+              সংযোগ তৈরি হলে সারাংশ, streak, আজকের Daily Activities ও Timeline
+              share হবে। যেটি দেখাতে চান না, শুধু সেটির permission বন্ধ করে
+              সংরক্ষণ করুন।
             </p>
           </section>
           <section className="connection-panel">
@@ -77,8 +78,20 @@ export default async function ConnectionsPage({
           <section className="connection-panel">
             {connected === "1" && (
               <p className="connection-success" role="status">
-                সংযোগ সফল হয়েছে। এখন দুজনেই আলাদাভাবে তথ্য দেখানোর অনুমতি ঠিক
-                করতে পারবেন।
+                সংযোগ সফল হয়েছে। সব তথ্য share করা চালু আছে; প্রয়োজন হলে নিচে
+                নির্দিষ্ট permission বন্ধ করুন।
+              </p>
+            )}
+            {connected === "already" && (
+              <p className="connection-success" role="status">
+                এই ব্যক্তির সঙ্গে আপনার সংযোগ আগে থেকেই সক্রিয় আছে। নতুন কোনো
+                সংযোগ তৈরি হয়নি।
+              </p>
+            )}
+            {connected === "error" && (
+              <p className="connection-error" role="alert">
+                সংযোগটি সম্পন্ন করা যায়নি। লিংকটি ব্যবহৃত, বাতিল বা
+                মেয়াদোত্তীর্ণ হতে পারে। নতুন লিংক নিয়ে আবার চেষ্টা করুন।
               </p>
             )}
             <div className="feature-section-heading">
@@ -119,6 +132,22 @@ export default async function ConnectionsPage({
                             defaultChecked={policy.streaks}
                           />{" "}
                           অভ্যাস ধরে রাখার ধারা
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="dailyActivities"
+                            defaultChecked={policy.dailyActivities}
+                          />{" "}
+                          আজকের Daily Activities
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="timeline"
+                            defaultChecked={policy.timeline}
+                          />{" "}
+                          আজকের Timeline
                         </label>
                         <button className="activity-button" type="submit">
                           অনুমতি সংরক্ষণ

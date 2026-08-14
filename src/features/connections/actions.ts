@@ -35,9 +35,16 @@ export async function createInviteAction(
 
 export async function redeemInviteAction(token: string): Promise<void> {
   const user = await getCurrentUser();
-  if (!user || !(await redeemConnectionInvite(token, user.id))) return;
+  if (!user) return;
+  const result = await redeemConnectionInvite(token, user.id);
   revalidatePath("/connections");
-  redirect("/connections?connected=1");
+  redirect(
+    result === "success"
+      ? "/connections?connected=1"
+      : result === "already_connected"
+        ? "/connections?connected=already"
+        : "/connections?connected=error",
+  );
 }
 
 export async function disconnectAction(connectionId: string): Promise<void> {

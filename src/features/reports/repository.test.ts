@@ -89,4 +89,21 @@ describe("reports repository", () => {
 
     expect(timelineFind).not.toHaveBeenCalled();
   });
+
+  it("skips activity storage when a shared report does not permit it", async () => {
+    timelineFind.mockReturnValue({ toArray });
+    const ownerId = new ObjectId();
+
+    await getProductivityReport(
+      ownerId.toHexString(),
+      ["2026-08-07", "2026-08-13"],
+      "2026-08-13",
+      600,
+      ["2026-07-14", "2026-08-13"],
+      { includeActivities: false },
+    );
+
+    expect(activitiesFind).not.toHaveBeenCalled();
+    expect(progressFind).not.toHaveBeenCalled();
+  });
 });

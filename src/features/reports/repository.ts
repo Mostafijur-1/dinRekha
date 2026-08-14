@@ -89,7 +89,7 @@ export async function getProductivityReport(
   todayKey: string,
   currentMinute: number,
   historyDateKeys = dateKeys,
-  options: { includeTimeline?: boolean } = {},
+  options: { includeTimeline?: boolean; includeActivities?: boolean } = {},
 ): Promise<
   (ProductivityReport & { consistency: ActivityConsistency[] }) | null
 > {
@@ -101,21 +101,25 @@ export async function getProductivityReport(
   await ensureDatabaseIndexes();
 
   const [activityRows, progressRows, timelineRows] = await Promise.all([
-    (await dailyActivitiesCollection())
-      .find({
-        ownerId: owner,
-        $or: [
-          { effectiveFrom: { $exists: false } },
-          { effectiveFrom: { $lte: lastDate } },
-        ],
-      })
-      .toArray(),
-    (await dailyActivityProgressCollection())
-      .find({
-        ownerId: owner,
-        dateKey: { $gte: progressStart, $lte: lastDate },
-      })
-      .toArray(),
+    options.includeActivities === false
+      ? Promise.resolve([])
+      : (await dailyActivitiesCollection())
+          .find({
+            ownerId: owner,
+            $or: [
+              { effectiveFrom: { $exists: false } },
+              { effectiveFrom: { $lte: lastDate } },
+            ],
+          })
+          .toArray(),
+    options.includeActivities === false
+      ? Promise.resolve([])
+      : (await dailyActivityProgressCollection())
+          .find({
+            ownerId: owner,
+            dateKey: { $gte: progressStart, $lte: lastDate },
+          })
+          .toArray(),
     options.includeTimeline === false
       ? Promise.resolve([])
       : (await timelineEntriesCollection())

@@ -10,10 +10,20 @@ import { ensureDatabaseIndexes } from "@/lib/db/indexes";
 export type SharingPermissions = {
   productivitySummary: boolean;
   streaks: boolean;
+  dailyActivities: boolean;
+  timeline: boolean;
 };
 export const privatePermissions: SharingPermissions = {
   productivitySummary: false,
   streaks: false,
+  dailyActivities: false,
+  timeline: false,
+};
+export const defaultConnectedPermissions: SharingPermissions = {
+  productivitySummary: true,
+  streaks: true,
+  dailyActivities: true,
+  timeline: true,
 };
 
 async function activeConnection(owner: ObjectId, recipient: ObjectId) {
@@ -46,8 +56,10 @@ export async function getSharingPolicy(
     ? {
         productivitySummary: policy.productivitySummary,
         streaks: policy.streaks,
+        dailyActivities: policy.dailyActivities ?? true,
+        timeline: policy.timeline ?? true,
       }
-    : privatePermissions;
+    : defaultConnectedPermissions;
 }
 
 export async function setSharingPolicy(
@@ -75,6 +87,8 @@ export async function setSharingPolicy(
       $set: {
         productivitySummary: permissions.productivitySummary,
         streaks: permissions.streaks,
+        dailyActivities: permissions.dailyActivities,
+        timeline: permissions.timeline,
         updatedAt: now,
       },
       $setOnInsert: { _id: new ObjectId(), createdAt: now },
@@ -86,7 +100,10 @@ export async function setSharingPolicy(
 
 export async function authorizeSharedReport(ownerId: string, viewerId: string) {
   const permissions = await getSharingPolicy(ownerId, viewerId);
-  return permissions.productivitySummary || permissions.streaks
+  return permissions.productivitySummary ||
+    permissions.streaks ||
+    permissions.dailyActivities ||
+    permissions.timeline
     ? permissions
     : null;
 }

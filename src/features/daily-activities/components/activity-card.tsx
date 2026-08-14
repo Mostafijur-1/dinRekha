@@ -89,7 +89,23 @@ export function ActivityCard({
                 className="activity-step-button"
               />
             </form>
-            <span>{activity.value}</span>
+            <form action={setProgress} className="counter-direct-form">
+              <input type="hidden" name="dateKey" value={dateKey} />
+              <label>
+                <span className="sr-only">সরাসরি সংখ্যা লিখুন</span>
+                <input
+                  type="number"
+                  name="value"
+                  min="0"
+                  max="1000000"
+                  step="1"
+                  defaultValue={activity.value}
+                  inputMode="numeric"
+                  required
+                />
+              </label>
+              <ActivitySubmitButton idle="রাখুন" pending="…" />
+            </form>
             <form action={setProgress}>
               <input type="hidden" name="dateKey" value={dateKey} />
               <input type="hidden" name="value" value={activity.value + 1} />

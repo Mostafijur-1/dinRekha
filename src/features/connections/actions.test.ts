@@ -24,7 +24,7 @@ describe("redeemInviteAction", () => {
 
   it("returns to the connection list with success feedback after redeeming", async () => {
     getCurrentUser.mockResolvedValue({ id: "user-id" });
-    redeemConnectionInvite.mockResolvedValue(true);
+    redeemConnectionInvite.mockResolvedValue("success");
 
     await redeemInviteAction("a".repeat(24));
 
@@ -32,12 +32,21 @@ describe("redeemInviteAction", () => {
     expect(redirect).toHaveBeenCalledWith("/connections?connected=1");
   });
 
-  it("does not redirect when the invite cannot be redeemed", async () => {
+  it("shows a useful result when the invite cannot be redeemed", async () => {
     getCurrentUser.mockResolvedValue({ id: "user-id" });
-    redeemConnectionInvite.mockResolvedValue(false);
+    redeemConnectionInvite.mockResolvedValue("invalid");
 
     await redeemInviteAction("a".repeat(24));
 
-    expect(redirect).not.toHaveBeenCalled();
+    expect(redirect).toHaveBeenCalledWith("/connections?connected=error");
+  });
+
+  it("reports an already active connection without duplicating it", async () => {
+    getCurrentUser.mockResolvedValue({ id: "user-id" });
+    redeemConnectionInvite.mockResolvedValue("already_connected");
+
+    await redeemInviteAction("a".repeat(24));
+
+    expect(redirect).toHaveBeenCalledWith("/connections?connected=already");
   });
 });
