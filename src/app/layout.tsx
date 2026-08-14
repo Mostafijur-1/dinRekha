@@ -6,7 +6,7 @@ import { InstallProvider } from "@/features/pwa/install-provider";
 
 import "./globals.css";
 
-const title = "দিনরেখা — দিন কোথায় গেল, রেখায় দেখুন";
+const title = "দিনরেখা — দিন কোথায় গেল, দিনরেখায় দেখুন";
 const description =
   "কাজ, অভ্যাস ও মনোযোগের সময় সহজে নোট করুন এবং প্রতিদিনের অগ্রগতি পরিষ্কারভাবে বুঝুন।";
 

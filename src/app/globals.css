@@ -1860,10 +1860,6 @@ a {
   display: none;
 }
 .timeline-default-sleep {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 1rem;
   min-height: 4rem;
   padding: 0.75rem 0.85rem;
   border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--border));
@@ -1884,13 +1880,6 @@ a {
   margin-top: 0.25rem;
   color: var(--text-faint);
   font-size: 0.64rem;
-}
-.timeline-default-sleep .timeline-hour-entry > summary {
-  min-height: auto;
-  border-style: solid;
-}
-.timeline-default-sleep .timeline-hour-entry[open] {
-  grid-column: 1 / -1;
 }
 .timeline-hour-entry > summary {
   min-height: 4rem;
@@ -2996,9 +2985,6 @@ a {
     padding: 1rem 0.65rem;
   }
   .timeline-hour-content .timeline-card {
-    grid-template-columns: 1fr;
-  }
-  .timeline-default-sleep {
     grid-template-columns: 1fr;
   }
   .timeline-edit {

@@ -10,6 +10,7 @@
 - প্রতিটি slot ওই সময়ের কাছাকাছি historical কাজকে suggestion হিসেবে আগে দেখায়
 - occupied ও future slot overlap বা future-time mutation তৈরি করতে দেয় না
 - প্রথম slot-এ বাস্তব entry না থাকলে `ঘুম` presentation default হিসেবে tracked হয়; page load database write করে না
+- default `ঘুম` slot-টি একটি একক activity block; এখানে আলাদা activity input বা suggestion নেই
 
 - Activity, category, start time, end time ও private note
 - completed এবং বর্তমানে চলমান entry

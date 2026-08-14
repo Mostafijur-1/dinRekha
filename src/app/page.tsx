@@ -316,7 +316,7 @@ export function HomeContent({
 
       <footer className="site-footer page-width">
         <Brand />
-        <p>দিন কোথায় গেল—রেখায় দেখুন।</p>
+        <p>দিন কোথায় গেল—দিনরেখায় দেখুন।</p>
         <span>© ২০২৬ দিনরেখা</span>
       </footer>
     </main>

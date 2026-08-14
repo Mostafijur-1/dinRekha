@@ -25,9 +25,6 @@ function HourEntryForm({
   isToday,
   boundary,
   suggestions,
-  defaultActivity = "",
-  defaultCategory = "সাধারণ",
-  summary = "এই ঘণ্টায় কী করেছেন লিখুন",
 }: {
   dateKey: string;
   startMinute: number;
@@ -35,16 +32,13 @@ function HourEntryForm({
   isToday: boolean;
   boundary: number;
   suggestions: TimelineSuggestion[];
-  defaultActivity?: string;
-  defaultCategory?: string;
-  summary?: string;
 }) {
   const [state, action] = useActionState(
     createTimelineEntryAction,
     initialTimelineActionState,
   );
-  const [activity, setActivity] = useState(defaultActivity);
-  const [category, setCategory] = useState(defaultCategory);
+  const [activity, setActivity] = useState("");
+  const [category, setCategory] = useState("সাধারণ");
   const isCurrentSlot =
     isToday && boundary >= startMinute && boundary < endMinute;
   const startTime = minuteToTime(startMinute);
@@ -59,7 +53,7 @@ function HourEntryForm({
     <details className="timeline-hour-entry">
       <summary>
         <span aria-hidden="true">+</span>
-        {summary}
+        এই ঘণ্টায় কী করেছেন লিখুন
       </summary>
       <form action={action} className="timeline-hour-form">
         <input type="hidden" name="dateKey" value={dateKey} />
@@ -249,17 +243,6 @@ export function HourlyTimeline({
                           : "৫ ঘণ্টা"}
                       </small>
                     </div>
-                    <HourEntryForm
-                      dateKey={dateKey}
-                      startMinute={startMinute}
-                      endMinute={endMinute}
-                      isToday={isToday}
-                      boundary={boundary}
-                      suggestions={suggestions}
-                      defaultActivity="ঘুম"
-                      defaultCategory="বিশ্রাম"
-                      summary="পরিবর্তন করুন"
-                    />
                   </div>
                 ) : isFuture ? (
                   <p className="timeline-hour-state">এই সময় এখনো আসেনি</p>
