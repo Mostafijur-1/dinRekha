@@ -64,7 +64,7 @@ function temporalError(
 
 function messageFor(result: "success" | "not_found" | "overlap") {
   if (result === "overlap")
-    return "এই সময়ের সঙ্গে আরেকটি Timeline entry মিলে যাচ্ছে।";
+    return "এই সময়ের জন্য একটি Timeline entry আগে থেকেই আছে।";
   if (result === "not_found") return "Timeline entry পাওয়া যায়নি।";
   return null;
 }

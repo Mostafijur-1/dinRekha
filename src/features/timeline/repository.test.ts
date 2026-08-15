@@ -37,7 +37,7 @@ const input = {
   note: "",
 };
 
-describe("Timeline repository authorization and overlap", () => {
+describe("Timeline repository authorization and slot independence", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("scopes suggestion history to the authenticated owner", async () => {
@@ -63,12 +63,33 @@ describe("Timeline repository authorization and overlap", () => {
     );
   });
 
-  it("does not insert an overlapping interval", async () => {
+  it("does not insert a second entry at the exact same start time", async () => {
     findOne.mockResolvedValue({ _id: new ObjectId() });
     await expect(
       createTimelineEntry(new ObjectId().toHexString(), "2026-08-13", input),
     ).resolves.toBe("overlap");
     expect(insertOne).not.toHaveBeenCalled();
+    expect(findOne).toHaveBeenCalledWith({
+      ownerId: expect.any(ObjectId),
+      dateKey: "2026-08-13",
+      startMinute: 540,
+    });
+  });
+
+  it("allows a later start time without requiring the earlier entry to end", async () => {
+    findOne.mockResolvedValue(null);
+
+    await expect(
+      createTimelineEntry(new ObjectId().toHexString(), "2026-08-13", {
+        ...input,
+        startTime: "10:00",
+        endTime: "",
+      }),
+    ).resolves.toBe("success");
+
+    expect(insertOne).toHaveBeenCalledWith(
+      expect.objectContaining({ startMinute: 600, status: "in_progress" }),
+    );
   });
 
   it("updates only the activity within the owner and date boundary", async () => {

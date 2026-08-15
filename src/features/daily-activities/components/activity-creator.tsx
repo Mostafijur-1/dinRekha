@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 
+import { useCloseDetailsOnSuccess } from "@/components/use-close-details-on-success";
 import { initialActivityActionState } from "@/features/daily-activities/action-state";
 import { createActivityAction } from "@/features/daily-activities/actions";
 import { ActivityDefinitionFields } from "@/features/daily-activities/components/activity-definition-fields";
@@ -13,13 +14,14 @@ export function ActivityCreator() {
     initialActivityActionState,
   );
   const form = useRef<HTMLFormElement>(null);
+  const detailsRef = useCloseDetailsOnSuccess(state);
 
   useEffect(() => {
     if (state.status === "success") form.current?.reset();
   }, [state]);
 
   return (
-    <details className="activity-creator">
+    <details className="activity-creator" ref={detailsRef}>
       <summary>
         <span aria-hidden="true">＋</span>
         নতুন Daily Activity

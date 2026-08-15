@@ -29,6 +29,9 @@ describe("TimelineCard edit form", () => {
     );
 
     fireEvent.click(screen.getByText("Edit"));
+    expect(screen.queryByText("শেখা")).not.toBeInTheDocument();
+    expect(screen.queryByText("10:00")).not.toBeInTheDocument();
+    expect(screen.queryByText("11:00")).not.toBeInTheDocument();
     const form = screen.getByText("সংরক্ষণ করুন").closest("form")!;
     expect(within(form).getByRole("textbox", { name: "Activity" })).toHaveValue(
       "পড়াশোনা",

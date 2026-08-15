@@ -1913,11 +1913,14 @@ a {
   padding: 0.65rem;
 }
 .timeline-hour-content .timeline-card {
-  grid-template-columns: 5rem minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   box-shadow: none;
 }
 .timeline-hour-content .timeline-card::before {
   display: none;
+}
+.shared-timeline-card + .shared-timeline-card {
+  margin-top: 0.5rem;
 }
 .timeline-default-sleep {
   min-height: 4rem;
@@ -2096,7 +2099,7 @@ a {
   font-weight: 800;
 }
 .timeline-copy h3 {
-  margin: 0.25rem 0 0;
+  margin: 0;
   font-size: 1.05rem;
 }
 .timeline-copy p {

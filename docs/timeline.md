@@ -12,17 +12,20 @@ Start time, end time, category এবং note edit form-এ পাঠানো �
 ০৫:০০–২৩:০০ পর্যন্ত ঘণ্টাভিত্তিক স্থায়ী slot দেখায়:
 
 - ব্যবহারকারী সংশ্লিষ্ট ঘণ্টা খুলে শুধু কাজের নাম লেখেন; start/end সময় slot থেকে তৈরি হয়
-- বর্তমান ঘণ্টার entry end time ছাড়া in-progress হিসেবে থাকে
+- বর্তমান ঘণ্টার entry end time ছাড়া in-progress হিসেবে থাকে; পরের ঘণ্টা এলে সেটি
+  পরের slot-কে block করে না
 - প্রতিটি slot ওই সময়ের কাছাকাছি historical কাজকে suggestion হিসেবে আগে দেখায়
-- occupied ও future slot overlap বা future-time mutation তৈরি করতে দেয় না
+- প্রতিটি ঘণ্টা স্বাধীন; শুধু একই start time-এ দ্বিতীয় entry তৈরি করা যায় না এবং future
+  slot mutation তৈরি করতে দেয় না
 - প্রথম slot-এ সবসময় `ঘুম` presentation default হিসেবে tracked হয়; page load database write করে না
 - `০০:০০–০৫:০০` একটি সংরক্ষিত, একক activity block; এখানে পুরোনো entry, আলাদা input বা suggestion দেখানো হয় না এবং নতুন entry তৈরি করা যায় না
 
-- Activity, category, start time, end time ও private note
+- Timeline row-তে শুধু Activity ও private note দেখা যায়; সময় বাম পাশের slot label-এ একবারই
+  দেখানো হয় এবং category UI-তে দেখানো হয় না
 - completed এবং বর্তমানে চলমান entry
 - edit ও delete
 - আগের দিনের entry
-- overlap rejection
+- duplicate start-time rejection
 - tracked ও untracked সময়
 - authenticated owner isolation
 
@@ -32,11 +35,11 @@ Favorites, reports, offline sync এবং special metadata এই milestone-এ
 
 `timelineEntries` collection-এ প্রতিটি entry-র `ownerId`, `dateKey`,
 `startMinute` এবং optional `endMinute` থাকে। Clock time-কে day-local minute হিসেবে রাখায়
-দিনভিত্তিক sorting ও overlap query সরল থাকে এবং server timezone-এর ওপর নির্ভর করতে হয় না।
+দিনভিত্তিক sorting ও duplicate-time query সরল থাকে এবং server timezone-এর ওপর নির্ভর করতে হয় না।
 
-`endMinute` না থাকলে entry-টি `in_progress`; overlap calculation-এ এটি ঐ দিনের শেষ পর্যন্ত
-সময় দখল করে। `timeline_owner_date_start` index owner, date ও start time অনুযায়ী list query
-সমর্থন করে।
+`endMinute` না থাকলে entry-টি `in_progress`; tracked/gap calculation-এ এটি নিজের এক ঘণ্টার
+slot-এর বেশি সময় দখল করে না। `timeline_owner_date_start` index owner, date ও start time অনুযায়ী
+list query সমর্থন করে।
 
 ## Validation and authorization
 
@@ -44,13 +47,12 @@ Client form browser validation দেয়, কিন্তু server action Zod �
 Server authenticated session থেকে owner নির্ধারণ করে; client থেকে user ID নেওয়া হয় না।
 Repository-এর read, update ও delete query-তেও `ownerId` থাকে।
 
-ভবিষ্যৎ দিন বা সময় গ্রহণ করা হয় না। Historical entry-তে end time আবশ্যক। নতুন বা edited
-interval বিদ্যমান interval-এর সঙ্গে overlap করলে mutation প্রত্যাখ্যাত হয়; পাশাপাশি থাকা
-interval বৈধ।
+ভবিষ্যৎ দিন বা সময় গ্রহণ করা হয় না। Historical entry-তে end time আবশ্যক। একই
+owner/date/start time-এ আরেকটি entry থাকলে mutation প্রত্যাখ্যাত হয়; অন্য সময়ের entry
+স্বাধীনভাবে তৈরি করা যায়।
 
 ## Known limitation
 
-Overlap check এবং insert/update বর্তমানে আলাদা database operation। একই owner একই সময়ে
-একাধিক device থেকে সমান্তরাল mutation পাঠালে বিরল race condition-এ overlapping entry তৈরি
-হতে পারে। ভবিষ্যৎ synchronization milestone-এ idempotency/serialization strategy যোগ করতে
-হবে।
+Duplicate start-time check এবং insert বর্তমানে আলাদা database operation। একই owner একই সময়ে
+একাধিক device থেকে সমান্তরাল mutation পাঠালে বিরল race condition-এ duplicate entry তৈরি হতে
+পারে। ভবিষ্যৎ synchronization milestone-এ idempotency/serialization strategy যোগ করতে হবে।

@@ -89,6 +89,10 @@ describe("HourlyTimeline", () => {
     expect(
       tenOClockSlot!.querySelector<HTMLInputElement>('input[name="endTime"]'),
     ).toHaveValue("11:00");
+    expect(within(tenOClockSlot!).queryByText("শেখা")).not.toBeInTheDocument();
+    expect(
+      within(tenOClockSlot!).queryByText(/সময় স্বয়ংক্রিয়/),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps future hours visible but unavailable", () => {
@@ -141,7 +145,7 @@ describe("HourlyTimeline", () => {
     ).toHaveValue("23:59");
   });
 
-  it("does not offer a new entry inside an occupied hour", () => {
+  it("offers each hour independently of an earlier long-running entry", () => {
     render(
       <HourlyTimeline
         entries={[
@@ -166,10 +170,7 @@ describe("HourlyTimeline", () => {
 
     const tenOClockSlot = screen.getByText("10:00").closest("article");
     expect(
-      within(tenOClockSlot!).getByText(/আগের ঘণ্টার “দীর্ঘ মিটিং” চলছে/),
+      within(tenOClockSlot!).getByText("এই ঘণ্টায় কী করেছেন লিখুন"),
     ).toBeVisible();
-    expect(
-      within(tenOClockSlot!).queryByText("এই ঘণ্টায় কী করেছেন লিখুন"),
-    ).not.toBeInTheDocument();
   });
 });

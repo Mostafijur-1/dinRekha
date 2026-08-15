@@ -31,10 +31,13 @@ describe("Timeline time utilities", () => {
     ]);
   });
 
-  it("treats an in-progress entry as occupied through the boundary", () => {
+  it("limits an in-progress entry to its own hour", () => {
     expect(
       timelineGaps([{ startMinute: 120, endMinute: undefined }], 300),
-    ).toEqual([{ startMinute: 0, endMinute: 120 }]);
+    ).toEqual([
+      { startMinute: 0, endMinute: 120 },
+      { startMinute: 180, endMinute: 300 },
+    ]);
   });
 
   it("uses the user's timezone for the current minute", () => {

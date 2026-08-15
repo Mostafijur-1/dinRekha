@@ -1,10 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import { Brand } from "@/components/brand";
-import { listDailyActivities } from "@/features/daily-activities/repository";
-import { dateKeyForTimezone } from "@/features/daily-activities/date";
-import { authorizeSharedReport } from "@/features/sharing/repository";
-import { listTimelineEntries } from "@/features/timeline/repository";
 import { findActiveUserById } from "@/features/auth/repositories/user-repository";
+import { dateKeyForTimezone } from "@/features/daily-activities/date";
+import { listDailyActivities } from "@/features/daily-activities/repository";
+import { authorizeSharedReport } from "@/features/sharing/repository";
+import { SharedHourlyTimeline } from "@/features/timeline/components/shared-hourly-timeline";
+import { listTimelineEntries } from "@/features/timeline/repository";
+import { currentMinuteForTimezone } from "@/features/timeline/time";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "সংযোগের অগ্রগতি" };
@@ -27,6 +29,7 @@ export default async function SharedProgressPage({
   if (!owner) notFound();
   const now = new Date();
   const todayKey = dateKeyForTimezone(now, owner.timezone);
+  const currentMinute = currentMinuteForTimezone(now, owner.timezone);
   const [dailyActivities, timelineEntries] = await Promise.all([
     permissions.dailyActivities
       ? listDailyActivities(owner.id, todayKey)
@@ -80,24 +83,10 @@ export default async function SharedProgressPage({
                 <h2>Timeline</h2>
               </div>
             </div>
-            {timelineEntries.length ? (
-              <div className="shared-data-list">
-                {timelineEntries.map((entry) => (
-                  <article key={entry.id}>
-                    <span>
-                      <strong>{entry.activity}</strong>
-                      <small>{entry.category}</small>
-                    </span>
-                    <time>
-                      {entry.startTime}
-                      {entry.endTime ? ` – ${entry.endTime}` : " – চলছে"}
-                    </time>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="report-empty">আজকের Timeline-এ কোনো entry নেই।</p>
-            )}
+            <SharedHourlyTimeline
+              entries={timelineEntries}
+              boundary={currentMinute}
+            />
           </section>
         )}
       </section>

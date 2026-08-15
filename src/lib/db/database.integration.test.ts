@@ -192,7 +192,7 @@ describeWithDatabase("MongoDB authentication persistence", () => {
     ]);
   });
 
-  it("stores owner-scoped Timeline entries and rejects overlaps", async () => {
+  it("stores owner-scoped Timeline entries independently by start time", async () => {
     const ownerId = new ObjectId();
     const otherOwnerId = new ObjectId();
     const { createTimelineEntry, deleteTimelineEntry, listTimelineEntries } =
@@ -204,7 +204,7 @@ describeWithDatabase("MongoDB authentication persistence", () => {
         activity: "পড়াশোনা",
         category: "কাজ",
         startTime: "09:00",
-        endTime: "10:00",
+        endTime: "",
         note: "অধ্যায় এক",
       },
     );
@@ -213,8 +213,17 @@ describeWithDatabase("MongoDB authentication persistence", () => {
       createTimelineEntry(ownerId.toHexString(), "2026-08-13", {
         activity: "হাঁটা",
         category: "স্বাস্থ্য",
-        startTime: "09:30",
-        endTime: "10:30",
+        startTime: "10:00",
+        endTime: "11:00",
+        note: "",
+      }),
+    ).resolves.toBe("success");
+    await expect(
+      createTimelineEntry(ownerId.toHexString(), "2026-08-13", {
+        activity: "দ্বিতীয় দশটার কাজ",
+        category: "কাজ",
+        startTime: "10:00",
+        endTime: "11:00",
         note: "",
       }),
     ).resolves.toBe("overlap");
@@ -226,14 +235,21 @@ describeWithDatabase("MongoDB authentication persistence", () => {
       expect.objectContaining({
         activity: "পড়াশোনা",
         startTime: "09:00",
-        endTime: "10:00",
+        endTime: "",
+      }),
+      expect.objectContaining({
+        activity: "হাঁটা",
+        startTime: "10:00",
+        endTime: "11:00",
       }),
     ]);
     await expect(
       deleteTimelineEntry(otherOwnerId.toHexString(), entries[0].id),
     ).resolves.toBe(false);
-    await expect(
-      deleteTimelineEntry(ownerId.toHexString(), entries[0].id),
-    ).resolves.toBe(true);
+    for (const entry of entries) {
+      await expect(
+        deleteTimelineEntry(ownerId.toHexString(), entry.id),
+      ).resolves.toBe(true);
+    }
   });
 });

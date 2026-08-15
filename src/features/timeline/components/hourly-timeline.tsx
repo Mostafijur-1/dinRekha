@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 
+import { useCloseDetailsOnSuccess } from "@/components/use-close-details-on-success";
 import { initialTimelineActionState } from "@/features/timeline/action-state";
 import { createTimelineEntryAction } from "@/features/timeline/actions";
 import { TimelineCard } from "@/features/timeline/components/timeline-card";
@@ -15,6 +16,7 @@ import {
 import {
   durationLabel,
   minuteToTime,
+  timelineHourSlots,
   timelineGaps,
 } from "@/features/timeline/time";
 
@@ -39,6 +41,7 @@ function HourEntryForm({
   );
   const [activity, setActivity] = useState("");
   const [category, setCategory] = useState("সাধারণ");
+  const detailsRef = useCloseDetailsOnSuccess(state);
   const isCurrentSlot =
     isToday && boundary >= startMinute && boundary < endMinute;
   const startTime = minuteToTime(startMinute);
@@ -50,7 +53,7 @@ function HourEntryForm({
   );
 
   return (
-    <details className="timeline-hour-entry">
+    <details className="timeline-hour-entry" ref={detailsRef}>
       <summary>
         <span aria-hidden="true">+</span>
         এই ঘণ্টায় কী করেছেন লিখুন
@@ -76,7 +79,6 @@ function HourEntryForm({
                   }}
                 >
                   <strong>{suggestion.activity}</strong>
-                  <small>{suggestion.category}</small>
                 </button>
               ))}
             </div>
@@ -98,9 +100,6 @@ function HourEntryForm({
             placeholder="যেমন: বই পড়েছি"
             autoComplete="off"
           />
-          <small>
-            সময় স্বয়ংক্রিয়: {startTime}–{endTime || "এখন চলছে"}
-          </small>
         </label>
         <TimelineSubmitButton label="Timeline-এ রাখুন" />
         {state.message && (
@@ -141,35 +140,16 @@ export function HourlyTimeline({
   isToday: boolean;
   suggestions: TimelineSuggestion[];
 }) {
-  const slots = [
-    { startMinute: 0, endMinute: 300, isDefaultSleep: true },
-    ...Array.from({ length: 19 }, (_, index) => {
-      const startMinute = (index + 5) * 60;
-      return {
-        startMinute,
-        endMinute: startMinute + 60,
-        isDefaultSleep: false,
-      };
-    }),
-  ];
   const daytimeEntries = entries.filter((entry) => entry.startMinute >= 300);
   const effectiveEntries = [defaultSleepEntry, ...daytimeEntries];
   const gaps = timelineGaps(effectiveEntries, boundary).filter(
     (gap) => gap.endMinute > gap.startMinute,
   );
-  const tracked = effectiveEntries.reduce(
-    (total, entry) =>
-      total +
-      Math.max(
-        0,
-        Math.min(entry.endMinute ?? boundary, boundary) - entry.startMinute,
-      ),
-    0,
-  );
   const untracked = gaps.reduce(
     (total, gap) => total + gap.endMinute - gap.startMinute,
     0,
   );
+  const tracked = Math.max(0, boundary - untracked);
 
   return (
     <section className="timeline-section" aria-labelledby="timeline-heading">
@@ -190,15 +170,10 @@ export function HourlyTimeline({
       </div>
 
       <div className="timeline-hour-list">
-        {slots.map(({ startMinute, endMinute, isDefaultSleep }) => {
+        {timelineHourSlots.map(({ startMinute, endMinute, isDefaultSleep }) => {
           const startingEntries = daytimeEntries.filter(
             (entry) =>
               entry.startMinute >= startMinute && entry.startMinute < endMinute,
-          );
-          const overlappingEntry = daytimeEntries.find(
-            (entry) =>
-              entry.startMinute < endMinute &&
-              (entry.endMinute ?? boundary) > startMinute,
           );
           const isFuture = isToday && startMinute > boundary;
           const isCurrent =
@@ -230,24 +205,12 @@ export function HourlyTimeline({
                 {isDefaultSleep ? (
                   <div className="timeline-default-sleep">
                     <div>
-                      <span>বিশ্রাম · ডিফল্ট</span>
                       <h3>ঘুম</h3>
-                      <small>
-                        {isToday && boundary < 300
-                          ? `${durationLabel(boundary)} চলছে`
-                          : "৫ ঘণ্টা"}
-                      </small>
                     </div>
                   </div>
                 ) : isFuture ? (
                   <p className="timeline-hour-state">এই সময় এখনো আসেনি</p>
-                ) : overlappingEntry ? (
-                  startingEntries.length === 0 && (
-                    <p className="timeline-hour-state">
-                      আগের ঘণ্টার “{overlappingEntry.activity}” চলছে
-                    </p>
-                  )
-                ) : (
+                ) : startingEntries.length === 0 ? (
                   <HourEntryForm
                     dateKey={dateKey}
                     startMinute={startMinute}
@@ -256,7 +219,7 @@ export function HourlyTimeline({
                     boundary={boundary}
                     suggestions={suggestions}
                   />
-                )}
+                ) : null}
               </div>
             </article>
           );

@@ -34,14 +34,13 @@ function objectId(value: string): ObjectId | null {
 function interval(input: TimelineEntryInput) {
   const startMinute = timeToMinute(input.startTime);
   const endMinute = input.endTime ? timeToMinute(input.endTime) : undefined;
-  return { startMinute, endMinute, occupiedEnd: endMinute ?? 1440 };
+  return { startMinute, endMinute };
 }
 
-async function overlaps(
+async function entryExistsAtStart(
   ownerId: ObjectId,
   dateKey: string,
   startMinute: number,
-  occupiedEnd: number,
   excludedId?: ObjectId,
 ): Promise<boolean> {
   const timeline = await timelineEntriesCollection();
@@ -50,10 +49,7 @@ async function overlaps(
       ownerId,
       dateKey,
       ...(excludedId ? { _id: { $ne: excludedId } } : {}),
-      startMinute: { $gte: 300, $lt: occupiedEnd },
-      $expr: {
-        $gt: [{ $ifNull: ["$endMinute", 1440] }, startMinute],
-      },
+      startMinute,
     }),
   );
 }
@@ -126,9 +122,8 @@ export async function createTimelineEntry(
   const owner = objectId(ownerId);
   if (!owner) return "not_found";
   await ensureDatabaseIndexes();
-  const { startMinute, endMinute, occupiedEnd } = interval(input);
-  if (await overlaps(owner, dateKey, startMinute, occupiedEnd))
-    return "overlap";
+  const { startMinute, endMinute } = interval(input);
+  if (await entryExistsAtStart(owner, dateKey, startMinute)) return "overlap";
   const now = new Date();
   await (
     await timelineEntriesCollection()

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 
+import { useCloseDetailsOnSuccess } from "@/components/use-close-details-on-success";
 import { initialTimelineActionState } from "@/features/timeline/action-state";
 import {
   deleteTimelineEntryAction,
@@ -9,7 +10,6 @@ import {
 } from "@/features/timeline/actions";
 import { TimelineSubmitButton } from "@/features/timeline/components/timeline-submit-button";
 import type { TimelineEntryView } from "@/features/timeline/repository";
-import { durationLabel } from "@/features/timeline/time";
 
 export function TimelineCard({
   entry,
@@ -24,21 +24,16 @@ export function TimelineCard({
     updateAction,
     initialTimelineActionState,
   );
+  const detailsRef = useCloseDetailsOnSuccess(state);
   return (
     <article
       className={`timeline-card ${entry.status === "in_progress" ? "is-current" : ""}`}
     >
-      <div className="timeline-time">
-        <strong>{entry.startTime}</strong>
-        <span>{entry.endTime || "এখন চলছে"}</span>
-      </div>
       <div className="timeline-copy">
-        <span>{entry.category}</span>
         <h3>{entry.activity}</h3>
         {entry.note && <p>{entry.note}</p>}
-        {entry.duration > 0 && <small>{durationLabel(entry.duration)}</small>}
       </div>
-      <details className="timeline-edit">
+      <details className="timeline-edit" ref={detailsRef}>
         <summary>Edit</summary>
         <form action={action} className="timeline-form">
           <input type="hidden" name="dateKey" value={dateKey} />

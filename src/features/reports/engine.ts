@@ -1,5 +1,6 @@
 import { activityIsScheduled } from "@/features/reports/streaks";
 import { proportionalActivityScore } from "@/features/daily-activities/progress";
+import { timelineEntryEndMinute } from "@/features/timeline/time";
 
 export type ReportActivity = {
   id: string;
@@ -88,9 +89,7 @@ export function buildProductivityReport({
     const trackedMinutes = timeline
       .filter((entry) => entry.dateKey === dateKey)
       .reduce((total, entry) => {
-        const end =
-          entry.endMinute ??
-          (dateKey === todayKey ? currentMinute : entry.startMinute);
+        const end = timelineEntryEndMinute(entry, availableMinutes);
         const duration = Math.max(
           0,
           Math.min(end, availableMinutes) - entry.startMinute,

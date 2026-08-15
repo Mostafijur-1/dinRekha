@@ -3,7 +3,7 @@
 ## বাস্তবায়িত core
 
 - Google-only authentication, protected routes ও session invalidation
-- ২৪ ঘণ্টার Timeline, overlap validation, untracked gaps, history ও deterministic suggestions
+- ২৪ ঘণ্টার independent Timeline slots, duplicate-time validation, untracked gaps, history ও deterministic suggestions
 - user-defined Daily Activities, recurrence, four measurement modes ও progress
 - explainable Reports: day, week, month, custom range, streak ও Activity history
 - many-to-many Connections, expiring single-use invitation ও directional, owner-controlled sharing

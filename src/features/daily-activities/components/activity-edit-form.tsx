@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 
+import { useCloseDetailsOnSuccess } from "@/components/use-close-details-on-success";
 import { initialActivityActionState } from "@/features/daily-activities/action-state";
 import { updateActivityAction } from "@/features/daily-activities/actions";
 import { ActivityDefinitionFields } from "@/features/daily-activities/components/activity-definition-fields";
@@ -15,9 +16,10 @@ export function ActivityEditForm({
 }) {
   const update = updateActivityAction.bind(null, activity.id);
   const [state, action] = useActionState(update, initialActivityActionState);
+  const detailsRef = useCloseDetailsOnSuccess(state);
 
   return (
-    <details className="activity-edit">
+    <details className="activity-edit" ref={detailsRef}>
       <summary>Edit</summary>
       <form action={action} className="activity-definition-form">
         <ActivityDefinitionFields activity={activity} />

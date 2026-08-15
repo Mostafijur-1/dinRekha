@@ -32,6 +32,25 @@ export function currentMinuteForTimezone(date: Date, timezone: string): number {
 
 export type TimelineGap = { startMinute: number; endMinute: number };
 
+export const timelineHourSlots = [
+  { startMinute: 0, endMinute: 300, isDefaultSleep: true },
+  ...Array.from({ length: 19 }, (_, index) => {
+    const startMinute = (index + 5) * 60;
+    return {
+      startMinute,
+      endMinute: startMinute + 60,
+      isDefaultSleep: false,
+    };
+  }),
+];
+
+export function timelineEntryEndMinute(
+  entry: { startMinute: number; endMinute?: number },
+  boundary = 1440,
+): number {
+  return Math.min(entry.endMinute ?? entry.startMinute + 60, boundary);
+}
+
 export function timelineGaps(
   entries: Array<{ startMinute: number; endMinute?: number }>,
   boundary = 1440,
@@ -42,7 +61,7 @@ export function timelineGaps(
     if (entry.startMinute > cursor) {
       gaps.push({ startMinute: cursor, endMinute: entry.startMinute });
     }
-    cursor = Math.max(cursor, entry.endMinute ?? boundary);
+    cursor = Math.max(cursor, timelineEntryEndMinute(entry, boundary));
   }
   if (cursor < boundary)
     gaps.push({ startMinute: cursor, endMinute: boundary });
